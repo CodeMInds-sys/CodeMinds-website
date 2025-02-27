@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading-spinner">جاري التحميل...</div>
+        
+        <div id="profileContent" style="display: none;">
+            <h1>الملف الشخصي</h1>
+            
+            <div class="profile-section">
+                <h3>المعلومات الشخصية</h3>
+                <div class="info-group">
+                    <label>الاسم:</label>
+                    <span id="userName"></span>
+                </div>
+                <div class="info-group">
+                    <label>البريد الإلكتروني:</label>
+                    <span id="userEmail"></span>
+                </div>
+                <div class="info-group">
+                    <label>حالة البريد الإلكتروني:</label>
+                    <span id="emailStatus"></span>
+                </div>
+                <div id="emailVerification"></div>
+            </div>
+
+            <button onclick="utils.logout()" class="btn btn-danger">
+                تسجيل الخروج
+            </button>
+        </div>
+    </div>
+
+    <script src="./js/utils.js"></script>
+    <script src="./js/profile.js"></script>
+</body>
+</html> 
