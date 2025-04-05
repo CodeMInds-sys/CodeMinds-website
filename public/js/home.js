@@ -1,11 +1,17 @@
 // التحقق من حالة تسجيل الدخول
+
+
+console.log('Home page loaded');
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Home page loaded');
     
     const authButtons = document.getElementById('authButtons');
     const userMenu = document.getElementById('userMenu');
     const userName = document.getElementById('userName');
-
+    renderCourses();
+    console.log('Rendered courses call');
+    
     // التحقق من حالة تسجيل الدخول
     if (utils.isAuthenticated()) {
         try {
@@ -92,3 +98,48 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 }); 
+
+
+
+
+
+
+
+
+
+
+// render courses
+
+async function renderCourses() {
+    try {
+        const response = await fetch('http://localhost:3000/api/courses');
+        if (!response.ok) {
+            throw new Error('Failed to fetch courses');
+        }
+        utils.showToast('render courses');
+        console.log("render courses");
+        
+        const data = await response.json();
+        const courses = data.data;
+        const coursesGrid = document.querySelector('.courses-grid');
+        coursesGrid.innerHTML = '';
+        courses.forEach(course => {
+            const courseElement = document.createElement('div');
+            courseElement.className = 'course-card';
+            courseElement.innerHTML = `
+                <img src="${course.image || './images/default-course.png'}" alt="${course.name}">
+                <h3>${course.name}</h3>
+                <p>${course.description}</p>
+                <div class="price">${course.price} جنيه</div>
+                <div class="actions">
+                    <button onclick="enrollCourse('${course._id}')" class="btn btn-primary">اشترك</button>
+                </div>
+            `;
+            coursesGrid.appendChild(courseElement);
+        });
+    } catch (error) {
+        console.error('Error rendering courses:', error);
+        utils.showToast(error.message || 'Failed to render courses', true);
+    }
+}
+renderCourses();

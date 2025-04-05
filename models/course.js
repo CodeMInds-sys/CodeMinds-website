@@ -53,6 +53,7 @@ const courseSchema = new mongoose.Schema({
 
 });
 
+
 // Virtual for enrolled students count
 courseSchema.virtual('studentsCount').get(function() {
     return this.enrolledStudents.length;

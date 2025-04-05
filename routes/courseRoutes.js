@@ -5,7 +5,7 @@ const checkRole = require('../middlewares/checkRole');
 const courseController = require('../controllers/courseController');
 const { upload } = require('../utils/fileUpload');
 
-router.use(auth); // حماية جميع routes الكورسات
+// router.use(auth); // حماية جميع routes الكورسات
 
 // routes للمدير والمحاضر
 router.post('/', 

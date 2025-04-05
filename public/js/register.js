@@ -1,3 +1,34 @@
+function toggleLoading(isLoading) {
+    const submitButton = document.querySelector('button[type="submit"]');
+    if (!submitButton) {
+        console.error('Submit button not found');
+        return;
+    }
+
+    if (isLoading) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري التحميل...';
+    } else {
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'تأكيد';
+    }
+}
+
+function showToast(message, isError = false) {
+    Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: 'left',
+        style: {
+            background: isError ? "#ff0000" : "#4CAF50"
+        },
+        stopOnFocus: true
+    }).showToast();
+}
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Register page loaded');
     
@@ -45,29 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!validateInput(email, 'email')) {
-            console.warn('Invalid email format', { email });
-            showToast("بريد إلكتروني غير صالح", true);
-            return;
-        }
-
-        if (!validateInput(name, 'name')) {
-            console.warn('Invalid name format', { name });
-            showToast("الاسم يجب أن يكون 3 أحرف على الأقل", true);
-            return;
-        }
-
         if (password !== confirmPassword) {
             console.warn('Passwords do not match');
             showToast("كلمة المرور غير متطابقة", true);
             return;
         }
 
-        if (!validateInput(password, 'password')) {
-            console.warn('Weak password detected');
-            showToast("كلمة المرور ضعيفة", true);
-            return;
-        }
 
         toggleLoading(true);
         console.log('Starting registration request', { email, name });

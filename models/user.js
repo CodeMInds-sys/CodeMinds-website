@@ -110,8 +110,8 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['student', 'instructor', 'manager', 'admin'],
-        default: 'student'
+        enum: ['user','student', 'instructor', 'manager', 'admin'],
+        default: 'user'
     },
     isVerified: {
         type: Boolean,

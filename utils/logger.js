@@ -15,7 +15,7 @@ const Logger = {
         if (process.env.NODE_ENV === 'development') {
             console.debug('\x1b[32m%s\x1b[0m', '🔍 DEBUG:', message, data);
         }
-    }
+    } 
 };
 
 module.exports = Logger; 

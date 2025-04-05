@@ -8,11 +8,12 @@ const Logger = require("./utils/logger");
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; 
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors());
 
 // Logging middleware
@@ -43,7 +44,7 @@ app.use("/api/courses", courseRoutes);
 // app.use("/api/statistics", statisticsRoutes);
 
 app.get("/", (req, res) => {
-    Logger.info('Root endpoint accessed'); 
+    Logger.info('Root endpoint accessed');  
     res.send("Hello World");
 });
 

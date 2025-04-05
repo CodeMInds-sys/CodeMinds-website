@@ -74,8 +74,11 @@ const authController = {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
-        if (!user || !(await user.comparePassword(password))) {
-            throw new AppError('البريد الإلكتروني أو كلمة المرور غير صحيحة', 401);
+        if (!user ) {
+            throw new AppError('user not found', 401);
+        }
+        if (!(await user.comparePassword(password)) ) {
+            throw new AppError('wrong password', 401);
         }
         console.log(user);
         if (!user.isEmailVerified) {
