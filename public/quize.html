@@ -235,6 +235,119 @@ int main() {
       <label><input type="radio" name="q5" value="D"> D) خطأ في الكومبايل</label>
     </div>
 
+    <!-- سؤال 6 -->
+<div class="question">
+  <p><strong>6. ما الإخراج المتوقع من الكود التالي؟</strong></p>
+  <pre>
+class Sample {
+private:
+    int x = 5;
+public:
+    void printX() {
+        cout << x;
+    }
+};
+
+int main() {
+    Sample s;
+    s.printX();
+}</pre>
+  <label><input type="radio" name="q6" value="A"> A) 0</label><br>
+  <label><input type="radio" name="q6" value="B"> B) 5</label><br>
+  <label><input type="radio" name="q6" value="C"> C) خطأ لأن x private</label><br>
+  <label><input type="radio" name="q6" value="D"> D) لا شيء يُطبع</label>
+</div>
+
+<!-- سؤال 7 -->
+<div class="question">
+  <p><strong>7. ماذا يحدث عند تنفيذ الكود التالي؟</strong></p>
+  <pre>
+class Base {
+protected:
+    int x = 10;
+};
+
+class Derived : public Base {
+public:
+    void show() {
+        cout << x;
+    }
+};
+
+int main() {
+    Derived d;
+    d.show();
+}</pre>
+  <label><input type="radio" name="q7" value="A"> A) 10</label><br>
+  <label><input type="radio" name="q7" value="B"> B) خطأ لأن x private</label><br>
+  <label><input type="radio" name="q7" value="C"> C) لا شيء يُطبع</label><br>
+  <label><input type="radio" name="q7" value="D"> D) خطأ في الوراثة</label>
+</div>
+
+<!-- سؤال 8 -->
+<div class="question">
+  <p><strong>8. ما الذي يتم طباعته؟</strong></p>
+  <pre>
+class Math {
+public:
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    double add(double a, double b) {
+        return a + b + 0.5;
+    }
+};
+
+int main() {
+    Math m;
+    cout << m.add(2, 3) << " " << m.add(2.0, 3.0);
+}</pre>
+  <label><input type="radio" name="q8" value="A"> A) 5 5</label><br>
+  <label><input type="radio" name="q8" value="B"> B) 5 5.5</label><br>
+  <label><input type="radio" name="q8" value="C"> C) 5.5 5</label><br>
+  <label><input type="radio" name="q8" value="D"> D) خطأ لأن add مكررة</label>
+</div>
+
+<!-- سؤال 9 -->
+<div class="question">
+  <p><strong>9. أي من التالي صحيح بخصوص access modifiers في C++؟</strong></p>
+  <label><input type="radio" name="q9" value="A"> A) public يعني لا يمكن الوصول له من الخارج</label><br>
+  <label><input type="radio" name="q9" value="B"> B) private يعني يمكن الوصول له من الكلاسات المشتقة</label><br>
+  <label><input type="radio" name="q9" value="C"> C) protected يمكن الوصول له من الكلاسات المشتقة</label><br>
+  <label><input type="radio" name="q9" value="D"> D) جميع ما سبق</label>
+</div>
+
+<!-- سؤال 10 -->
+<!-- سؤال 10 -->
+<div class="question">
+  <p><strong>10. ما الإخراج المتوقع؟</strong></p>
+  <pre>
+class Animal {
+public:
+    void sound() {
+        cout << "Animal sound ";
+    }
+};
+
+class Dog : public Animal {
+public:
+    void sound() {
+        cout << "Dog bark ";
+    }
+};
+
+int main() {
+    Dog d;
+    d.sound();
+}</pre>
+  <label><input type="radio" name="q10" value="A"> A) Animal sound</label><br>
+  <label><input type="radio" name="q10" value="B"> B) Dog bark</label><br>
+  <label><input type="radio" name="q10" value="C"> C) Animal sound Dog bark</label><br>
+  <label><input type="radio" name="q10" value="D"> D) خطأ في الكود</label>
+</div>
+
+
     <button type="button" onclick="checkAnswers()">عرض النتيجة</button>
     <div class="result" id="result"></div>
 
@@ -242,26 +355,35 @@ int main() {
 </div>
 
 <script>
-  function checkAnswers() {
-    const answers = {
-      q1: "B",
-      q2: "C",
-      q3: "B",
-      q4: "C",
-      q5: "A"
-    };
 
-    let score = 0;
+ 
 
-    for (let key in answers) {
-      const selected = document.querySelector(`input[name="${key}"]:checked`);
-      if (selected && selected.value === answers[key]) {
-        score++;
-      }
+function checkAnswers() {
+  const answers = {
+    q1: "B",
+    q2: "C",
+    q3: "B",
+    q4: "C",
+    q5: "A",
+    q6: "B",
+    q7: "A",
+    q8: "B",
+    q9: "C",
+    q10: "B"
+  };
+
+  let score = 0;
+
+  for (let key in answers) {
+    const selected = document.querySelector(`input[name="${key}"]:checked`);
+    if (selected && selected.value === answers[key]) {
+      score++;
     }
-
-    document.getElementById("result").innerText = `درجتك: ${score} من 5`;
   }
+
+  document.getElementById("result").innerText = `درجتك: ${score} من 10`;
+}
+
 </script>
 
 </body>
