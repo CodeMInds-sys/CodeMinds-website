@@ -74,7 +74,7 @@ app.use((err, req, res, next) => {
 (async () => {
     try {
         // الاتصال بقاعدة البيانات
-        await connectMongoose.connectDB();
+        await connectMongoose.connectDB(); 
         
         // تشغيل السيرفر
         app.listen(port, () => {
