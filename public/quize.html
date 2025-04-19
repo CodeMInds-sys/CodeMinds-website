@@ -108,9 +108,46 @@
       font-weight: bold;
       color: green;
     }
+    .timer-container {
+      position: sticky;
+      top: 10px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 20px;
+  height: 30px;
+  background-color: #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+#progressBar {
+  width: 100%;
+  height: 100%;
+  background-color: green;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  line-height: 30px;
+  transition: width 1s linear, background-color 0.5s;
+}
+
+#progressText {
+  position: relative;
+  z-index: 2;
+}
+
   </style>
 </head>
 <body>
+  <div class="timer-container">
+    <div id="progressBar">
+      <span id="progressText">10:00</span>
+    </div>
+  </div>
+  
+  <audio id="tickSound" src="https://www.soundjay.com/clock/sounds/clock-ticking-2.mp3"></audio>
 
 <div class="quiz-container">
   <h2>اختبار C++ OOP</h2>
@@ -353,12 +390,7 @@ int main() {
 
   </form>
 </div>
-
 <script>
-
- 
-
-function checkAnswers() {
   const answers = {
     q1: "B",
     q2: "C",
@@ -373,17 +405,66 @@ function checkAnswers() {
   };
 
   let score = 0;
+  let totalTime = 600; // 10 دقائق
+  let timeLeft = totalTime;
 
-  for (let key in answers) {
-    const selected = document.querySelector(`input[name="${key}"]:checked`);
-    if (selected && selected.value === answers[key]) {
-      score++;
+  const resultDiv = document.getElementById("result");
+  const quizButton = document.querySelector("button");
+  const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+
+  function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function updateProgressBar() {
+    let percent = (timeLeft / totalTime) * 100;
+    progressBar.style.width = percent + "%";
+    progressText.innerText = formatTime(timeLeft);
+
+    if (percent > 60) {
+      progressBar.style.backgroundColor = "green";
+    } else if (percent > 30) {
+      progressBar.style.backgroundColor = "orange";
+    } else {
+      progressBar.style.backgroundColor = "red";
     }
   }
 
-  document.getElementById("result").innerText = `درجتك: ${score} من 10`;
-}
+  function startTimer() {
+    const interval = setInterval(() => {
+      timeLeft--;
+      document.getElementById("tickSound").play();
 
+      updateProgressBar();
+
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        quizButton.disabled = true;
+        resultDiv.style.color = "red";
+        resultDiv.innerText = "انتهى الوقت ⌛";
+      }
+    }, 1000);
+  }
+
+  function checkAnswers() {
+    score = 0;
+    for (let key in answers) {
+      const selected = document.querySelector(`input[name="${key}"]:checked`);
+      if (selected && selected.value === answers[key]) {
+        score++;
+      }
+    }
+    resultDiv.style.color = "green";
+    resultDiv.innerText = `درجتك: ${score} من 10`;
+  }
+
+  window.onload = () => {
+    updateProgressBar();
+    startTimer();
+  };
 </script>
 
 </body>
