@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadCourses() {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/courses', {
+        const response = await fetch('../../api/courses', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -125,7 +125,7 @@ function openEditModal(courseId) {
 async function loadCourseForEdit(courseId) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/courses/${courseId}`, {
+        const response = await fetch(`../../api/courses/${courseId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -154,7 +154,7 @@ async function loadCourseForEdit(courseId) {
 async function editCourse(courseId) {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/courses/${courseId}`, {
+        const response = await fetch(`../../api/courses/${courseId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -173,10 +173,10 @@ async function editCourse(courseId) {
 
 async function deleteCourse(courseId) {
     if (!confirm('هل أنت متأكد من حذف هذا الكورس؟')) return;
-
+    
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/courses/${courseId}`, {
+        const response = await fetch(`../../api/courses/${courseId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -260,7 +260,7 @@ async function handleAddCourse(e) {
         const token = localStorage.getItem('token');
         
         // إضافة الهيدرز المطلوبة للتحقق من الصلاحيات
-        const response = await fetch('http://localhost:3000/api/courses', {
+        const response = await fetch('../../api/courses', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -292,7 +292,7 @@ async function handleEditCourse(e) {
         const formData = new FormData(e.target);
         const token = localStorage.getItem('token');
 
-        const response = await fetch(`http://localhost:3000/api/courses/${courseId}`, {
+        const response = await fetch(`../../api/courses/${courseId}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

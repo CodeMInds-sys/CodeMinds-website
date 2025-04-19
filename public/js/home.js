@@ -112,7 +112,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 async function renderCourses() {
     try {
-        const response = await fetch('http://localhost:3000/api/courses');
+        const response = await fetch('../../api/courses');
         if (!response.ok) {
             throw new Error('Failed to fetch courses');
         }
