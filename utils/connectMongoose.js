@@ -1,19 +1,38 @@
-const mongoose = require('mongoose');
-const Logger = require('./logger');
+// /pages/api/data.js
 
-const connectMongoose = async () => {
-    try {
-        const connection = await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+  const mongoose = require("mongoose");
+  const logger=require('./logger')
+// /pages/api/data.js
+const connectDB = async () => {
+//   if (mongoose.connections[0].readyState) return;
 
-        Logger.info('📦 Connected to MongoDB successfully');
-        return connection;
-    } catch (error) {
-        Logger.error('❌ MongoDB connection error:', error);
-        process.exit(1);
-    }
+
+logger.info('mongoose function is funning')
+  await mongoose.connect(process.env.MONGODB_URI, {
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
+  });
+
+  mongoose.connection.on("connected", () => {
+    logger.info('MongoDB Connected');
+  });
+
+  mongoose.connection.on("error", (err) => {
+    logger.error('MongoDB connection error: ${err.message')
+  });
+
+  mongoose.connection.on("disconnected", () => {
+    logger.warn('MongoDB Disconnected');
+  })
+
+  process.on("SIGINT", () => {
+    mongoose.connection.close(() => {
+      logger.warn('MongoDB connection closed due to app termination');
+      process.exit(0);
+    });
+  });
 };
 
-module.exports = connectMongoose; 
+module.exports={
+    connectDB
+ } ;

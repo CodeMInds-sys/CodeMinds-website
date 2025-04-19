@@ -74,7 +74,7 @@ app.use((err, req, res, next) => {
 (async () => {
     try {
         // الاتصال بقاعدة البيانات
-        await connectMongoose();
+        await connectMongoose.connectDB();
         
         // تشغيل السيرفر
         app.listen(port, () => {
@@ -88,32 +88,3 @@ app.use((err, req, res, next) => {
         process.exit(1);
     }
 })();
-
-// معالجة إنهاء التطبيق بشكل آمن
-process.on('SIGTERM', () => {
-    Logger.info('SIGTERM received. Shutting down gracefully');
-    process.exit(0);
-});
-
-process.on('SIGINT', () => {
-    Logger.info('SIGINT received. Shutting down gracefully');
-    process.exit(0);
-});
-
-process.on('uncaughtException', (err) => {
-    Logger.error('Uncaught Exception:', {
-        error: err.message,
-        stack: err.stack
-    });
-    process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-    Logger.error('Unhandled Rejection:', {
-        reason: reason,
-        promise: promise
-    });
-    process.exit(1);
-});
- 
-
