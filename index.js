@@ -3,7 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectMongoose = require("./utils/connectMongoose");
 const Logger = require("./utils/logger");
-
+const path = require('path');
 // تهيئة متغيرات البيئة
 dotenv.config();
 
@@ -34,7 +34,7 @@ const instructorRoutes = require("./routes/instructorRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const statisticsRoutes = require("./routes/statisticsRoutes");
 
-app.use('/', express.static('public'));
+app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
 
 app.use("/api/auth", authRoutes);
@@ -43,7 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 // app.use("/api/statistics", statisticsRoutes);
 
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
     Logger.info('Root endpoint accessed');  
     res.send("Hello World");
 });
