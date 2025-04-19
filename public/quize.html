@@ -138,6 +138,15 @@
   z-index: 2;
 }
 
+.correct-answer {
+  background-color: #d4edda !important;
+  border: 2px solid #28a745 !important;
+}
+.incorrect-answer {
+  background-color: #f8d7da !important;
+  border: 2px solid #dc3545 !important;
+}
+
   </style>
 </head>
 <body>
@@ -449,17 +458,45 @@ int main() {
     }, 1000);
   }
 
-  function checkAnswers() {
-    score = 0;
-    for (let key in answers) {
-      const selected = document.querySelector(`input[name="${key}"]:checked`);
-      if (selected && selected.value === answers[key]) {
-        score++;
+function checkAnswers() {
+  score = 0;
+  // Remove previous highlights
+  document.querySelectorAll('label').forEach(label => {
+    label.classList.remove('correct-answer', 'incorrect-answer');
+  });
+
+  for (let key in answers) {
+    const correctValue = answers[key];
+    const options = document.querySelectorAll(`input[name="${key}"]`);
+    let userSelected = null;
+
+    options.forEach(option => {
+      const label = option.parentElement;
+      if (option.checked) {
+        userSelected = option.value;
+      }
+      // Highlight the correct answer
+      if (option.value === correctValue) {
+        label.classList.add('correct-answer');
+      }
+    });
+
+    // If user selected and it's wrong, highlight their wrong answer
+    if (userSelected && userSelected !== correctValue) {
+      const wrongOption = document.querySelector(`input[name="${key}"][value="${userSelected}"]`);
+      if (wrongOption) {
+        wrongOption.parentElement.classList.add('incorrect-answer');
       }
     }
-    resultDiv.style.color = "green";
-    resultDiv.innerText = `درجتك: ${score} من 10`;
+
+    // Score calculation
+    if (userSelected === correctValue) {
+      score++;
+    }
   }
+  resultDiv.style.color = "green";
+  resultDiv.innerText = `درجتك: ${score} من 10`;
+}
 
   window.onload = () => {
     updateProgressBar();
