@@ -1,6 +1,6 @@
 const { match } = require("assert");
 const mongoose = require("mongoose");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const taskSubmissionSchema = new mongoose.Schema({

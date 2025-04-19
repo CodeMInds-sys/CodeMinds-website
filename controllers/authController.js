@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
@@ -10,9 +10,6 @@ const path = require('path');
 const fs = require('fs').promises;
 const Logger = require('../utils/logger');
 
-const generateVerificationToken = () => {
-    return crypto.randomBytes(32).toString('hex');
-};
 
 
 const sendVerificationEmail = async (email, name, verificationUrl) => {
