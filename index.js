@@ -43,7 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 // app.use("/api/statistics", statisticsRoutes);
 
-app.get("*", (req, res) => {
+app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  
     res.send("Hello World");
 });
