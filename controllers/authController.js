@@ -27,13 +27,13 @@ const sendVerificationEmail = async (email, name, verificationUrl) => {
 
     await sendEmail({
         email,
-        subject: 'تأكيد البريد الإلكتروني',
-        message: emailTemplate
+        subject: 'Verify your email address',
+        html: emailTemplate
     }); 
     return true;
     } catch (error) {
         Logger.error('Error sending verification email', error);
-        return new AppError('فشل في إرسال بريد التحقق. يرجى المحاولة مرة أخرى', 500);
+        return new AppError('Failed to send verification email. Please try again', 500);
     }
 };  
 

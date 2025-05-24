@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const sendEmail = async ({ email, subject, message }) => {
+const sendEmail = async ({ email, subject, message, html }) => {
     // إنشاء ناقل البريد
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -15,13 +15,7 @@ const sendEmail = async ({ email, subject, message }) => {
         from: process.env.EMAIL_USER, 
         to: email,
         subject: subject,
-        html: `
-            <div style="direction: rtl; text-align: right; font-family: Arial, sans-serif; padding: 20px;">
-                <h2 style="color: #2c3e50;">تأكيد البريد الإلكتروني</h2>
-                <p style="color: #34495e;">${message}</p>
-                <p style="color: #7f8c8d; font-size: 12px;">إذا لم تقم بطلب هذا البريد، يرجى تجاهله.</p>
-            </div>
-        `
+        html: html
     };
 
     // إرسال البريد

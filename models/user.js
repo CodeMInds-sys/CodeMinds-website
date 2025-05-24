@@ -93,20 +93,20 @@ const courseSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'الرجاء إدخال الاسم'],
-        minlength: [3, 'الاسم يجب أن يكون 3 أحرف على الأقل'],
+        required: [true, 'name is required'],
+        minlength: [3, 'name must be at least 3 characters long'],
         trim: true
     },
     email: {
         type: String,
-        required: [true, 'الرجاء إدخال البريد الإلكتروني'],
+        required: [true, 'email is required'],
         lowercase: true,
         trim: true,
-        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'الرجاء إدخال بريد إلكتروني صحيح']
+        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'email is invalid']
     },
     password: {
         type: String,
-        required: [true, 'الرجاء إدخال كلمة المرور']
+        required: [true, 'password is required']
     },
     role: {
         type: String,
