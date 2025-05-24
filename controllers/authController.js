@@ -41,7 +41,10 @@ const authController = {
     // تسجيل مستخدم جديد
     register: asyncHandler(async (req, res) => {
         const { email, password, name } = req.body;
-
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            throw new AppError('user already exists', 400);
+        }
         // إنشاء المستخدم الجديد
         const verificationToken =await generateToken({ email });
         const user = await User.create({ 
@@ -68,7 +71,7 @@ const authController = {
 
     // تسجيل الدخول
     login: asyncHandler(async (req, res) => {
-        const { email, password } = req.body;
+        const { email, password } = req.body;  
 
         const user = await User.findOne({ email });
         if (!user ) {
