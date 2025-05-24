@@ -71,9 +71,15 @@ const getViews = asyncHandler(async (req, res) => {
     }));
     console.log(views); 
    
+    const gests = await Guest.find({});
+    console.log(gests.length);
+
+
     res.status(200).json({
         success: true,
-        views
+        views,
+        noOfGuests:gests.length,
+        guests:gests
     });
 });
 
