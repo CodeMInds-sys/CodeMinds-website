@@ -42,8 +42,8 @@ const authController = {
     register: asyncHandler(async (req, res) => {
         const { email, password, name } = req.body;
         const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            throw new AppError('user already exists', 400);
+        if (existingUser && existingUser.isEmailVerified) {
+            throw new AppError('user already exists  ', 400);
         }
         // إنشاء المستخدم الجديد
         const verificationToken =await generateToken({ email }  , '30m');
