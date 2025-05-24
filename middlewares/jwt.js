@@ -3,11 +3,11 @@ const AppError = require('../utils/AppError');
 const Logger = require('../utils/logger');
 const User = require('../models/user');
 
-const generateToken = (payload) => {
+const generateToken = (payload,time) => {
     return jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_LIFETIME || '1d' }
+        { expiresIn: time || '1d' }
     );
 };
 

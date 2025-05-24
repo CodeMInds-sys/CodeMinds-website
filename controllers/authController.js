@@ -46,7 +46,7 @@ const authController = {
             throw new AppError('user already exists', 400);
         }
         // إنشاء المستخدم الجديد
-        const verificationToken =await generateToken({ email });
+        const verificationToken =await generateToken({ email }  , '30m');
         const user = await User.create({ 
             email, 
             password, 
