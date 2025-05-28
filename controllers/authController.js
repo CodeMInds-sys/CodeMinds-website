@@ -65,7 +65,7 @@ const authController = {
 
     // تسجيل الدخول
     login: asyncHandler(async (req, res) => {
-        const { email, password } = req.body;  
+        const { email, password ,rememberMe } = req.body;  
 
         const user = await User.findOne({ email });
         if (!user ) {
@@ -75,18 +75,10 @@ const authController = {
             throw new AppError('wrong password', 401);
         }
         console.log(user);
-        if (!user.isEmailVerified) {
-
-            const verificationUrl = `${process.env.BASE_URL}/api/auth/verify-email/${user.verificationToken}`;
-            const emailSent = await sendVerificationEmail(user.email, user.name, verificationUrl);
-            if (emailSent instanceof AppError) {
-                throw emailSent;
-            }
-            throw new AppError('يرجى تفعيل حسابك من خلال الرابط المرسل إلى بريدك الإلكتروني', 403);
-        }
-
+  
+        
         // إنشاء توكن جديد وتحديث التوكن القديم
-        const authToken = generateToken({ id: user._id });
+        const authToken = generateToken({ id: user._id },rememberMe?  '':'1d');
         user.authToken = authToken;
         await user.save();
         console.log("done");
@@ -109,10 +101,22 @@ const authController = {
                 throw new AppError('Invalid token', 401);
             }
             const {name, email, password} = decoded;
+            const existingUser=User.find({email});
+            if (existingUser ) {
+                let msg=await fs.readFile(
+                    path.join(__dirname,"../public/email/responses/message.html")
+                    ,"utf-8"
+                )
+                msg =msg.replace('{{message}}',"user is already exist")
+                msg=msg.replace('{{subject}}',"exist user")
+                res.end(msg)       
+            }   
+            const hashedPassword=bcrypt.hashSync(password, 10); 
+            
             await User.create({
                 name,
                 email,
-                password,
+                password:hashedPassword,
             });
             
             // قراءة صفحة النجاح
@@ -133,7 +137,7 @@ const authController = {
             
             // إرسال صفحة الخطأ مع رسالة الخطأ
             res.send(
-                errorHtml.replace('{{errorMessage}}', 'رابط التفعيل منتهي الصلاحية أو غير صالح')
+                errorHtml.replace('{{errorMessage}}', error.message )
             );
         }
     })

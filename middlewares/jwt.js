@@ -4,10 +4,14 @@ const Logger = require('../utils/logger');
 const User = require('../models/user');
 
 const generateToken = (payload,time) => {
+    const options={};
+    if(typeof time === 'string' && time.trim() !== ''){
+        options.expiresIn = time;
+    }
     return jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: time || '1d' }
+        options
     );
 };
 
