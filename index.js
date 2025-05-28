@@ -30,9 +30,9 @@ app.use((req, res, next) => {
 
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
-const instructorRoutes = require("./routes/instructorRoutes");
+// const instructorRoutes = require("./routes/instructorRoutes");
 const courseRoutes = require("./routes/courseRoutes");
-const statisticsRoutes = require("./routes/statisticsRoutes");
+// const statisticsRoutes = require("./routes/statisticsRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 app.use('/', express.static(path.join(__dirname, 'public')));
@@ -40,10 +40,8 @@ app.use('/uploads', express.static('uploads'));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-// app.use("/api/students", studentRoutes); 
-// app.use("/api/instructors", instructorRoutes);
 app.use("/api/courses", courseRoutes);
-// app.use("/api/statistics", statisticsRoutes);
+
 
 app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  

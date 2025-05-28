@@ -9,8 +9,8 @@ const { upload } = require('../utils/fileUpload');
 
 // routes للمدير والمحاضر
 router.post('/', 
-    auth,
-    checkRole('manager', 'instructor'), 
+    // auth,
+    // checkRole('manager', 'instructor'), 
     upload.single('image'), // middleware لرفع الصورة
     courseController.createCourse
 );

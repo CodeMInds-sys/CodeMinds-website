@@ -2,71 +2,118 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
             padding: 20px;
         }
+
         .email-container {
             max-width: 600px;
             margin: 0 auto;
             background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
+
         .header {
+            background-color: #809b8f;
+            padding: 30px 20px;
             text-align: center;
-            margin-bottom: 20px;
+            color: white;
         }
+
         .logo {
-            max-width: 150px;
-            margin-bottom: 20px;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 15px;
+            border-radius: 50%;
         }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 20px;
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
         }
+
         .content {
-            margin-bottom: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            color: #333333;
         }
+
+        .content h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .content p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #666666;
+        }
+
         .verify-button {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: #4CAF50;
+            background-color: #4a90e2;
             color: white;
-            text-decoration: none;
+            padding: 12px 30px;
             border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
             margin: 20px 0;
+            transition: background-color 0.3s ease;
         }
+
+        .verify-button:hover {
+            background-color: #357abd;
+        }
+
         .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
             text-align: center;
-            color: #7f8c8d;
-            font-size: 12px;
-            margin-top: 20px;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .footer p {
+            color: #666666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100%;
+            }
+            
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="email-container">
         <div class="header">
-            <img src="{{logoUrl}}" alt="Logo" class="logo">
+            <img src="../imgs/logo simple.jpeg" alt="Logo" class="logo">
             <h1>تأكيد البريد الإلكتروني</h1>
         </div>
         <div class="content">
             <h3>مرحباً {{name}}</h3>
             <p>شكراً لتسجيلك معنا. يرجى الضغط على الزر التالي لتأكيد بريدك الإلكتروني:</p>
             <a href="{{verificationUrl}}" class="verify-button">تأكيد البريد الإلكتروني</a>
-            <p>أو يمكنك نسخ الرابط التالي ولصقه في المتصفح:</p>
-            <p>{{verificationUrl}}</p>
         </div>
-        <div class="footer">
-            <p>إذا لم تقم بطلب هذا البريد، يرجى تجاهله.</p>
-            <p>© {{year}} جميع الحقوق محفوظة</p>
-        </div>
+
     </div>
 </body>
 </html> 

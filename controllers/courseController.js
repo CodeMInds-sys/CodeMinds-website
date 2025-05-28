@@ -28,11 +28,12 @@ exports.createCourse = asyncHandler(async (req, res) => {
     }
   
     // إنشاء الدورة التدريبية
+    const {title,description,price,}=req.body;
     const course = await Course.create({
-      ...req.body,
-      image: imageUrl,
-      imagePublicId:imagePublicId,
-      createdBy: req.user.id
+      title,
+      description,
+      price,
+      imageUrl,
     });
   
     res.status(201).json({

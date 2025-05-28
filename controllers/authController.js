@@ -42,18 +42,12 @@ const authController = {
     register: asyncHandler(async (req, res) => {
         const { email, password, name } = req.body;
         const existingUser = await User.findOne({ email });
-        if (existingUser && existingUser.isEmailVerified) {
+        if (existingUser ) {
             throw new AppError('user already exists  ', 400);
         }
         // إنشاء المستخدم الجديد
-        const verificationToken =await generateToken({ email }  , '30m');
-        const user = await User.create({ 
-            email, 
-            password, 
-            name,
-            verificationToken
-        });
-        
+        const verificationToken =await generateToken({ email , name ,password}  , '30m');
+
         const verificationUrl = `${process.env.BASE_URL}/api/auth/verify-email/${verificationToken}`;
         
        
@@ -64,7 +58,7 @@ const authController = {
 
         res.status(201).json({
             success: true,
-            message: 'تم إنشاء الحساب بنجاح. يرجى تفعيل حسابك من خلال الرابط المرسل إلى بريدك الإلكتروني'
+            message: 'تم إنشاء الحساب بنجاح. من فضلك تحقق من بريدك الإلكتروني (بما في ذلك قسم الرسائل غير المهمة) لتفعيل الحساب.'
         });
 
     }),
@@ -111,25 +105,16 @@ const authController = {
         try {
             // التحقق من التوكن
             const decoded = verifyToken(token);
-            const user = await User.findOne({ email: decoded.email });
-
-            if (!user) {
-                // قراءة صفحة الخطأ
-                const errorHtml = await fs.readFile(
-                    path.join(__dirname, '../public/email/responses/error.html'),
-                    'utf8'
-                );
-                
-                // إرسال صفحة الخطأ مع رسالة مخصصة
-                return res.send(
-                    errorHtml.replace('{{errorMessage}}', 'رابط التفعيل غير صالح')
-                );
+            if( !decoded){
+                throw new AppError('Invalid token', 401);
             }
-
-            // تحديث حالة التحقق للمستخدم
-            user.isEmailVerified = true;
-            await user.save();
-
+            const {name, email, password} = decoded;
+            await User.create({
+                name,
+                email,
+                password,
+            });
+            
             // قراءة صفحة النجاح
             const successHtml = await fs.readFile(
                 path.join(__dirname, '../public/email/responses/success.html'),
