@@ -140,6 +140,19 @@ const authController = {
                 errorHtml.replace('{{errorMessage}}', error.message )
             );
         }
+    }),
+    changePassword:asyncHandler(async (req, res) => {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new AppError('user not found', 401);
+        }
+        user.password = password;
+        await user.save();
+        res.status(200).json({
+            success: true,
+            message: 'تم تغيير كلمة المرور بنجاح'
+        });
     })
 };
 
