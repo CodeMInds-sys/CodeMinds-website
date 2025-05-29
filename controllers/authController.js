@@ -101,15 +101,18 @@ const authController = {
                 throw new AppError('Invalid token', 401);
             }
             const {name, email, password} = decoded;
-            const existingUser=User.find({email});
-            if (existingUser ) {
+            const existingUser=await User.findOne({email});
+            console.log("exist user ",existingUser);
+            
+            if (existingUser) {
                 let msg=await fs.readFile(
                     path.join(__dirname,"../public/email/responses/message.html")
-                    ,"utf-8"
+                    ,"utf-8" 
                 )
-                msg =msg.replace('{{message}}',"user is already exist")
+                msg =msg.replace('{{message}}',"user is already exist please login ")
                 msg=msg.replace('{{subject}}',"exist user")
-                res.end(msg)       
+                res.end(msg);      
+                return;
             }   
             const hashedPassword=bcrypt.hashSync(password, 10); 
             
