@@ -23,11 +23,16 @@ exports.createCourse = asyncHandler(async (req, res) => {
         console.log(imageUrl,imagePublicId);
       } catch (error) {
         console.error('Error uploading to Cloudinary:', error);
-        return res.status(500).json({ message: 'فشل في رفع الصورة إلى Cloudinary' });
+        return res.status(500).json({ 
+            success: false,
+            message: 'فشل في رفع الصورة إلى Cloudinary' ,
+            data: null
+        });
       }
     }
   
     // إنشاء الدورة التدريبية
+    try {   
     const {title,description,price,}=req.body;
     const course = await Course.create({
       title,
@@ -35,12 +40,28 @@ exports.createCourse = asyncHandler(async (req, res) => {
       price,
       imageUrl,
     });
-  
+    // in case error delete image fromt coudinary agai
     res.status(201).json({
       success: true,
+      message:"course created successfully",
       data: course
     });
+
+    } catch (error) {
+        console.error('Error creating course:', error);
+        if(imagePublicId)
+             await deleteFromCloudinary(imagePublicId);
+        return res.status(500).json({ 
+            success: false,
+            message: 'fail to create course' ,
+            data: null
+        });
+    }
+
+    
   });
+
+  
 exports.getCourses = asyncHandler(async (req, res) => {
     const courses = await Course.find()
         .populate('instructors', 'name email ')

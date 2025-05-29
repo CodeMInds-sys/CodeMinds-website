@@ -38,11 +38,11 @@ const userRoutes = require("./routes/userRoutes");
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes); 
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 
-
+ 
 app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  
     res.send("not found api");
