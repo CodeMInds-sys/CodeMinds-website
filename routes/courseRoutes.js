@@ -16,13 +16,15 @@ router.post('/',
 );
 
 router.put('/:id', 
-    checkRole('manager', 'instructor'), 
+    // checkRole('manager', 'instructor'), 
     upload.single('image'), // middleware لرفع الصورة
     courseController.updateCourse
 );
 
 // routes للمدير فقط
-router.delete('/:id', checkRole('manager'), courseController.deleteCourse);
+router.delete('/:id', 
+    // checkRole('manager'), 
+    courseController.deleteCourse);
 
 // routes عامة (مع التحقق من تسجيل الدخول)
 router.get('/', courseController.getCourses);
