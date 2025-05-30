@@ -123,7 +123,8 @@ exports.updateCourse = asyncHandler(async (req, res) => {
           const uploadResult = await uploadToCloudinary(fileStr, req.file.originalname);
           imageUrl = uploadResult.url;
           imagePublicId = uploadResult.public_id;
-  
+          course.imageUrl=imageUrl;
+
           console.log(imageUrl,imagePublicId);
         } catch (error) {
           console.error('Error uploading to Cloudinary:', error);
@@ -141,7 +142,6 @@ exports.updateCourse = asyncHandler(async (req, res) => {
     course.title=title? title:course.title;
     course.description=description? description:course.description;
     course.price=price? price:course.price;
-    course.imageUrl=imageUrl;
     await course.save();
     res.status(200).json({
         success: true,
