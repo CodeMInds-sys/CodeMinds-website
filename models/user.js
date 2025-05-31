@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
     profileModel:{
         type: String,
         enum: ['Student', 'Instructor', 'Manager', 'Admin'],
-        default: 'User'
+        default:null
     }
 
 }, {
