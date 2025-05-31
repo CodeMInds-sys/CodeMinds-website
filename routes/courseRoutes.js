@@ -5,19 +5,20 @@ const checkRole = require('../middlewares/checkRole');
 const courseController = require('../controllers/courseController');
 const { upload } = require('../utils/fileUpload');
 
+const uploadImage = upload(['image/jpeg', 'image/png', 'image/jpg']);
 // router.use(auth); // حماية جميع routes الكورسات
 
 // routes للمدير والمحاضر
 router.post('/', 
     // auth,
     // checkRole('manager', 'instructor'), 
-    upload.single('image'), // middleware لرفع الصورة
+    uploadImage.single('image'), // middleware لرفع الصورة
     courseController.createCourse
 );
 
 router.put('/:id', 
     // checkRole('manager', 'instructor'), 
-    upload.single('image'), // middleware لرفع الصورة
+    uploadImage.single('image'), // middleware لرفع الصورة
     courseController.updateCourse
 );
 

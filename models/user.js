@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
         trim: true,
         match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'email is invalid']
     },
+    phone: {
+        type: String,
+        required: [true, 'phone is required'],
+        trim: true,
+    },
     password: {
         type: String,
         required: [true, 'password is required']
@@ -26,14 +31,16 @@ const userSchema = new mongoose.Schema({
         default: 'user'
     },
     authToken: String,
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    courses: [{
+    profileRef:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-    }],
+        refPath: 'profileModel'
+    },
+    profileModel:{
+        type: String,
+        enum: ['Student', 'Instructor', 'Manager', 'Admin'],
+        default: 'User'
+    }
+
 }, {
     timestamps: true
 });

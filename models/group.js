@@ -30,7 +30,12 @@ const groupSchema = new Schema({
     students: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }]
+    }],
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+        required: true
+    }
 })
 
 module.exports = mongoose.model("Group", groupSchema);

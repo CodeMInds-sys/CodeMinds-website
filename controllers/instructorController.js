@@ -1,11 +1,19 @@
-const User = require('../models/user');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
+const Instructor = require('../models/instructor');
+const User = require('../models/user');
+const bcrypt = require('bcryptjs');
+
+
 
 exports.getInstructors = asyncHandler(async (req, res) => {
-    const instructors = await User.find({ role: 'instructor' })
-        .select('name email specialization courses');
-    
+    const instructors = await User.find({ role: 'instructor', status: 'accepted' })
+    .populate(
+        {
+            path: 'profileRef',
+            select: 'name email specialization coursesCanTeach'
+        }
+    )
     res.status(200).json({
         success: true,
         count: instructors.length,
@@ -14,16 +22,28 @@ exports.getInstructors = asyncHandler(async (req, res) => {
 });
 
 exports.createInstructor = asyncHandler(async (req, res) => {
-    const instructor = await User.create({
-        ...req.body,
-        role: 'instructor'
+    const {specialization,experienceYears,bio,
+          github,linkedin, coursesCanTeach,password } = req.body;
+    const instructor = await new Instructor({
+        specialization,
+        experienceYears,
+        bio,
+        github,
+        linkedin,
+        coursesCanTeach,
     });
-
+    const user = req.user;
+    user.role='instructor';
+    user.profileRef=instructor._id;
+    user.profileModel='Instructor';
+    await user.save();
+    await instructor.save();
     res.status(201).json({
         success: true,
         data: instructor,
-        message: 'تم إضافة المحاضر بنجاح'
+        message: 'instructor created successfully'
     });
+   
 });
 
 exports.updateInstructor = asyncHandler(async (req, res) => {

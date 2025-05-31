@@ -40,13 +40,13 @@ const sendVerificationEmail = async (email, name, verificationUrl) => {
 const authController = {
     // تسجيل مستخدم جديد
     register: asyncHandler(async (req, res) => {
-        const { email, password, name } = req.body;
+        const { email, password, name ,phone} = req.body;
         const existingUser = await User.findOne({ email });
         if (existingUser ) {
             throw new AppError('user already exists  ', 400);
         }
         // إنشاء المستخدم الجديد
-        const verificationToken =await generateToken({ email , name ,password}  , '30m');
+        const verificationToken =await generateToken({ email , name ,password,phone}  , '30m');
 
         const verificationUrl = `${process.env.BASE_URL}/api/auth/verify-email/${verificationToken}`;
         
@@ -100,7 +100,7 @@ const authController = {
             if( !decoded){
                 throw new AppError('Invalid token', 401);
             }
-            const {name, email, password} = decoded;
+            const {name, email, password,phone} = decoded;
             const existingUser=await User.findOne({email});
             console.log("exist user ",existingUser);
             
@@ -120,6 +120,7 @@ const authController = {
                 name,
                 email,
                 password:hashedPassword,
+                phone,
             });
             
             // قراءة صفحة النجاح

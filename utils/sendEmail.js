@@ -1,6 +1,10 @@
 const nodemailer = require('nodemailer');
-
+const Logger = require('../utils/logger');
 const sendEmail = async ({ email, subject, message, html }) => {
+    try {
+    if(!email){
+        return new AppError('email is required', 400);
+    }
     // إنشاء ناقل البريد
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -20,6 +24,13 @@ const sendEmail = async ({ email, subject, message, html }) => {
 
     // إرسال البريد
     await transporter.sendMail(mailOptions);
+    Logger.info('Email sent successfully');
+    return true;
+    } catch (error) {
+        Logger.error('Error sending email', error);
+        return new AppError('Failed to send email. Please try again', 500);
+
+    }
 };
 
 module.exports = sendEmail; 

@@ -24,11 +24,14 @@ const courseSchema = new Schema({
         type: Boolean,
         default: true
     },
-    avilableGroups: [{
+    availableGroups: [{
         ref: "Group",
         type: mongoose.Schema.Types.ObjectId,
         default: []
-    }]
+    }],
+},
+{
+    timestamps: true
 })
 
 

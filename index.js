@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
-// const instructorRoutes = require("./routes/instructorRoutes");
+const instructorRoutes = require("./routes/instructorRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 // const statisticsRoutes = require("./routes/statisticsRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -41,7 +41,7 @@ app.use('/uploads', express.static('uploads'));
 app.use("/api/auth", authRoutes); 
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
-
+app.use("/api/instructor",instructorRoutes)
  
 app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  
@@ -88,3 +88,4 @@ app.use((err, req, res, next) => {
         process.exit(1);
     }
 })();
+ 

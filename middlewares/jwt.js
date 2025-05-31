@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
 const Logger = require('../utils/logger');
 const User = require('../models/user');
-
 const generateToken = (payload,time) => {
     const options={};
     if(typeof time === 'string' && time.trim() !== ''){
@@ -48,7 +47,7 @@ const auth = async (req, res, next) => {
         }
 
         req.user = user;
-        next();
+        next();  
     } catch (error) {
         next(error);
     }

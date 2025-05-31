@@ -7,26 +7,29 @@ const fs = require('fs');
 const storage = multer.memoryStorage();
 
 // التحقق من نوع الملف
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+const fileFilter = (allowedTypes)=>{
+    return (req, file, cb) => {
     
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new AppError('نوع الملف غير مدعوم. يرجى رفع صور فقط', 400), false);
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new AppError('نوع الملف غير مدعوم. يرجى رفع صور فقط', 400), false);
+        }
     }
 };
 
 // إعدادات الرفع
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter,
+const upload = (allowedTypes)=>{ 
+    return multer({
+        storage: storage,
+        fileFilter: fileFilter(allowedTypes),
 
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5 ميجابايت كحد أقصى
-    }
+        limits: {
+            fileSize: 5 * 1024 * 1024 // 5 ميجابايت كحد أقصى
+        }
     
-});
+})
+};
 
 // معالج الأخطاء
 const handleUploadError = (error, req, res, next) => {
