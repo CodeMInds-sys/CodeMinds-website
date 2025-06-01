@@ -16,7 +16,7 @@ const groupSchema = new Schema({
     },
     availableSeats: {
         type: Number,
-        required: true
+        default: 0
     },
     totalSeats: {
         type: Number,
@@ -35,7 +35,16 @@ const groupSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
         required: true
-    }
+    },
+    lectures:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Lecture"
+    }],
+    tasks:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Task"
+    }],
+    
 })
 
 module.exports = mongoose.model("Group", groupSchema);

@@ -10,13 +10,13 @@ router.use(auth);
 router
   .route('/')
   .get(groupController.getGroups)
-  .post(checkRole('manager', 'admin'), groupController.createGroup);
+  .post(checkRole('instructor','manager', 'admin'), groupController.createGroup);
 
 router
   .route('/:id')
-  .get(groupController.getGroup)
-  .put(checkRole('manager', 'admin'), groupController.updateGroup)
-  .delete(checkRole('manager', 'admin'), groupController.deleteGroup);
+  // .get(groupController.getGroup)
+  .put(checkRole('instructor','manager', 'admin'), groupController.updateGroup)
+  .delete(checkRole('instructor','manager', 'admin'), groupController.deleteGroup);
 
 
 module.exports = router;

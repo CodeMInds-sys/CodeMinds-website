@@ -7,17 +7,17 @@ const bcrypt = require('bcryptjs');
 
 
 exports.getInstructors = asyncHandler(async (req, res) => {
-    const instructors = await User.find({ role: 'instructor', status: 'accepted' })
+    const instructors = await User.find({ role: 'instructor' })
     .populate(
         {
             path: 'profileRef',
-            select: 'name email specialization coursesCanTeach'
+            select: 'name email status specialization coursesCanTeach'
         }
     )
+    const acceptedInstructors = instructors.filter(instructor => instructor.profileRef.status === 'pending');
     res.status(200).json({
         success: true,
-        count: instructors.length,
-        data: instructors
+        data: acceptedInstructors
     });
 });
 

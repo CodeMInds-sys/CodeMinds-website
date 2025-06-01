@@ -34,6 +34,7 @@ const instructorRoutes = require("./routes/instructorRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 // const statisticsRoutes = require("./routes/statisticsRoutes");
 const userRoutes = require("./routes/userRoutes");
+const groupRoutes = require("./routes/groupRoutes");
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
@@ -42,7 +43,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/instructor",instructorRoutes)
- 
+app.use("/api/groups",groupRoutes)
+
 app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  
     res.send("not found api");
