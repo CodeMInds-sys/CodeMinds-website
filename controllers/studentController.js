@@ -1,9 +1,34 @@
 const User = require('../models/user');
 const Student = require('../models/student');
 const Course = require('../models/course');
-const ReqToEntoll = require('../models/reqToEntoll');
+const ReqToEnroll = require('../models/reqToEnroll');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
+
+exports.createStudent = asyncHandler(async (req, res) => {
+    const {age,gender} = req.body;
+    const user = req.user;
+    if(!user){
+        throw new AppError('user not found', 404);
+    }
+    const student = await Student.create({
+        age,
+        gender,
+        user:user._id
+    });
+
+    user.role='student';
+    user.profileRef=student._id;
+    user.profileModel='Student';
+    await user.save();
+
+    res.status(201).json({
+        success: true,
+        data: student,
+        message: 'تم إضافة الطالب بنجاح'
+    });
+});
+
 
 exports.getStudents = asyncHandler(async (req, res) => {
     const students = await User.find({ role: 'student' })
@@ -14,19 +39,6 @@ exports.getStudents = asyncHandler(async (req, res) => {
         success: true,
         count: students.length,
         data: students
-    });
-});
-
-exports.createStudent = asyncHandler(async (req, res) => {
-    const student = await User.create({
-        ...req.body,
-        role: 'student'
-    });
-
-    res.status(201).json({
-        success: true,
-        data: student,
-        message: 'تم إضافة الطالب بنجاح'
     });
 });
 
@@ -93,59 +105,83 @@ exports.enrollStudentInCourse = asyncHandler(async (req, res) => {
     if (!course) {
         throw new AppError('course not found', 404);
     }
+
+    const reqToEnrollExist = await ReqToEnroll.findOne({
+        student: user._id,
+        course: courseId,
+        status: 'pending'
+    });
+    if (reqToEnrollExist) {
+        throw new AppError('request to enroll student in course already exists', 400);
+    }
     
-    const reqToEntoll = await ReqToEntoll.create({
+    const reqToEnroll = await ReqToEnroll.create({
         student: user._id,
         course: courseId,
         status: 'pending'
     });
     
-    if(!reqToEntoll){
+    
+    if(!reqToEnroll ){
         throw new AppError('failed to enroll student in course', 404);
     }
     res.status(200).json({
         success: true,
         message: 'request to enroll student in course created successfully',
-        data: reqToEntoll
+        data: reqToEnroll
     });
 });
 
 
 exports.acceptRequestToEnrollInCourse = asyncHandler(async (req, res) => {
-    const { reqToEntollId } = req.body;
+    const { requestId } = req.body;
 
  
-    const reqToEntoll = await ReqToEntoll.findOne({
-        _id: reqToEntollId,
+    const reqToEnroll = await ReqToEnroll.findOne({
+        _id: requestId,
         status: 'pending'
     });
-    if (!reqToEntoll) {
+    if (!reqToEnroll) {
         throw new AppError('request to enroll student in course not found', 404);
     }
-
-    const course = await Course.findById(reqToEntoll.course);
+    console.log("reqToEnroll",reqToEnroll);
+    const course = await Course.findById(reqToEnroll.course);
     if (!course) {
         throw new AppError('course not found', 404);
     }
-    const student = await User.findById(reqToEntoll.student);
+    const student = await User.findById(reqToEnroll.student);
+    console.log("student",student);
     if (!student) {
         throw new AppError('student not found', 404);
     }
-    student.enrolledCourses.push(reqToEntoll.course);
-    await student.save();
+    // student.courses.push(reqToEnroll.course);
+    // await student.save();
 
-    course.enrolledStudents.push(student._id);
-    await course.save();
+ 
 
-    reqToEntoll.status = 'accepted';
-    await reqToEntoll.save();
+    // reqToEnroll.status = 'accepted';
+    // await reqToEnroll.save();
     res.status(200).json({
         success: true,
         message: 'request to enroll student in course accepted successfully',
-        data: reqToEntoll
+        data: reqToEnroll
     });
 });
 
+
+exports.getAllRequestsToEnrollInCourse = asyncHandler(async (req, res) => {
+    const reqToEnroll = await ReqToEnroll.find({})
+    .populate('student', 'name email')
+    .populate('course', 'title');
+    if (!reqToEnroll) {
+        throw new AppError('requests to enroll student in course not found', 404);
+    }
+    res.status(200).json({
+        success: true,
+        message: 'requests to enroll student in course found successfully',
+        data: reqToEnroll   
+    });
+});
 
 
 // ... باقي الدوال 

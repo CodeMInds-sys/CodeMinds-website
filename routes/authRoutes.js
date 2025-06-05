@@ -15,4 +15,6 @@ router.get('/profile', auth, (req, res) => {
     });
 });
 
+router.get('/verifyToken', auth, authController.verifyToken);
+
 module.exports = router; 

@@ -5,15 +5,22 @@ const checkRole = require('../middlewares/checkRole');
 const studentController = require('../controllers/studentController');
 const userController = require('../controllers/userController');
 
+
+
+router.get('/requests', studentController.getAllRequestsToEnrollInCourse);
+router.put('/requests/accept', studentController.acceptRequestToEnrollInCourse);
+// router.put('/requests/reject', studentController.rejectRequestToEnrollInCourse);
+
+
 router.use(auth);
+// routes for student
+router.route('/')
+.post(studentController.createStudent)
+.get(studentController.getStudents);    
+ 
+router.put('/:id', checkRole('student'), studentController.updateStudent);
+router.delete('/:id', checkRole('student'), studentController.deleteStudent); 
+router.get('/:id', checkRole('student'), studentController.getStudent);
 
-// routes للمدير فقط
-router.get('/', checkRole('manager'), studentController.getStudents);
-router.post('/', checkRole('manager'), studentController.createStudent);
-router.put('/:id', checkRole('manager'), studentController.updateStudent);
-router.delete('/:id', checkRole('manager'), studentController.deleteStudent);
-router.get('/:id', checkRole('manager'), studentController.getStudent);
-// router.get('/enrolled-courses', checkRole('manager'), studentController.getEnrolledCourses);
-
-router.post('/enroll-course', userController.enrollCourse);
-module.exports = router; 
+router.post('/enroll', checkRole('student'), studentController.enrollStudentInCourse);
+module.exports = router;  

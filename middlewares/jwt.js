@@ -19,12 +19,12 @@ const verifyToken = (token) => {
         return jwt.verify(token, process.env.JWT_SECRET);
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
-            throw new AppError('انتهت صلاحية الرمز', 401);
+            throw new AppError("token expired", 401);
         }
         if (error.name === 'JsonWebTokenError') {
-            throw new AppError('رمز غير صالح', 401);
+            throw new AppError("invalid token", 401);
         }
-        throw new AppError('خطأ في التحقق من الرمز', 401);
+        throw new AppError("invalid token", 401);
     }
 };
 

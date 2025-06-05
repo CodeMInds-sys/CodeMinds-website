@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-const reqToEntollSchema = new mongoose.Schema({
+const reqToEnrollSchema = new mongoose.Schema({
     student:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
+        
     },
     course:{
         type:mongoose.Schema.Types.ObjectId,
@@ -16,5 +17,5 @@ const reqToEntollSchema = new mongoose.Schema({
     }
 })
 
-const reqToEntoll = mongoose.model("ReqToEntoll",reqToEntollSchema);
-module.exports = reqToEntoll;
+const reqToEnroll = mongoose.model("ReqToEnroll",reqToEnrollSchema);
+module.exports = reqToEnroll;
