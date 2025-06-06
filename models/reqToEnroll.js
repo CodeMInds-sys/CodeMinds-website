@@ -14,6 +14,11 @@ const reqToEnrollSchema = new mongoose.Schema({
         type:String,
         enum:["pending","accepted","rejected"],
         default:"pending"
+    },
+    group:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Group",
+        default: null
     }
 })
 

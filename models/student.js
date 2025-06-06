@@ -28,16 +28,13 @@ const studentSchema = new Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Course"
     }],
-    default: []
-    ,
+    
   
     // الجروبات اللي الطالب منضم ليها
     groups: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group"
     }],
-    default: []
-    ,
     // التقدم في كل كورس (تقييمات – واجبات – الحضور)
     courseProgress: [{
       type: mongoose.Schema.Types.ObjectId,

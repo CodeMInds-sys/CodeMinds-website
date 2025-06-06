@@ -3,7 +3,9 @@ const AppError = require('../utils/AppError');
 const Group = require('../models/group');
 const User = require('../models/user');
 const Instructor = require('../models/instructor');
+const Student = require('../models/student');
 const Course = require('../models/course');
+const ReqToEnroll = require('../models/reqToEnroll');
 
 exports.createGroup = asyncHandler(async (req, res) => {
     console.log(req.user);
@@ -33,24 +35,38 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 
 exports.getGroups = asyncHandler(async (req, res) => {
-    const groups = await Group.find()
-    .populate(
-        {
+    let groups = await Group.find()
+        .populate({
             path: 'instructor',
-            select: 'name email'
-        }
-    )
-    .populate(
-        {
+            select: 'name email phone profileRef profileModel'
+        })
+        .populate({
             path: 'course',
             select: 'title'
+        })
+        .populate({
+            path: 'students',
+            select: 'name email phone profileRef profileModel'
+        });
+
+    // manual populate لكل student في كل group
+    for (const group of groups) {
+        for (const student of group.students) {
+            if (student?.profileRef && student?.profileModel) {
+                await student.populate({
+                    path: 'profileRef',
+                    model: student.profileModel
+                });
+            }
         }
-    );
+    }
+
     res.status(200).json({
         success: true,
         data: groups
     });
 });
+
 
 // update Group info
 exports.updateGroup= asyncHandler( async(req,res)=>{
@@ -93,3 +109,59 @@ exports.deleteGroup = asyncHandler(async (req, res) => {
         data: group
     });
 })
+
+
+
+
+
+
+
+exports.addStudentToGroup = asyncHandler(async (req, res) => {
+    const { groupId, studentId,reqToEnrollId } = req.body;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+        throw new AppError('group not found', 404);
+    }
+    const reqToEnroll = await ReqToEnroll.findById(reqToEnrollId);
+    if (!reqToEnroll) {
+        throw new AppError('request to enroll not found', 404);
+    }
+    const student = await User.findById(studentId).populate('profileRef');
+    if (!student) {
+        throw new AppError('student not found', 404);
+    } 
+    
+    // check if student already in group
+    if (group.students.includes(studentId)) {
+        throw new AppError('student already in this group', 400);
+    }
+    
+    // check if group already in student's groups
+    if (student.profileRef.groups.includes(groupId)) {
+        throw new AppError('group already assigned to student', 400);
+    }
+    
+    // push student to group
+    group.students.push(studentId);
+    await group.save();
+    
+    // push group to student
+    student.profileRef.groups.push(groupId);
+    await student.profileRef.save();
+    
+    reqToEnroll.group=groupId;  
+    await reqToEnroll.save();
+     
+    res.status(200).json({
+        success: true,
+        message: 'student added to group successfully', 
+        data: group
+    });
+     
+});
+
+
+
+
+

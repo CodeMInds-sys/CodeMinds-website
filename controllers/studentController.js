@@ -32,8 +32,9 @@ exports.createStudent = asyncHandler(async (req, res) => {
 
 exports.getStudents = asyncHandler(async (req, res) => {
     const students = await User.find({ role: 'student' })
-        .select('name email enrolledCourses')
-        .populate('enrolledCourses', 'name');
+        .select('name email phone courses groups profileRef profileModel')
+        .populate('profileRef');
+        // .populate('courses');
     
     res.status(200).json({
         success: true,
@@ -77,7 +78,7 @@ exports.deleteStudent = asyncHandler(async (req, res) => {
 
 exports.getStudent = asyncHandler(async (req, res) => {
     const student = await User.findById(req.params.id)
-        .select('name email enrolledCourses')
+        .select('name email phone courses groups profileRef profileModel')
         .populate('enrolledCourses', 'name description');
 
     if (!student) {
@@ -149,18 +150,23 @@ exports.acceptRequestToEnrollInCourse = asyncHandler(async (req, res) => {
     if (!course) {
         throw new AppError('course not found', 404);
     }
-    const student = await User.findById(reqToEnroll.student);
+    const user = await User.findById(reqToEnroll.student);
+    console.log("user",user);
+    if (!user) {
+        throw new AppError('user not found', 404);
+    }
+    const student = await Student.findById(user.profileRef);
     console.log("student",student);
     if (!student) {
         throw new AppError('student not found', 404);
     }
-    // student.courses.push(reqToEnroll.course);
-    // await student.save();
+    student.courses.push(reqToEnroll.course);
+    await student.save();
 
  
 
-    // reqToEnroll.status = 'accepted';
-    // await reqToEnroll.save();
+    reqToEnroll.status = 'accepted';
+    await reqToEnroll.save();
     res.status(200).json({
         success: true,
         message: 'request to enroll student in course accepted successfully',
@@ -171,8 +177,24 @@ exports.acceptRequestToEnrollInCourse = asyncHandler(async (req, res) => {
 
 exports.getAllRequestsToEnrollInCourse = asyncHandler(async (req, res) => {
     const reqToEnroll = await ReqToEnroll.find({})
-    .populate('student', 'name email')
+    .populate({
+      path: 'student',
+      select: 'name email phone profileRef profileModel'
+    })
     .populate('course', 'title');
+
+  for (const req of reqToEnroll) {
+    const student = req.student;
+    if (student?.profileRef && student?.profileModel) {
+      await student.populate({
+        path: 'profileRef',
+        model: student.profileModel
+      });
+    }
+  }
+
+    
+
     if (!reqToEnroll) {
         throw new AppError('requests to enroll student in course not found', 404);
     }
@@ -182,6 +204,43 @@ exports.getAllRequestsToEnrollInCourse = asyncHandler(async (req, res) => {
         data: reqToEnroll   
     });
 });
+exports.getAcceptedRequests = asyncHandler(async (req, res) => {
+    let reqToEnroll = await ReqToEnroll.find({ status: 'accepted' })
+    .populate({
+      path: 'student',
+      match: { role: 'student' },
+      select: 'name email phone profileRef profileModel'
+    })
+    .populate('course', 'title');
+  
+  // إزالة الطلبات اللي ماعندهاش طالب (بسبب match)
+  reqToEnroll = reqToEnroll.filter(req => req.student);
+  
+  for (const req of reqToEnroll) {
+    const student = req.student;
+    if (student?.profileRef && student?.profileModel) {
+      await student.populate({
+        path: 'profileRef',
+        model: student.profileModel
+      });
+    }
+  }
+  
+
+    
+
+    if (!reqToEnroll) {
+        throw new AppError('requests to enroll student in course not found', 404);
+    }
+    res.status(200).json({
+        success: true,
+        message: 'requests to enroll student in course found successfully',
+        data: reqToEnroll   
+    });
+});
+
+
+
 
 
 // ... باقي الدوال 

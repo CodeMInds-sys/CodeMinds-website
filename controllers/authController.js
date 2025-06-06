@@ -161,8 +161,9 @@ const authController = {
 
 
     verifyToken:asyncHandler(async (req, res) => {
-        
-        const {userId}=req.user._id;
+        console.log("req.user",req.user);
+        const userId=req.user._id;
+        console.log("userId",userId);
         const user=await User.findById(userId);
         if(!user){
             throw new AppError('user not found', 401);

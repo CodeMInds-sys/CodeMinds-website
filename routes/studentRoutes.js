@@ -8,6 +8,7 @@ const userController = require('../controllers/userController');
 
 
 router.get('/requests', studentController.getAllRequestsToEnrollInCourse);
+router.get('/requests/accepted', studentController.getAcceptedRequests);
 router.put('/requests/accept', studentController.acceptRequestToEnrollInCourse);
 // router.put('/requests/reject', studentController.rejectRequestToEnrollInCourse);
 
@@ -23,4 +24,6 @@ router.delete('/:id', checkRole('student'), studentController.deleteStudent);
 router.get('/:id', checkRole('student'), studentController.getStudent);
 
 router.post('/enroll', checkRole('student'), studentController.enrollStudentInCourse);
+
+
 module.exports = router;  
