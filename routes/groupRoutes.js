@@ -19,4 +19,8 @@ router
   .delete(checkRole('instructor','manager', 'admin'), groupController.deleteGroup);
 
 router.post('/addStudent', groupController.addStudentToGroup);
+router.get('/instructorGroups/:id', groupController.getGroupsOfInstructor);
+
+router.post('/addLecToGroup', groupController.addLectureToGroup);
+
 module.exports = router;

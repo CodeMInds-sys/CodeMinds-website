@@ -15,6 +15,8 @@ const lectureSchema = new Schema({
     },
     videos:[{
         type: String,
+        required:[true,"videos are required"],
+        unique:[true,"this video already exists"]
     }],
     course: {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,15 +28,11 @@ const lectureSchema = new Schema({
         ref: "Group",
         required: true
     },
-    tasks:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Task"
-    }],
     objectives:[{
         type: String,
     }],
 
     
-})
+},{timestamps:true})
 
 module.exports = mongoose.model("Lecture", lectureSchema);

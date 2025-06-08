@@ -40,10 +40,7 @@ const groupSchema = new Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Lecture"
     }],
-    tasks:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Task"
-    }],
+
     
 })
 

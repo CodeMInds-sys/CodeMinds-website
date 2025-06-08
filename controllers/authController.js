@@ -67,7 +67,9 @@ const authController = {
     login: asyncHandler(async (req, res) => {
         const { email, password ,rememberMe } = req.body;  
 
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email })
+        .populate('profileRef')
+  
         if (!user ) {
             throw new AppError('user not found', 401);
         }
@@ -81,7 +83,24 @@ const authController = {
         const authToken = generateToken({ id: user._id },rememberMe?  '':'1d');
         user.authToken = authToken;
         await user.save();
-        console.log("done");
+        if (!user) throw new AppError('User not found', 404);
+        
+        // خطوة 1: populate لـ profileRef 
+        if(user.role==='student'){
+            await user.populate({
+            path: 'profileRef',
+            model: user.profileModel, // Student مثلاً
+            populate: [
+                { path: 'courses' },
+                { path: 'groups' }
+            ]
+            });
+        }
+        else if(user.role==='instructor'){
+            await user.populate({
+                path: 'profileRef'});
+        }
+        
         res.status(200).json({
             success: true,
             token: authToken,
@@ -161,14 +180,30 @@ const authController = {
 
 
     verifyToken:asyncHandler(async (req, res) => {
-        console.log("req.user",req.user);
-        const userId=req.user._id;
-        console.log("userId",userId);
-        const user=await User.findById(userId);
-        if(!user){
-            throw new AppError('user not found', 401);
+        const userId = req.user._id;
+        let user = await User.findById(userId);
+        
+        if (!user) throw new AppError('User not found', 404);
+        
+        // خطوة 1: populate لـ profileRef
+        if(user.role==='student'){
+            await user.populate({
+            path: 'profileRef',
+            model: user.profileModel, // Student مثلاً
+            populate: [
+                { path: 'courses' },
+                { path: 'groups' }
+            ]
+            });
         }
-        res.status(200).json({
+        else if(user.role==='instructor'){
+            await user.populate({
+                path: 'profileRef'});
+        }
+        
+
+        
+        res.status(200).json({ 
             success: true,
             user,
             message: 'token is valid'

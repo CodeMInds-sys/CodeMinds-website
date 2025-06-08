@@ -5,6 +5,7 @@ const User = require('../models/user');
 const Instructor = require('../models/instructor');
 const Student = require('../models/student');
 const Course = require('../models/course');
+const Lecture = require('../models/lecture');
 const ReqToEnroll = require('../models/reqToEnroll');
 
 exports.createGroup = asyncHandler(async (req, res) => {
@@ -161,7 +162,57 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
      
 });
 
+ 
+exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
+    const instructorId = req.params.id;
+    
+    const groups = await Group.find({ instructor: instructorId })
+        .populate({
+            path: 'course',
+            select: 'title'
+        })
+        .populate({
+            path: 'students',
+            select: 'name'
+        })
+        .populate({
+            path: 'lectures',
+            // select: 'title date description' // هات أي بيانات محتاجها من المحاضرة
+        });
+
+    res.status(200).json({
+        success: true,
+        data: groups
+    });
+});
 
 
 
+exports.addLectureToGroup = asyncHandler(async (req, res) => {
+    const { groupId, title,description,date,objectives,videos} = req.body;
+    const group = await Group.findById(groupId);
+    if (!group) {
+        throw new AppError('group not found', 404);
+    }
+    if(group.instructor.toString() !== req.user._id.toString()){
+        throw new AppError('you are not authorized to add lecture to this group', 401);
+    }
+    const lecture = await new Lecture({
+        title,
+        description,
+        objectives,
+        date,
+        videos,
+        group:groupId,
+        course:group.course
+    });
+    await lecture.save();
 
+    group.lectures.push(lecture._id);
+    await group.save();
+    res.status(200).json({
+        success: true,
+        message: 'lecture added to group successfully', 
+        data: group
+    });
+});

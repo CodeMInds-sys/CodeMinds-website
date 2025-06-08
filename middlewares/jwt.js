@@ -39,13 +39,15 @@ const auth = async (req, res, next) => {
         const decoded = verifyToken(token);
         const user = await User.findOne({ 
             _id: decoded.id,
-            authToken: token
         });
 
         if (!user) {
-            throw new AppError('تم تسجيل الدخول من جهاز آخر', 401);
+            throw new AppError('user not found', 401);
         }
 
+        if(user.authToken != token){
+            throw new AppError('user logged in from another device', 401);
+        }
         req.user = user;
         next();  
     } catch (error) {
