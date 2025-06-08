@@ -91,14 +91,28 @@ const authController = {
             path: 'profileRef',
             model: user.profileModel, // Student مثلاً
             populate: [
-                { path: 'courses' },
-                { path: 'groups' }
+                { path: 'courses' ,select:'title _id imageURL ' },
+                { path: 'groups' ,select:'title _id startDate endDate ',
+                    populate:{
+                        path:'instructor',
+                        select:'name '
+                    },
+                    populate:{
+                        path:'course',
+                        select:'title '
+                    },
+                    populate:{
+                        path:'lectures',
+                        // select:'title '
+                    }
+                 }
             ]
             });
         }
         else if(user.role==='instructor'){
             await user.populate({
-                path: 'profileRef'});
+                path: 'profileRef'
+            });
         }
         
         res.status(200).json({
@@ -185,22 +199,35 @@ const authController = {
         
         if (!user) throw new AppError('User not found', 404);
         
-        // خطوة 1: populate لـ profileRef
+        // خطوة 1: populate لـ profileRef 
         if(user.role==='student'){
             await user.populate({
             path: 'profileRef',
             model: user.profileModel, // Student مثلاً
             populate: [
-                { path: 'courses' },
-                { path: 'groups' }
+                { path: 'courses' ,select:'title _id imageURL ' },
+                { path: 'groups' ,select:'title _id startDate endDate ',
+                    populate:{
+                        path:'instructor',
+                        select:'name '
+                    },
+                    populate:{
+                        path:'course',
+                        select:'title '
+                    },
+                    populate:{
+                        path:'lectures',
+                        // select:'title '
+                    }
+                 }
             ]
             });
         }
         else if(user.role==='instructor'){
             await user.populate({
-                path: 'profileRef'});
+                path: 'profileRef'
+            });
         }
-        
 
         
         res.status(200).json({ 

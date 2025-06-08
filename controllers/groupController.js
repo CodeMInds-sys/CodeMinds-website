@@ -100,6 +100,12 @@ exports.deleteGroup = asyncHandler(async (req, res) => {
     const course=await Course.findById(courseId);
     course.availableGroups.pull(group._id);
     await course.save();
+    const students=group.students;
+    for (const student of students) {
+        const user=await User.findById(student).populate('profileRef');
+        user.profileRef.groups.pull(group._id);
+        await user.save();
+    }
     const deletedGroup = await Group.findByIdAndDelete(req.params.id);
     if (!deletedGroup) {
         throw new AppError('Group not found', 404);
