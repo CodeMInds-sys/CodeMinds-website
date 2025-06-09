@@ -158,6 +158,7 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     await student.profileRef.save();
     
     reqToEnroll.group=groupId;  
+    reqToEnroll.joined=true;
     await reqToEnroll.save();
      
     res.status(200).json({

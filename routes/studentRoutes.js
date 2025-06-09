@@ -3,17 +3,11 @@ const router = express.Router();
 const { auth } = require('../middlewares/jwt');
 const checkRole = require('../middlewares/checkRole');
 const studentController = require('../controllers/studentController');
-const userController = require('../controllers/userController');
-
-
-
-router.get('/requests', studentController.getAllRequestsToEnrollInCourse);
-router.get('/requests/accepted', studentController.getAcceptedRequests);
-router.put('/requests/accept', studentController.acceptRequestToEnrollInCourse);
-// router.put('/requests/reject', studentController.rejectRequestToEnrollInCourse);
-
+const requestsController = require('../controllers/requestsController');
 
 router.use(auth);
+
+
 // routes for student
 router.route('/')
 .post(studentController.createStudent)
@@ -23,7 +17,11 @@ router.put('/:id', checkRole('student'), studentController.updateStudent);
 router.delete('/:id', checkRole('student'), studentController.deleteStudent); 
 router.get('/:id', checkRole('student'), studentController.getStudent);
 
-router.post('/enroll', checkRole('student'), studentController.enrollStudentInCourse);
+router.post('/enroll', checkRole('student'), requestsController.enrollStudentInCourse);
+
+
+
+
 
 
 module.exports = router;  

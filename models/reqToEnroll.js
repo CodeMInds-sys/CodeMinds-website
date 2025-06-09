@@ -19,6 +19,10 @@ const reqToEnrollSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"Group",
         default: null
+    },
+    joined:{
+        type:Boolean,
+        default:false
     }
 })
 
