@@ -3,6 +3,12 @@ const mongoose = require("mongoose");
 
 const instructorRequestSchema = new mongoose.Schema(
   {
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:true,
+        unique:[true,'your instructor request already exists']
+    },
     specialization: {
       type: String,
       required: [true,'specialization is required'],

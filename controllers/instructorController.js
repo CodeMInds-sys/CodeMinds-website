@@ -11,20 +11,31 @@ exports.getInstructors = asyncHandler(async (req, res) => {
     .populate(
         {
             path: 'profileRef',
-            select: 'name email status specialization coursesCanTeach'
+            match: { status: 'pending' },
+            select: 'status specialization coursesCanTeach'
         }
     )
-    const acceptedInstructors = instructors.filter(instructor => instructor.profileRef.status === 'pending');
+    if(!instructors){
+        throw new AppError('instructors not found', 404);
+    }
+    // const acceptedInstructors = instructors.filter(instructor => instructor.profileRef.status === 'pending');
     res.status(200).json({
         success: true,
-        data: acceptedInstructors
+        data: instructors
     });
 });
 
 exports.createInstructor = asyncHandler(async (req, res) => {
+    const user = req.user; 
+
+    const userId = user._id;
     const {specialization,experienceYears,bio,
-          github,linkedin, coursesCanTeach,password } = req.body;
+          github,linkedin, coursesCanTeach } = req.body;
+    if(user.role==='instructor'){
+        throw new AppError('you are already an instructor', 400);
+    }      
     const instructor = await new Instructor({
+        user:userId, 
         specialization,
         experienceYears,
         bio,
@@ -32,12 +43,12 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         linkedin,
         coursesCanTeach,
     });
-    const user = req.user;
+    await instructor.save();
     user.role='instructor';
+
     user.profileRef=instructor._id;
     user.profileModel='Instructor';
     await user.save();
-    await instructor.save();
     res.status(201).json({
         success: true,
         data: instructor,
