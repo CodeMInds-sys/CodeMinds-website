@@ -45,9 +45,9 @@ const auth = async (req, res, next) => {
             throw new AppError('user not found', 401);
         }
 
-        if(user.authToken != token){
-            throw new AppError('user logged in from another device', 401);
-        }
+        // if(user.authToken != token){
+        //     throw new AppError('user logged in from another device', 401);
+        // }
         req.user = user;
         next();  
     } catch (error) {

@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['Student', 'Instructor', 'Manager', 'Admin'],
         default:null
+    },
+    history:{
+        type: Array,
+        default: []
     }
 
 }, {

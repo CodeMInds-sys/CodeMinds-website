@@ -36,7 +36,7 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 
 exports.getGroups = asyncHandler(async (req, res) => {
-    let groups = await Group.find()
+    let groups = await Group.find({})
         .populate({
             path: 'instructor',
             select: 'name email phone profileRef profileModel'
@@ -51,20 +51,21 @@ exports.getGroups = asyncHandler(async (req, res) => {
         });
 
     // manual populate لكل student في كل group
-    for (const group of groups) {
-        for (const student of group.students) {
-            if (student?.profileRef && student?.profileModel) {
-                await student.populate({
-                    path: 'profileRef',
-                    model: student.profileModel
-                });
-            }
-        }
-    }
+    // for (const group of groups) {
+    //     for (const student of group.students) {
+    //         if (student?.profileRef && student?.profileModel) {
+    //             await student.populate({
+    //                 path: 'profileRef',
+    //                 model: student.profileModel
+    //             });
+    //         }
+    //     }
+    // }
 
     res.status(200).json({
         success: true,
-        data: groups
+        data: groups,
+        message: 'groups found successfully'
     });
 });
 

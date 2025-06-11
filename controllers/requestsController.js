@@ -68,7 +68,8 @@ exports.acceptRequestToEnrollInCourse = asyncHandler(async (req, res) => {
  
     const reqToEnroll = await ReqToEnroll.findOne({
         _id: requestId,
-        status: 'pending'
+        status: 'pending',
+        
     });
     if (!reqToEnroll) {
         throw new AppError('request to enroll student in course not found', 404);
@@ -133,7 +134,7 @@ exports.getAllRequestsToEnrollInCourse = asyncHandler(async (req, res) => {
     });
 });
 exports.getAcceptedRequests = asyncHandler(async (req, res) => {
-    let reqToEnroll = await ReqToEnroll.find({ status: 'accepted' })
+    let reqToEnroll = await ReqToEnroll.find({ status: 'accepted', joined: false })
     .populate({
       path: 'student',
       match: { role: 'student' },
