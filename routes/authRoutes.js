@@ -18,7 +18,7 @@ router.get('/profile', auth, (req, res) => {
 router.get('/verifyToken', auth, authController.verifyToken);
 
 
-router.get('/requestChangePassword', authController.requestChangePassword);
+router.post('/requestChangePassword', authController.requestChangePassword);
 
 router.get('/verifyChangePassword', authController.verifyChangePassword);
 
