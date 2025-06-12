@@ -43,7 +43,14 @@ const userSchema = new mongoose.Schema({
     history:{
         type: Array,
         default: []
-    }
+    },
+    resetPasswordTokenUsed: {
+        type: Boolean,
+        default: false
+    },
+
+    
+
 
 }, {
     timestamps: true
