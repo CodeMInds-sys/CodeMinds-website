@@ -37,6 +37,30 @@ const sendVerificationEmail = async (email, name, verificationUrl) => {
     }
 };  
 
+const sendVerificationChangePasswordEmail = async (email, name, verificationUrl) => {
+    try {
+        let emailTemplate = await fs.readFile(
+            path.join(__dirname, '../public/email/verificationChangePassword.html'),
+            'utf8'
+    );
+    
+    emailTemplate = emailTemplate
+        .replace(/\{\{name\}\}/g, name)
+        .replace(/\{\{verificationUrl\}\}/g, verificationUrl)
+        .replace(/\{\{year\}\}/g, new Date().getFullYear().toString());
+
+    await sendEmail({
+        email,
+        subject: 'Verify your email address to change password',
+        html: emailTemplate
+    }); 
+    return true;
+    } catch (error) {
+        Logger.error('Error sending verification email', error);
+        return new AppError('Failed to send verification email. Please try again', 500);
+    }
+};  
+
 const authController = {
     // تسجيل مستخدم جديد
     register: asyncHandler(async (req, res) => {
@@ -178,19 +202,7 @@ const authController = {
             );
         }
     }),
-    changePassword:asyncHandler(async (req, res) => {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) {
-            throw new AppError('user not found', 401);
-        }
-        user.password = password;
-        await user.save();
-        res.status(200).json({
-            success: true,
-            message: 'تم تغيير كلمة المرور بنجاح'
-        });
-    }),
+
 
 
     verifyToken:asyncHandler(async (req, res) => {
@@ -235,7 +247,81 @@ const authController = {
             user,
             message: 'token is valid'
         });
-    })
+    }),
+
+    requestChangePassword:asyncHandler(async (req, res) => {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new AppError('user not found', 401);
+        }
+        const verificationToken =await generateToken({ email }  , '30m');
+
+        const verificationUrl = `${process.env.BASE_URL}/api/auth/verifyChangePassword/${verificationToken}`;
+        
+       
+        const emailSent = await sendVerificationChangePasswordEmail(email, user.name, verificationUrl);
+        if (emailSent instanceof AppError) {
+            throw emailSent;
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'تم إرسال رابط التحقق بنجاح. من فضلك تحقق من بريدك الإلكتروني (بما في ذلك قسم الرسائل غير المهمة) لتغيير كلمة المرور.'
+        });
+    }),
+
+    verifyChangePassword:asyncHandler(async (req, res) => {
+        const { token } = req.params;
+        const decoded = verifyToken(token);
+        if( !decoded){
+            throw new AppError('Invalid token', 401);
+        }
+        const {email} = decoded;
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new AppError('user not found', 401);
+        }
+        const verificationToken =await generateToken({ email }  , '30m');
+        const verificationUrl = `${process.env.BASE_URL}/api/auth/changePassword/${verificationToken}`;
+        const changePasswordPage = await fs.readFile(
+            path.join(__dirname, '../public/email/responses/changePasswordPage.html'),
+            'utf8'
+        );
+        changePasswordPage = changePasswordPage.replace('{{name}}', user.name);
+        changePasswordPage = changePasswordPage.replace('{{verificationUrl}}', verificationUrl);
+        changePasswordPage = changePasswordPage.replace('{{year}}', new Date().getFullYear().toString());
+        res.end(changePasswordPage);
+
+    }),
+
+
+    changePassword:asyncHandler(async (req, res) => {
+        const { token } = req.params;
+        const decoded = verifyToken(token);
+        if( !decoded){
+            throw new AppError('Invalid token', 401);
+        }
+        const {email} = decoded;
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new AppError('user not found', 401);
+        }
+        const {password,confirmPassword} = req.body;
+        if(password !== confirmPassword){
+            throw new AppError('passwords do not match', 401);
+        }
+        const hashedPassword=bcrypt.hashSync(password, 10); 
+        user.password=hashedPassword;
+        await user.save();
+        const successHtml = await fs.readFile(
+            path.join(__dirname, '../public/email/responses/success.html'),
+            'utf8'
+        );
+        successHtml = successHtml.replace('{{message}}', 'تم تغيير كلمة المرور بنجاح');
+        successHtml = successHtml.replace('{{year}}', new Date().getFullYear().toString());
+        res.end(successHtml);
+    }),
 };
 
 module.exports = authController; 
