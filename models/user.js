@@ -19,10 +19,13 @@ const userSchema = new mongoose.Schema({
     phone: {
         type: String,
         required: [true, 'phone is required'],
+        match: [/^01[0-2,5]{1}[0-9]{8}$/, 'phone is invalid'],
         trim: true,
     },
     password: {
         type: String,
+        minlength: [8, 'password must be at least 8 characters long'],
+        match: [/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, 'password is invalid'],
         required: [true, 'password is required']
     },
     role: {

@@ -27,13 +27,13 @@ exports.getInstructors = asyncHandler(async (req, res) => {
 
 exports.createInstructor = asyncHandler(async (req, res) => {
     const user = req.user; 
-
+    const {fileId,fileUrl}=req;
     const userId = user._id;
     const {specialization,experienceYears,bio,
           github,linkedin, coursesCanTeach } = req.body;
     if(user.role==='instructor'){
         throw new AppError('you are already an instructor', 400);
-    }      
+    }       
     const instructor = await new Instructor({
         user:userId, 
         specialization,
@@ -42,6 +42,10 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         github,
         linkedin,
         coursesCanTeach,
+        cv:{
+            fileId,
+            fileUrl
+        }
     });
     await instructor.save();
     user.role='instructor';

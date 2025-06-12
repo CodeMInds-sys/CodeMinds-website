@@ -13,7 +13,7 @@ const fileFilter = (allowedTypes)=>{
         if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new AppError('نوع الملف غير مدعوم. يرجى رفع صور فقط', 400), false);
+            cb(new AppError(`you can only upload ${allowedTypes.join(', ')}`, 400), false);
         }
     }
 };
@@ -24,9 +24,9 @@ const upload = (allowedTypes)=>{
         storage: storage,
         fileFilter: fileFilter(allowedTypes),
 
-        limits: {
-            fileSize: 5 * 1024 * 1024 // 5 ميجابايت كحد أقصى
-        }
+        // limits: {
+        //     fileSize: 5 * 1024 * 1024 // 5 ميجابايت كحد أقصى
+        // }
     
 })
 };

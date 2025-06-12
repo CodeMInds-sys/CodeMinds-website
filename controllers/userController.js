@@ -62,7 +62,28 @@ const getViews = asyncHandler(async (req, res) => {
     });
 });
 
+
+// const uploadFileToGoogleDrive = asyncHandler(async (req, res) => {
+//     const { file } = req;
+//     const {fileId,fileUrl}=req;
+//     const {name}=req.body;
+//     if (!file) {
+//         return res.status(400).json({
+//             success: false,
+//             message: 'No file uploaded'
+//         });
+//     }
+//     res.status(200).json({
+//         success: true,
+//         fileUrl,
+//         fileId,
+//         name
+//     });
+// });
+
+
 module.exports = {
     viewUser,
-    getViews
+    getViews,
+    // uploadFileToGoogleDrive
 }

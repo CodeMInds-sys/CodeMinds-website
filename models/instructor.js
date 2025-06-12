@@ -42,6 +42,16 @@ const instructorRequestSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    cv:{
+      fileId: {
+        type: String,
+        default: null,
+      },
+      fileUrl: {
+        type: String,
+        default: null,
+      },
+    }
   },
   { timestamps: true }
 );
