@@ -15,22 +15,24 @@
             background-color: #f0f2f5;
         }
         .container {
+            width: 50%;
             text-align: center;
             padding: 2rem;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
         }
         .error-icon {
             color: #ef4444;
             font-size: 48px;
             margin-bottom: 1rem;
         }
-        h1 { color: #1f2937; }
+        h2 { color: #1f2937; }
         p { color: #4b5563; }
         .error-message {
             color: #ef4444;
             margin: 1rem 0;
+            font-size: 1.2rem;
         }
         .btn {
             display: inline-block;
@@ -46,9 +48,9 @@
 <body>
     <div class="container">
         <div class="error-icon">✕</div>
-        <h1>خطأ في التحقق</h1>
+        <h2>خطأ في التحقق</h2>
         <p class="error-message">{{errorMessage}}</p>
-        <a href="/login" class="btn">عودة إلى تسجيل الدخول</a>
+        <a href="https://code-minds.vercel.app/login" class="btn">تسجيل الدخول</a>
     </div>
 </body>
 </html> 
