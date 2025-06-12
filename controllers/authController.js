@@ -293,7 +293,7 @@ const authController = {
                 path.join(__dirname, '../public/email/responses/error.html'),
                 'utf8'
             );
-            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            errorPage=errorPage.replace('{{errorMessage}}', 'رابط غير صالح أو منتهي الصلاحية');
             res.end(errorPage);
             return;
         }
@@ -306,7 +306,7 @@ const authController = {
                 path.join(__dirname, '../public/email/responses/error.html'),
                 'utf8'
             );
-            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            errorPage=errorPage.replace('{{errorMessage}}', 'رابط غير صالح أو منتهي الصلاحية');
             res.end(errorPage);
             return;
         }
@@ -334,7 +334,7 @@ const authController = {
                 path.join(__dirname, '../public/email/responses/error.html'),
                 'utf8'
             );
-            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            errorPage=errorPage.replace('{{errorMessage}}', 'رابط غير صالح أو منتهي الصلاحية');
             res.end(errorPage);
             return;
         }
@@ -347,7 +347,7 @@ const authController = {
                 path.join(__dirname, '../public/email/responses/error.html'),
                 'utf8'
             );
-            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            errorPage=errorPage.replace('{{errorMessage}}', 'رابط غير صالح أو منتهي الصلاحية');
             res.end(errorPage);
             return;
         }
@@ -358,7 +358,7 @@ const authController = {
                 path.join(__dirname, '../public/email/responses/error.html'),
                 'utf8'
             );
-            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            errorPage=errorPage.replace('{{errorMessage}}', 'كلمات المرور غير متطابقة');
             res.end(errorPage);
             return;
         }
