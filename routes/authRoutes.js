@@ -20,8 +20,8 @@ router.get('/verifyToken', auth, authController.verifyToken);
 
 router.get('/requestChangePassword', authController.requestChangePassword);
 
-router.get('/verifyChangePassword/:token', authController.verifyChangePassword);
+router.get('/verifyChangePassword', authController.verifyChangePassword);
 
-router.post('/changePassword/:token', authController.changePassword);
+router.post('/changePassword', authController.changePassword);
 
 module.exports = router; 
