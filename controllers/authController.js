@@ -283,19 +283,32 @@ const authController = {
     }),
     
 
+
     verifyChangePassword: asyncHandler(async (req, res) => {
         const { token } = req.query;
     
         const decoded = verifyToken(token);
         if (!decoded) {
-            throw new AppError('Invalid or expired url ', 401);
+            let errorPage=await fs.readFile(
+                path.join(__dirname, '../public/email/responses/error.html'),
+                'utf8'
+            );
+            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            res.end(errorPage);
+            return;
         }
     
         const { email } = decoded;
         const user = await User.findOne({ email });
     
         if (!user || user.resetPasswordTokenUsed ) {
-            throw new AppError('Invalid or expired url ', 401);
+            let errorPage=await fs.readFile(
+                path.join(__dirname, '../public/email/responses/error.html'),
+                'utf8'
+            );
+            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            res.end(errorPage);
+            return;
         }
     
         // نعرض صفحة تغيير الباسورد
@@ -317,19 +330,37 @@ const authController = {
     
         const decoded = verifyToken(token);
         if (!decoded) {
-            throw new AppError('رابط غير صالح أو منتهي الصلاحية', 401);
+            let errorPage=await fs.readFile(
+                path.join(__dirname, '../public/email/responses/error.html'),
+                'utf8'
+            );
+            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            res.end(errorPage);
+            return;
         }
     
         const { email } = decoded;
         const user = await User.findOne({ email });
     
         if (!user || user.resetPasswordTokenUsed ) {
-            throw new AppError('رابط غير صالح أو منتهي الصلاحية', 401);
+            let errorPage=await fs.readFile(
+                path.join(__dirname, '../public/email/responses/error.html'),
+                'utf8'
+            );
+            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            res.end(errorPage);
+            return;
         }
     
         const { password, confirmPassword } = req.body;
         if (password !== confirmPassword) {
-            throw new AppError('كلمات المرور غير متطابقة', 400);
+            let errorPage=await fs.readFile(
+                path.join(__dirname, '../public/email/responses/error.html'),
+                'utf8'
+            );
+            errorPage=errorPage.replace('{{errorMessage}}', 'Invalid or expired url ');
+            res.end(errorPage);
+            return;
         }
     
         user.password = bcrypt.hashSync(password, 10);
