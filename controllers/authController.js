@@ -284,7 +284,7 @@ const authController = {
         }
         const verificationToken =await generateToken({ email }  , '30m');
         const verificationUrl = `${process.env.BASE_URL}/api/auth/changePassword/${verificationToken}`;
-        const changePasswordPage = await fs.readFile(
+        let changePasswordPage = await fs.readFile(
             path.join(__dirname, '../public/email/responses/changePasswordPage.html'),
             'utf8'
         );
@@ -314,7 +314,7 @@ const authController = {
         const hashedPassword=bcrypt.hashSync(password, 10); 
         user.password=hashedPassword;
         await user.save();
-        const successHtml = await fs.readFile(
+        let successHtml = await fs.readFile(
             path.join(__dirname, '../public/email/responses/success.html'),
             'utf8'
         );
