@@ -181,10 +181,11 @@ const authController = {
             });
             
             // قراءة صفحة النجاح
-            const successHtml = await fs.readFile(
+            let successHtml = await fs.readFile(
                 path.join(__dirname, '../public/email/responses/success.html'),
                 'utf8'
             );
+            successHtml = successHtml.replace('{{message}}', 'تم التحقق من بريدك الإلكتروني بنجاح');
             
             // إرسال صفحة النجاح
             res.send(successHtml);
