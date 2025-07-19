@@ -34,17 +34,10 @@ router.get('/google/callback',
   (req, res) => {
     // إصدار JWT
     const token = generateToken({ id: req.user._id });
-    res.json({
-      success: true,
-      token,
-      user: {
-        id: req.user._id,
-        name: req.user.name,
-        email: req.user.email,
-        avatar: req.user.avatar,
-        // أضف أي بيانات أخرى تحتاجها
-      }
-    });
+    // إعادة التوجيه للفرونت مع التوكن (ويمكن user إذا أردت)
+    res.redirect(`https://code-minds-website.vercel.app/login?token=${token}`);
+    // أو مع بيانات المستخدم:
+    // res.redirect(`https://code-minds-website.vercel.app/login?token=${token}&user=${encodeURIComponent(JSON.stringify(req.user))}`);
   }
 );
 
