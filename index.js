@@ -1,11 +1,13 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const connectMongoose = require("./utils/connectMongoose");
 const Logger = require("./utils/logger");
 const path = require('path');
+const passport = require('./passport');
 // تهيئة متغيرات البيئة
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000; 
@@ -14,7 +16,8 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
+app.use(cors()); 
+app.use(passport.initialize());
 
 // Logging middleware
 app.use((req, res, next) => {
