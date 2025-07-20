@@ -22,5 +22,5 @@ router.post('/addStudent', groupController.addStudentToGroup);
 router.get('/instructorGroups/:id', groupController.getGroupsOfInstructor);
 
 router.post('/addLecToGroup', groupController.addLectureToGroup);
-
+router.put('/editLecToGroup/:id', groupController.editLectureToGroup);
 module.exports = router;

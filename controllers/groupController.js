@@ -224,3 +224,35 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
         data: group
     });
 });
+
+
+
+exports.editLectureToGroup = asyncHandler(async (req, res) => {
+    const { lectureId, title, description, objectives, date, videos } = req.body;
+    const group = await Group.findById(req.params.id);
+    if (!group) {
+        throw new AppError('group not found', 404);
+    }
+    const lecture = await Lecture.findById(lectureId);
+    if (!lecture) {
+        throw new AppError('lecture not found', 404);
+    }
+    lecture.title = title;
+    lecture.description = description;
+    lecture.objectives = objectives;
+    lecture.date = date;
+    lecture.videos = videos;
+    await lecture.save();
+    res.status(200).json({
+        success: true,
+        message: 'lecture updated successfully', 
+        data: lecture
+    });
+});
+
+
+
+
+
+
+
