@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const Logger = require('../utils/logger');
 const sendEmail = async ({ email, subject, message, html }) => {
-    try {
+    try { 
     if(!email){
         return new AppError('email is required', 400);
     }
