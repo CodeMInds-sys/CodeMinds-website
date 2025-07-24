@@ -383,6 +383,30 @@ const authController = {
 };
 
 
+const sendEmailtoAllUsers =asyncHandler(async (subject, message) => {
+    console.log('sendEmailtoAllUsers');
+    const users = await User.find({email:'mohamed12345abdullah@gmail.com'});
+    // console.log(users.length);
+    const html=`
+    <div>
+        <h1> easy register and login </h1>
+        <p>now you can login to your account with one click by clicking on continue with google or continue with facebook</p>
+        <button> <a href="https://code-minds.vercel.app/login"> go to log in page </a></button>
+    </div>
+    `
+    for (const user of users) {
+        console.log(user.email);
+        await sendEmail(
+            {
+                email: user.email,
+                subject,
+                message,
+                html
+            }
+        );
+    }
+});
+// sendEmailtoAllUsers('easy register and login', 'now you can login to your account with one click by clicking on continue with google or continue with facebook');
 
 
 

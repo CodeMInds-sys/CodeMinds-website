@@ -3,7 +3,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("../utils/AppError");
 const auth = require("../middlewares/jwt");
 const Guest = require("../models/guest");
-
+const  sendEmail  = require("../utils/sendEmail");
 
 const viewUser = asyncHandler(async (req, res) => {
     const {ip,page}= req.body;
@@ -80,6 +80,10 @@ const getViews = asyncHandler(async (req, res) => {
 //         name
 //     });
 // });
+
+
+
+
 
 
 module.exports = {
