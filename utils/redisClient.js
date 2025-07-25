@@ -1,40 +1,47 @@
-// const redis = require('redis');
 
-// // إنشاء عميل Redis باستخدام IPv4 (127.0.0.1)
-// const redisClient = redis.createClient({
-//   url: process.env.REDIS_URL || 'redis://127.0.0.1:6379'
-// });
 
-// // الاستماع لأخطاء الاتصال
-// redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
-// // الاتصال بـ Redis
-// (async () => {
-//   try {
-//     await redisClient.connect();
-//     console.log('✅ Connected to Redis');
-//   } catch (err) {
-//     console.error('❌ Failed to connect to Redis:', err);
-//   }
-// })();
 
-// // دالة لحفظ بيانات في الكاش
-// const setCache = async (key, value, ttl = 3600) => {
-//   try {
-//     await redisClient.set(key, value, { EX: ttl });
-//   } catch (err) {
-//     console.error('❌ Redis setCache error:', err);
-//   }
-// };
+const { createClient } = require('redis');
 
-// // دالة لاسترجاع بيانات من الكاش
-// const getCache = async (key) => {
-//   try {
-//     return await redisClient.get(key);
-//   } catch (err) {
-//     console.error('❌ Redis getCache error:', err);
-//     return null;
-//   }
-// };
+const client = createClient({
+    username: 'default',
+    password: 'wMXadgCh7qzGyXF2w9wdZ1UlsZmuDuCJ',
+    socket: {
+        host: 'redis-11546.c261.us-east-1-4.ec2.redns.redis-cloud.com',
+        port: 11546
+    }
+});
 
-// module.exports = { setCache, getCache };
+client.on('error', err => console.log('Redis Client Error', err));
+
+client.connect();
+
+
+// دالة لحفظ بيانات في الكاش
+const setCache = async (key, value, ttl = 3600) => {
+    try {
+      await client.set(key, value, { EX: ttl });
+    } catch (err) {
+      console.error('❌ Redis setCache error:', err);
+    }
+  };
+  
+  // دالة لاسترجاع بيانات من الكاش
+  const getCache = async (key) => {
+    try {
+      return await client.get(key);
+    } catch (err) {
+      console.error('❌ Redis getCache error:', err);
+      return null;
+    }
+  };
+  
+  
+setCache('foo', 'bar').then(() => {
+    console.log('✅ Redis setCache success');
+});
+const result = getCache('foo').then((result) => {
+    console.log(result)  // >>> bar
+});
+module.exports = { setCache, getCache };
