@@ -201,13 +201,13 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor-${instructorId}`; // Cache key for instructor's groups
     const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
-    if (cachedGroups) {
-        return res.status(200).json({
-            success: true,
-            data: JSON.parse(cachedGroups),
-            message: 'groups fetched successfully from cache'
-        });
-    }else{
+    // if (cachedGroups) {
+    //     return res.status(200).json({
+    //         success: true,
+    //         data: JSON.parse(cachedGroups),
+    //         message: 'groups fetched successfully from cache'
+    //     });
+    // }else{
         const groups = await Group.find({ instructor: instructorId })
         .populate({
             path: 'course',
@@ -227,7 +227,7 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
             success: true,
             data: groups
         });
-    }
+    // }
 
 });
 
