@@ -8,11 +8,11 @@ const Course = require('../models/course');
 const Lecture = require('../models/lecture');
 const ReqToEnroll = require('../models/reqToEnroll');
 // Import Redis cache functions from the redisClient utility
-const { setCache, getCache } = require('../utils/redisClient');
+const { setCache, getCache, delCache } = require('../utils/redisClient');
 
 // Helper function to fetch all groups and cache them in Redis
 const setGroupsCache = async () => {
-    const Groups = await Group.find({})
+    const groups = await Group.find({})
     .populate({
         path: 'instructor',
         select: 'name email phone profileRef profileModel'
@@ -24,9 +24,9 @@ const setGroupsCache = async () => {
     .populate({
         path: 'students',
         select: 'name email phone profileRef profileModel'
-    });;
-    const cacheKey = `groups`; // Define the cache key for storing all groups
-    await setCache(cacheKey, JSON.stringify(Groups)); // Store groups data in Redis cache
+    });
+    const cacheKey = `groups:all`;
+    await setCache(cacheKey, JSON.stringify(groups));
 }
 exports.createGroup = asyncHandler(async (req, res) => {
     console.log(req.user);
@@ -47,7 +47,8 @@ exports.createGroup = asyncHandler(async (req, res) => {
     await course.save();
     
     await group.save();
-    await setGroupsCache(); // Update Redis cache after updating a group
+    await setGroupsCache();
+    await delCache(`groups:instructor:${instructorId}`);
     res.status(201).json({
         success: true,
         data: group,
@@ -57,17 +58,15 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 
 exports.getGroups = asyncHandler(async (req, res) => {
-    const cacheKey = `groups`; // Cache key for all groups
-    const cachedGroups = await getCache(cacheKey); // Try to get groups from Redis cache
+    const cacheKey = `groups:all`;
+    const cachedGroups = await getCache(cacheKey);
     if (cachedGroups) {
-        // If groups are found in cache, return them
         return res.status(200).json({
             success: true,
             data: JSON.parse(cachedGroups),
             message: 'groups fetched successfully from cache'
         });
-    }else{
-        // If not in cache, update cache and then get from cache
+    } else {
         await setGroupsCache();
         const groups = await getCache(cacheKey);
         return res.status(200).json({
@@ -99,7 +98,8 @@ exports.updateGroup= asyncHandler( async(req,res)=>{
         throw new AppError('Group not found', 404);
     }
     await group.save();
-    await setGroupsCache(); // Update Redis cache after updating a group
+    await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
     res.status(200).json({
         success: true,
         data: group
@@ -110,8 +110,10 @@ exports.updateGroup= asyncHandler( async(req,res)=>{
 
 exports.deleteGroup = asyncHandler(async (req, res) => {
     const group=await Group.findById(req.params.id);
+    if (!group) throw new AppError('Group not found', 404);
     const courseId=group.course;
     const course=await Course.findById(courseId);
+    if (!course) throw new AppError('Course not found', 404);
     course.availableGroups.pull(group._id);
     await course.save();
     const students=group.students;
@@ -124,7 +126,8 @@ exports.deleteGroup = asyncHandler(async (req, res) => {
     if (!deletedGroup) {
         throw new AppError('Group not found', 404);
     }
-    await setGroupsCache(); // Update Redis cache after deleting a group
+    await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
     res.status(200).json({
         success: true,
         data: group
@@ -143,6 +146,9 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     const group = await Group.findById(groupId);
     if (!group) {
         throw new AppError('group not found', 404);
+    }
+    if (group.students.length >= group.totalSeats) {
+        throw new AppError('group is already full', 400);
     }
     const reqToEnroll = await ReqToEnroll.findById(reqToEnrollId);
     if (!reqToEnroll) {
@@ -174,11 +180,18 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     reqToEnroll.group=groupId;  
     reqToEnroll.joined=true;
     await reqToEnroll.save();
-    await setGroupsCache(); // Update Redis cache after adding a student to a group
+    await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
+    // populate group before response
+    const populatedGroup = await Group.findById(groupId)
+        .populate('instructor', 'name email phone profileRef profileModel')
+        .populate('course', 'title')
+        .populate('students', 'name email phone profileRef profileModel')
+        .populate('lectures');
     res.status(200).json({
         success: true,
         message: 'student added to group successfully', 
-        data: group
+        data: populatedGroup
     });
      
 });
@@ -242,7 +255,8 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
     group.lectures.push(lecture._id);
     await group.save();
 
-    await setGroupsCache(); // Update Redis cache after adding a lecture to a group
+    await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
 
     res.status(200).json({
         success: true,
@@ -271,6 +285,7 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
     await lecture.save();
 
     await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
 
     res.status(200).json({
         success: true,

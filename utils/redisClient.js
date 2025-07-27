@@ -37,6 +37,15 @@ const setCache = async (key, value, ttl = 3600) => {
     }
   };
   
+  // دالة لحذف بيانات من الكاش
+  const delCache = async (key) => {
+    try {
+      await client.del(key);
+    } catch (err) {
+      console.error('❌ Redis delCache error:', err);
+    }
+  };
+  
   
 setCache('foo', 'bar').then(() => {
     console.log('✅ Redis setCache success');
@@ -44,4 +53,4 @@ setCache('foo', 'bar').then(() => {
 const result = getCache('foo').then((result) => {
     console.log(result)  // >>> bar
 });
-module.exports = { setCache, getCache };
+module.exports = { setCache, getCache, delCache };
