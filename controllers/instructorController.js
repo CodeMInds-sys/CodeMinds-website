@@ -3,7 +3,7 @@ const AppError = require('../utils/AppError');
 const Instructor = require('../models/instructor');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-
+const { uploadToCloudinary } = require('../utils/cloudinary');
 
 
 exports.getInstructors = asyncHandler(async (req, res) => {
@@ -27,7 +27,9 @@ exports.getInstructors = asyncHandler(async (req, res) => {
 
 exports.createInstructor = asyncHandler(async (req, res) => {
     const user = req.user; 
-    const {fileId,fileUrl}=req;
+    const fileStr= `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    const uploadResult = await uploadToCloudinary(fileStr, req.file.originalname);
+    const {fileId,fileUrl}=uploadResult;
     const userId = user._id;
     const {specialization,experienceYears,bio,
           github,linkedin, coursesCanTeach } = req.body;

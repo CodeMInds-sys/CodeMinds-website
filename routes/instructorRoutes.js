@@ -6,8 +6,8 @@ const { auth } = require('../middlewares/jwt');
 const uploadFileToGoogleDrive = require('../utils/googleDrive');
 const uploadFile = upload(['application/pdf','image/jpeg', 'image/png', 'image/jpg']);
 router.route('/')
-    .post(auth, uploadFile.single('cv'), uploadFileToGoogleDrive, instructorController.createInstructor)
-    .get(instructorController.getInstructors);   
+    .post(auth, uploadFile.single('cv'), instructorController.createInstructor)
+    .get(instructorController.getInstructors);    
 
 router.route('/:id')
     .get(instructorController.getInstructor)
