@@ -27,7 +27,7 @@ const lectureProgressSchema= new mongoose.Schema({
         type:String,
         default : ""
     },
-    isSubmitted:{
+    isTaskSubmitted:{
         type:Boolean,
         default : false
     }
@@ -53,7 +53,7 @@ const courseProgressSchema = new mongoose.Schema({
 })
 
 const courseProgress=mongoose.model("CourseProgress",courseProgressSchema);
-module.exports={submission,courseProgress};
+module.exports={courseProgress,lectureProgressSchema};
 
 
 

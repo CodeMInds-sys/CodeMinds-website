@@ -7,6 +7,7 @@ const Student = require('../models/student');
 const Course = require('../models/course');
 const Lecture = require('../models/lecture');
 const ReqToEnroll = require('../models/reqToEnroll');
+const {courseProgress,lectureProgressSchema} = require('../models/courseProgress');
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 
@@ -24,6 +25,10 @@ const setGroupsCache = async () => {
     .populate({
         path: 'students',
         select: 'name email phone profileRef profileModel'
+    })
+    .populate({
+        path: 'lectures',
+        // select: 'title date description'
     });
     const cacheKey = `groups:all`;
     await setCache(cacheKey, JSON.stringify(groups));
@@ -60,7 +65,7 @@ exports.createGroup = asyncHandler(async (req, res) => {
 exports.getGroups = asyncHandler(async (req, res) => {
     const cacheKey = `groups:all`;
     const cachedGroups = await getCache(cacheKey);
-    if (cachedGroups) {
+    if (false) {
         return res.status(200).json({
             success: true,
             data: JSON.parse(cachedGroups),
@@ -72,7 +77,7 @@ exports.getGroups = asyncHandler(async (req, res) => {
         return res.status(200).json({
             success: true,
             data: JSON.parse(groups),
-            message: 'groups fetched successfully from cache'
+            message: 'get group success'
         });
     }
 
@@ -175,6 +180,17 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     
     // push group to student
     student.profileRef.groups.push(groupId);
+
+    // add course progress to this student
+
+    const courseProgress=new CourseProgress({
+        student:studentId,
+        course:group.course,
+        lectureProgress:[]
+    })
+    await courseProgress.save();
+    student.profileRef.courseProgress.push(courseProgress._id);
+
     await student.profileRef.save();
     
     reqToEnroll.group=groupId;  

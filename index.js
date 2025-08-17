@@ -39,6 +39,8 @@ const userRoutes = require("./routes/userRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const requestsRoutes = require("./routes/requestsRoutes");
+const questionRoutes = require("./routes/question");
+const feedbackRoutes = require("./routes/feedback");
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
@@ -50,6 +52,8 @@ app.use("/api/instructor",instructorRoutes)
 app.use("/api/groups",groupRoutes)
 app.use("/api/students",studentRoutes)
 app.use("/api/requests",requestsRoutes)
+app.use("/api/questions",questionRoutes)
+app.use("/api/feedback",feedbackRoutes)
 
 app.get("*", (req, res) => { 
     Logger.info('Root endpoint accessed');  
