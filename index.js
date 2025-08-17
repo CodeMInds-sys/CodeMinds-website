@@ -40,7 +40,7 @@ const groupRoutes = require("./routes/groupRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const requestsRoutes = require("./routes/requestsRoutes");
 const questionRoutes = require("./routes/question");
-const feedbackRoutes = require("./routes/feedback");
+const feedbackRoutes = require("./routes/feedBack");
 
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static('uploads'));
