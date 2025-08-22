@@ -23,11 +23,11 @@ const instructorRequestSchema = new mongoose.Schema(
     },
     github: {
       type: String,
-      default: "",
+      required: [true,'github is required'],
     },
     linkedin: {
       type: String,
-      default: "",
+      required: [true,'linkedin is required'],
     },
     coursesCanTeach: {
       type: String,
@@ -45,11 +45,11 @@ const instructorRequestSchema = new mongoose.Schema(
     cv:{
       fileId: {
         type: String,
-        default: null,
+        required: [true,'cv is required'],
       },
       fileUrl: {
         type: String,
-        default: null,
+        required: [true,'cv is required'],
       },
     }
   },
