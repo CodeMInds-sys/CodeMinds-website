@@ -12,7 +12,7 @@ exports.getInstructors = asyncHandler(async (req, res) => {
         {
             path: 'profileRef',
             match: { status: 'pending' },
-            select: 'status specialization coursesCanTeach'
+            // select: 'status specialization coursesCanTeach'
         }
     )
     if(!instructors){
