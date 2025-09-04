@@ -29,7 +29,7 @@ const groupSchema = new Schema({
     },
     students: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Student"
     }],
     course: {
         type: mongoose.Schema.Types.ObjectId,

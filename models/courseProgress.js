@@ -11,27 +11,51 @@ const lectureProgressSchema= new mongoose.Schema({
         ref:"Lecture",
         required:true
     }, 
+    engagement:{
+        type:Number,
+        default:0,
+        min:0,
+        max:100
+    },
     attendance:{
         type:String,
         enum:["present","absent","late"],
         default:"absent"
     },
-    file:{
-        type:String,
-    },
-    grade:{
+
+    lectureScore:{
         type : Number,
-        default : 0
+        default : 0,
+        min:0,
+        max:100
     },
     notes:{
         type:String,
         default : ""
     },
-    isTaskSubmitted:{
-        type:Boolean,
-        default : false
+    task: {
+        taskStatus: { type: String, enum:["pending","completed","failed","submitted"], default: "pending" },
+        submittedAt: { type: Date },
+        file:{
+            type:String,
+            default:""
+        },
+        score:{
+            type:Number,
+            default:0,
+            min:0,
+            max:100
+        },
+        notes:{
+            type:String,
+            default : ""
+        }
     }
 
+
+},
+{
+    timestamps:true
 })  
 
 
@@ -50,10 +74,14 @@ const courseProgressSchema = new mongoose.Schema({
     lectureProgress:[lectureProgressSchema],
     
 
+},
+{
+    timestamps:true
 })
 
 const courseProgress=mongoose.model("CourseProgress",courseProgressSchema);
-module.exports={courseProgress,lectureProgressSchema};
+const LectureProgress=mongoose.model("LectureProgress",lectureProgressSchema);
+module.exports={courseProgress,LectureProgress};
 
 
 

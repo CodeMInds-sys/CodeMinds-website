@@ -36,10 +36,12 @@ const studentSchema = new Schema({
       ref: "Group"
     }],
     // التقدم في كل كورس (تقييمات – واجبات – الحضور)
-    courseProgress: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "CourseProgress"
-    }]
+    courseProgress: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CourseProgress"
+      }
+    ]
     
   }, { timestamps: true });
   

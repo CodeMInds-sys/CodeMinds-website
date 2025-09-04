@@ -5,7 +5,7 @@ const checkRole = require('../middlewares/checkRole');
 const groupController = require('../controllers/groupController');
 
 
-router.use(auth);
+// router.use(auth);
 
 router
   .route('/')
@@ -23,4 +23,7 @@ router.get('/instructorGroups/:id', groupController.getGroupsOfInstructor);
 
 router.post('/addLecToGroup', groupController.addLectureToGroup);
 router.put('/editLecToGroup/:id', groupController.editLectureToGroup);
+
+router.get('/students/:id', groupController.getGroupStudents);
+router.get('/:id', groupController.getGroup); 
 module.exports = router;

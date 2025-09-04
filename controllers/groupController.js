@@ -86,6 +86,55 @@ exports.getGroups = asyncHandler(async (req, res) => {
 });
 
 
+exports.getGroup=asyncHandler(async(req,res)=>{
+    const group=await Group.findById(req.params.id)
+    .populate({
+        path: 'instructor',
+        select: 'name email '
+    })
+    .populate({
+        path: 'course',
+        select: 'title'
+    })
+    .populate({
+        path: 'students',
+        select:'user courseProgress',
+        populate:{
+            path:'user courseProgress',
+            select:'name course'
+        },
+    })
+    .populate({
+        path: 'lectures',
+        // select: 'title date description'
+    }).lean();
+    if (!group) {
+        throw new AppError('Group not found', 404);
+    }
+
+    let students=[];
+   
+    group.students.forEach(async(student) => {
+        let studentId=student._id;
+        let userId=student.user._id; 
+        let name=student.user.name; 
+        // let courseProgress=student.courseProgress;
+        let courseProgress=student.courseProgress.find((progress)=>progress.course.toString()       === group.course._id.toString());
+        console.log(student.courseProgress[0].course);
+        console.log(group.course._id);
+        console.log(courseProgress);
+        students.push({studentId,userId,name,courseProgress:courseProgress._id});
+    });
+    group.students=students;
+
+
+    res.status(200).json({
+        success: true,
+        data: group,
+      
+    });
+})
+
 // update Group info
 exports.updateGroup= asyncHandler( async(req,res)=>{
     const {title,startDate,endDate,totalSeats,instructorId,courseId} = req.body;
@@ -175,7 +224,7 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     }
     
     // push student to group
-    group.students.push(studentId);
+    group.students.push(student.profileRef);
     await group.save();
     
     // push group to student
@@ -224,19 +273,12 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     //         message: 'groups fetched successfully from cache'
     //     });
     // }else{
-        const groups = await Group.find({ instructor: instructorId })
+        const groups = await Group.find({ instructor: instructorId },{title:1,course:1})
         .populate({
             path: 'course',
             select: 'title'
         })
-        .populate({
-            path: 'students',
-            select: 'name'
-        })
-        .populate({
-            path: 'lectures',
-            // select: 'title date description' // هات أي بيانات محتاجها من المحاضرة
-        }).lean();
+
         // Cache the instructor's groups data in Redis
         await setCache(cacheKey, JSON.stringify(groups));
         res.status(200).json({
@@ -245,6 +287,63 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
         });
     // }
 
+});
+
+
+exports.getGroupStudents = asyncHandler(async (req, res) => {
+    const groupId = req.params.id;
+    if (!groupId) {
+        throw new AppError('group id is required', 400);
+    }
+    const group = await Group.findById(groupId,{students:1,})
+
+    .populate({
+        path: 'students',
+        select: 'user age gender profileRef profileModel courseProgress',
+        populate:{
+            path:'user',
+            select:'name'
+        },
+        populate:{
+            path:'courseProgress',
+            select:'course'
+        }
+    })
+    .populate({
+        path: 'course',
+        select: 'title'
+    })
+    .lean();
+
+    if (!group) {
+        throw new AppError('group not found', 404);
+    }
+    let data=[]
+    if (!group.course) {
+        throw new AppError('course not found', 404);
+    }
+    // console.log(group);
+    
+    for (const student of group.students) {
+        console.log("student",student);
+        console.log("courseProgress",student.courseProgress);
+        console.log("group.course",group.course);
+        console.log("group.course._id",group.course._id);
+        console.log("group.course._id.toString()",group.course._id.toString());
+        console.log("student.courseProgress.course",student.courseProgress.course);     
+        console.log("student.courseProgress.course.toString()",student.courseProgress[0].course.toString());
+        let courseProgress=student.courseProgress.find((progress)=>progress.course.toString() === group.course._id.toString());
+        data.push({
+            name:student.user.name,
+            age:student.age,
+            gender:student.gender,
+            courseProgress:courseProgress._id
+        })
+    }
+    res.status(200).json({
+        success: true,
+        data: data
+    });
 });
 
 
@@ -271,6 +370,30 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
     group.lectures.push(lecture._id);
     await group.save();
 
+    const students=group.students;
+    for (const student of students) {
+        if(student.courseProgress.course.toString() !== group.course._id.toString()){
+            throw new AppError('student is not enrolled in this course', 400);
+        }
+        const courseProgress=student.courseProgress.find((progress)=>progress.course.toString() === group.course._id.toString());
+        const lectureProgress=new LectureProgress({
+            lecture:lecture._id,
+            engagement:0,
+            attendance:"absent",
+            lectureScore:0,
+            notes:"",
+            task:{
+                taskStatus:"pending",
+                submittedAt:null,
+                file:"",
+                score:0,
+                notes:""
+            }
+        });
+        courseProgress.lectureProgress.push(lectureProgress);
+        await courseProgress.save();
+        await student.save();
+    }
     await setGroupsCache();
     await delCache(`groups:instructor:${group.instructor}`);
 
