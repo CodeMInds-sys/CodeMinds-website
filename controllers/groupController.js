@@ -8,6 +8,8 @@ const Course = require('../models/course');
 const Lecture = require('../models/lecture');
 const ReqToEnroll = require('../models/reqToEnroll');
 const {courseProgress,lectureProgressSchema} = require('../models/courseProgress');
+const CourseProgress = require('../models/courseProgress').courseProgress;
+const LectureProgress = require('../models/courseProgress').LectureProgress;
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 
@@ -64,7 +66,7 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 exports.getGroups = asyncHandler(async (req, res) => {
     const cacheKey = `groups:all`;
-    const cachedGroups = await getCache(cacheKey);
+    // const cachedGroups = await getCache(cacheKey);
     if (false) {
         return res.status(200).json({
             success: true,
@@ -72,11 +74,32 @@ exports.getGroups = asyncHandler(async (req, res) => {
             message: 'groups fetched successfully from cache'
         });
     } else {
-        await setGroupsCache();
-        const groups = await getCache(cacheKey);
+        // await setGroupsCache();
+        // const groups = await getCache(cacheKey);
+        const groups=await Group.find({})
+        .populate({
+            path: 'instructor',
+            select: 'name email phone profileRef profileModel'
+        })
+        .populate({
+            path: 'course',
+            select: 'title'
+        })
+        .populate({
+            path: 'students',
+            select: 'user',
+            populate:{
+                path:'user',
+                select:'name'
+            }
+        })
+        .populate({
+            path: 'lectures',
+            // select: 'title date description'
+        });
         return res.status(200).json({
             success: true,
-            data: JSON.parse(groups),
+            data: groups,
             message: 'get group success'
         });
     }
@@ -208,27 +231,27 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     if (!reqToEnroll) {
         throw new AppError('request to enroll not found', 404);
     }
-    const student = await User.findById(studentId).populate('profileRef');
+    const student = await Student.findOne({user:studentId});
     if (!student) {
         throw new AppError('student not found', 404);
     } 
     
     // check if student already in group
-    if (group.students.includes(studentId)) {
+    if (group.students.includes(student._id)) {
         throw new AppError('student already in this group', 400);
     }
     
     // check if group already in student's groups
-    if (student.profileRef.groups.includes(groupId)) {
+    if (student.groups.includes(groupId)) {
         throw new AppError('group already assigned to student', 400);
     }
     
     // push student to group
-    group.students.push(student.profileRef);
+    group.students.push(student);
     await group.save();
     
     // push group to student
-    student.profileRef.groups.push(groupId);
+    student.groups.push(groupId);
 
     // add course progress to this student
 
@@ -238,9 +261,9 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
         lectureProgress:[]
     })
     await courseProgress.save();
-    student.profileRef.courseProgress.push(courseProgress._id);
+    student.courseProgress.push(courseProgress._id);
 
-    await student.profileRef.save();
+    await student.save();
     
     reqToEnroll.group=groupId;  
     reqToEnroll.joined=true;
@@ -277,6 +300,47 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
         .populate({
             path: 'course',
             select: 'title'
+        })
+
+        // Cache the instructor's groups data in Redis
+        await setCache(cacheKey, JSON.stringify(groups));
+        res.status(200).json({
+            success: true,
+            data: groups
+        });
+    // }
+
+});
+exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
+    const instructorId = req.params.id;
+    const cacheKey = `groupsOfInstructor-${instructorId}`; // Cache key for instructor's groups
+    const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
+    // if (cachedGroups) {
+    //     return res.status(200).json({
+    //         success: true,
+    //         data: JSON.parse(cachedGroups),
+    //         message: 'groups fetched successfully from cache'
+    //     });
+    // }else{
+        const groups = await Group.find({ instructor: instructorId })
+        .populate({
+            path: 'course',
+            select: 'title'
+        }).populate({
+            path: 'students',
+            select: 'name email phone profileRef profileModel'
+        })
+        .populate({
+            path: 'lectures',
+            select: 'title date description'
+        })
+        .populate({
+            path: 'instructor',
+            select: 'name email phone profileRef profileModel'
+        })
+        .populate({
+            path: 'students',
+            select: 'name email phone profileRef profileModel'
         })
 
         // Cache the instructor's groups data in Redis
@@ -357,6 +421,9 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
     if(group.instructor.toString() !== req.user._id.toString()){
         throw new AppError('you are not authorized to add lecture to this group', 401);
     }
+    if (!group.course) {
+        throw new AppError('course not found', 404);
+    }
     const lecture = await new Lecture({
         title,
         description,
@@ -372,11 +439,19 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
 
     const students=group.students;
     for (const student of students) {
-        if(student.courseProgress.course.toString() !== group.course._id.toString()){
-            throw new AppError('student is not enrolled in this course', 400);
+        const thisStudent= await Student.findById(student).populate('courseProgress','course');
+        if (!thisStudent) {
+            throw new AppError('student not found', 404);
         }
-        const courseProgress=student.courseProgress.find((progress)=>progress.course.toString() === group.course._id.toString());
+        if (!thisStudent.courseProgress) {
+            throw new AppError('course progress not exists', 404);
+        }
+        const courseProgress=thisStudent.courseProgress.find((progress)=>progress.course.toString() === group.course.toString());
+        if (!courseProgress) {
+            throw new AppError('course progress not found', 404);
+        }
         const lectureProgress=new LectureProgress({
+            student:thisStudent._id,
             lecture:lecture._id,
             engagement:0,
             attendance:"absent",
@@ -390,12 +465,16 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
                 notes:""
             }
         });
-        courseProgress.lectureProgress.push(lectureProgress);
-        await courseProgress.save();
-        await student.save();
+        const thisCourseProgress=await CourseProgress.findById(courseProgress._id);
+        if (!thisCourseProgress) {
+            throw new AppError('course progress not found', 404);
+        }
+        thisCourseProgress.lectureProgress.push(lectureProgress);
+        await thisCourseProgress.save();
+        await thisStudent.save();
     }
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+    // await setGroupsCache();
+    // await delCache(`groups:instructor:${group.instructor}`);
 
     res.status(200).json({
         success: true,

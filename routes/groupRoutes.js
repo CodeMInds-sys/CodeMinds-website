@@ -5,7 +5,7 @@ const checkRole = require('../middlewares/checkRole');
 const groupController = require('../controllers/groupController');
 
 
-// router.use(auth);
+router.use(auth);
 
 router
   .route('/')

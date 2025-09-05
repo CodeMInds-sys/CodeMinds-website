@@ -51,6 +51,15 @@ exports.getCourseProgress = asyncHandler(async (req, res) => {
         path: 'course',
         select: 'title'
     })
+    .populate({
+        path: 'lectureProgress',
+        select: 'lecture',
+        populate:{
+            path:'lecture',
+            select:'title'
+        }
+    })
+  
 
     if (!courseProgress) {
         throw new AppError('Course progress not found', 404);
