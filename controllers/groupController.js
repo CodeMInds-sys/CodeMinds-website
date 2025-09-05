@@ -311,6 +311,39 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     // }
 
 });
+
+exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
+    const status=req.params.status;
+    let groups;
+    const statusEnum={
+       inProgress:"inProgress",
+       pending:"pending",
+       ended:"ended"
+    }
+    if(!statusEnum[status]){
+        throw new AppError("Invalid status",400);
+    }
+    const getGroupsFromDB=async(condition)=>{
+        return await Group.find(condition,{title:1,course:1})
+        .populate({
+            path: 'course',
+            select: 'title'
+        })
+    }
+
+    if(status===statusEnum.inProgress){
+        groups=await getGroupsFromDB({startDate:{$lte:Date.now()},endDate:{$gte:Date.now()}})         
+    }else if(status===statusEnum.pending){
+        groups=await getGroupsFromDB({startDate:{$gt:Date.now()}})
+    }else if(status===statusEnum.ended){
+        groups=await getGroupsFromDB({endDate:{$lt:Date.now()}})
+    }
+
+    res.status(200).json({
+        success: true,
+        data: groups
+    });
+})
 exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor-${instructorId}`; // Cache key for instructor's groups

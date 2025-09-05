@@ -18,6 +18,8 @@ router
   .put(checkRole('instructor','manager', 'admin'), groupController.updateGroup)
   .delete(checkRole('instructor','manager', 'admin'), groupController.deleteGroup);
 
+router.get('/status/:status',checkRole('manager', 'admin'), groupController.getGroupsWithStatus);
+
 router.post('/addStudent', groupController.addStudentToGroup);
 router.get('/instructorGroups/:id', groupController.getGroupsOfInstructor);
 
