@@ -283,6 +283,68 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     });
      
 });
+exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
+    const  groupId  = req.params.id;
+    const userId=req.user._id;
+
+    const group = await Group.findById(groupId);
+    if (!group) {
+        throw new AppError('group not found', 404);
+    }
+    if (group.students.length >= group.totalSeats) {
+        throw new AppError('group is already full', 400);
+    }
+
+    const student = await Student.findOne({user:userId});
+    if (!student) {
+        throw new AppError('student not found', 404);
+    } 
+    
+    // check if student already in group
+    if (group.students.includes(student._id)) {
+        throw new AppError('student already in this group', 400);
+    }
+    
+    // check if group already in student's groups
+    if (student.groups.includes(groupId)) {
+        throw new AppError('group already assigned to student', 400);
+    }
+    
+    // push student to group
+    group.students.push(student);
+    await group.save();
+    
+    // push group to student
+    student.groups.push(groupId);
+
+    // add course progress to this student
+
+    const courseProgress=new CourseProgress({
+        student:student._id,
+        course:group.course,
+        lectureProgress:[]
+    })
+    await courseProgress.save();
+    student.courseProgress.push(courseProgress._id);
+
+    await student.save();
+    
+
+    await setGroupsCache();
+    await delCache(`groups:instructor:${group.instructor}`);
+    // populate group before response
+    const populatedGroup = await Group.findById(groupId)
+        .populate('instructor', 'name email phone profileRef profileModel')
+        .populate('course', 'title')
+        .populate('students', 'name email phone profileRef profileModel')
+        .populate('lectures');
+    res.status(200).json({
+        success: true,
+        message: 'student added to group successfully', 
+        data: populatedGroup
+    });
+     
+});
 
  
 exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {

@@ -28,4 +28,6 @@ router.put('/editLecToGroup/:id', groupController.editLectureToGroup);
 
 router.get('/students/:id', groupController.getGroupStudents);
 router.get('/:id', groupController.getGroup); 
+
+router.get('/join/:id', groupController.addStudentToGroupWithInviteLink);
 module.exports = router;
