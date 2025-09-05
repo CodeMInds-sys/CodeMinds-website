@@ -45,11 +45,11 @@ const instructorRequestSchema = new mongoose.Schema(
     cv:{
       fileId: {
         type: String,
-        required: [true,'cv is required'],
+        // required: [true,'cv is required'],
       },
       fileUrl: {
         type: String,
-        required: [true,'cv is required'],
+        // required: [true,'cv is required'],
       },
     }
   },
