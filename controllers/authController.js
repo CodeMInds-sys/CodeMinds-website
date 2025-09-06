@@ -231,7 +231,12 @@ const authController = {
                     populate:{
                         path:'lectures',
                         // select:'title '
-                    }
+                    },
+                    populate:{
+                        path:'courseProgress',
+                        // select:'title '
+                    },
+
                  }
             ]
             });
