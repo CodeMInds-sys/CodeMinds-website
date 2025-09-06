@@ -232,12 +232,10 @@ const authController = {
                         path:'lectures',
                         // select:'title '
                     },
-                    populate:{
-                        path:'courseProgress',
-                        // select:'title '
-                    },
+    
 
-                 }
+                 },
+                 { path: 'courseProgress' },
             ]
             });
         }
