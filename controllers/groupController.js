@@ -316,7 +316,7 @@ exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
     
     // push group to student
     student.groups.push(groupId);
-
+    student.courses.push(group.course);
     // add course progress to this student
 
     const courseProgress=new CourseProgress({

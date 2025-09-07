@@ -120,31 +120,50 @@ const FeedBack=require("./models/feedBack")
 
 const script=async()=>{
     const students=await Student.find({})
+    .populate({
+        path:"user",
+        select:"name"
+    })
     let count=0;
     console.log("students",students.length);
    students.forEach ( async (student) => {
     count++;
     console.log("student",count);
     if(student.courses.length==0){
-        console.log("student",student.user,"has no courses");
+        console.log("student",student.user.name,"has no courses");
         return;
     }
-    // if(student.courseProgress.length==student.courses.length){
-        // console.log("student",student.user,"has all courses progress");
-       // log all students
+    if(student.courseProgress.length==student.courses.length){
+        // console.log("student",student.user.name,"has all courses progress");
        
-    //    console.log("students",students,"has all courses progress");
+    //    console.log("students",student.user.name,"has all courses progress");
         // return;
-    // }
+    }else{
+        // create course progress
+        for(let i=student.courseProgress.length;i<student.courses.length;i++){
+            const courseProgress=new CourseProgress({
+                student:student._id,
+                course:student.courses[i]
+            })
+            await courseProgress.save();
+            student.courseProgress.push(courseProgress._id);
+            await student.save();
+        }
+    }
     for(let i=0;i<student.groups.length;i++){
         const group=await Group.findById(student.groups[i]);
         const courseProgress=await CourseProgress.findOne({student:student._id,course:group.course});
+
         if(!courseProgress){
             console.log("courseProgress",student.groups[i],"not found");
             return;
         }
         if(!group){
             console.log("group",student.groups[i],"not found");
+            return;
+        }
+        if(courseProgress.lectureProgress.length==group.lectures.length){
+            console.log("student",student.user.name,"has all lectures progress");
             return;
         }
         for(let j=0;j<group.lectures.length;j++){
@@ -163,9 +182,13 @@ const script=async()=>{
                     notes:""
                 }
             })
+            if(courseProgress.lectureProgress.find((lec)=>lec.lecture.toString()===group.lectures.find((Glec)=>Glec.toString()===lec.lecture.toString()))){
+                console.log("lectureProgress already exists");
+                continue;
+            }
             courseProgress.lectureProgress.push(lectureProgress);
             await courseProgress.save();
-            // console.log("courseProgress saved for student",student.user,"course",student.courses[i].title);
+            console.log("courseProgress saved for student",student.user,"course",student.courses[i].title);
         }
    }
 })
@@ -241,6 +264,72 @@ script3=async()=>{
 }
 // script3()
    
+
+
+const remove_repeated_lectureProgress=async()=>{
+    const courseProgress=await CourseProgress.find({})
+    for (const thisCourseProgress of courseProgress) {
+        const currentCourseProgress=await CourseProgress.findById(thisCourseProgress._id);
+        if(!currentCourseProgress){
+            console.log("courseProgress not found");
+            return;
+        }
+
+        for (const lectureProgress of currentCourseProgress.lectureProgress) {
+            const currentLectureProgress=currentCourseProgress.lectureProgress.find((lec)=>lec.lecture.toString()===lectureProgress.lecture.toString());
+            if(!currentLectureProgress){
+                console.log("lectureProgress not found");
+                return;
+            }else{
+                console.log("lectureProgress  repeated found");
+                console.log("lectureProgress",currentLectureProgress);
+            }
+
+            // here delete the last repreted lecture progress
+            currentCourseProgress.lectureProgress.remove(currentLectureProgress);
+            await currentCourseProgress.save();
+            console.log("lectureProgress deleted");
+            
+          
+        }
+        // await thisCourseProgress.save();
+        console.log("done");
+    }
+}
+    
+// remove_repeated_lectureProgress()
+
+
+
+add_courses_to_students=async()=>{
+    const students=await Student.find({})
+    .populate({
+        path:"groups",
+        select:"course"
+    })
+    .populate({
+        path:"user",
+        select:"name"
+    })
+    for (const student of students) {
+        for(const studentGroup of student.groups){
+            const group=await Group.findById(studentGroup)
+            if(!group){
+                console.log("group not found");
+                return;
+            }
+            const existingCourse=student.courses.find((course)=>studentGroup.course.toString()===course.toString());
+            if(!existingCourse){
+                student.courses.push(group.course);
+                await student.save();
+                console.log("course added to student",student.user.name);
+            }else{
+                console.log("course already exists for student",student.user.name);
+            }
+        }
+    }
+}
+// add_courses_to_students()
 module.exports = app;   
 
 
