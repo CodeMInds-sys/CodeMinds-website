@@ -513,7 +513,7 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
     if (!group) {
         throw new AppError('group not found', 404);
     }
-    if(group.instructor.toString() !== req.user._id.toString()){
+    if((group.instructor.toString() !== req.user._id.toString()  )&&(req.user.role!=='manager')){
         throw new AppError('you are not authorized to add lecture to this group', 401);
     }
     if (!group.course) {
