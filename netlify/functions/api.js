@@ -1,10 +1,4 @@
-const express = require("express");
 const serverless = require("serverless-http");
-
-const app = express();
-
-app.get("/api/hello", (req, res) => {
-  res.json({ message: "Hello from Express on Netlify 🚀" });
-});
+const app = require("../../index"); // استورد app بدل ما تكتب كود جديد
 
 module.exports.handler = serverless(app);
