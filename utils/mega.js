@@ -7,8 +7,8 @@ const uploadToMega = async (buffer, fileName) => {
   try {
     // الاتصال بحساب MEGA
     const storage = await mega({
-      email: process.env.MEGA_EMAIL,
-      password: process.env.MEGA_PASSWORD,
+      email:"mohamed12345abdullah@gmail.com",
+      password:"abdo.m.s.mega",
     }).ready;
 
     // تحويل الـ buffer إلى stream
