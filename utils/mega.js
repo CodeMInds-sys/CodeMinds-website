@@ -1,41 +1,42 @@
-// mega.js
-const { mega } = require('megajs');
-const AppError = require('./AppError');
 const { Readable } = require('stream');
-const {Storage} = require('megajs');
+const { Storage } = require('megajs');
+const AppError = require('./AppError');
+
+const waitForReady = (storage) => {
+  return new Promise((resolve, reject) => {
+    storage.on('ready', () => resolve());
+    storage.on('error', (err) => reject(err));
+  });
+};
 
 const uploadToMega = async (buffer, fileName) => {
   try {
-    // الاتصال بحساب MEGA
+    // إنشاء جلسة MEGA
     const storage = new Storage({
-      email:"mohamed12345abdullah@gmail.com",
-      password:"abdo.m.s.mega",
-    })
-    storage.on('ready', () => {
-      console.log('✅ MEGA is ready');
-    })
-    storage.on('error', (err) => {
-      console.error('❌ Error connecting to MEGA:', err);
-    })
-    storage.on('close', () => {
-      console.log('✅ MEGA connection closed');
-    })
+      email: "mohamed12345abdullah@gmail.com",
+      password: "abdo.m.s.mega",
+    });
+
+    // انتظر لحد ما MEGA يتجهز
+    await waitForReady(storage);
+    console.log("✅ MEGA is ready");
 
     // تحويل الـ buffer إلى stream
     const stream = Readable.from(buffer);
 
-    // رفع الملف من stream مباشرة
-    const file = await storage.upload(fileName, stream).complete;
+    // رفع الملف
+    const file = storage.upload(fileName, stream);
+    await file.complete; // لازم تستنى رفع الملف كله
 
-    // الحصول على الرابط العام
+    // رابط عام
     const link = await file.link();
-
     return link;
   } catch (err) {
-    console.error('❌ Error uploading to MEGA:', err);
-    throw new AppError('حدث خطأ أثناء رفع الملف إلى MEGA', 500);
+    console.error("❌ Error uploading to MEGA:", err);
+    throw new AppError("حدث خطأ أثناء رفع الملف إلى MEGA", 500);
   }
 };
+
 
 // Middleware خاص بـ MEGA بعد multer
 const megaMiddleware = async (req, res, next) => {
