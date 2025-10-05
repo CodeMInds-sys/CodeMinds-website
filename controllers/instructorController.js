@@ -63,8 +63,8 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         linkedin,
         coursesCanTeach,
         cv:{
-            fileId,
-            fileUrl
+            fileId:"notttt",
+            fileUrl:megaLink
         }
     });
     await instructor.save();
