@@ -2,11 +2,12 @@
 const { mega } = require('megajs');
 const AppError = require('./AppError');
 const { Readable } = require('stream');
+const {Storage} = require('megajs');
 
 const uploadToMega = async (buffer, fileName) => {
   try {
     // الاتصال بحساب MEGA
-    const storage = await mega({
+    const storage = new Storage({
       email:"mohamed12345abdullah@gmail.com",
       password:"abdo.m.s.mega",
     })
