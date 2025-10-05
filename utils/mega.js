@@ -9,7 +9,16 @@ const uploadToMega = async (buffer, fileName) => {
     const storage = await mega({
       email:"mohamed12345abdullah@gmail.com",
       password:"abdo.m.s.mega",
-    }).ready;
+    })
+    storage.on('ready', () => {
+      console.log('✅ MEGA is ready');
+    })
+    storage.on('error', (err) => {
+      console.error('❌ Error connecting to MEGA:', err);
+    })
+    storage.on('close', () => {
+      console.log('✅ MEGA connection closed');
+    })
 
     // تحويل الـ buffer إلى stream
     const stream = Readable.from(buffer);
