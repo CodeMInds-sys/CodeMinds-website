@@ -28,8 +28,9 @@ exports.getInstructors = asyncHandler(async (req, res) => {
 exports.createInstructor = asyncHandler(async (req, res) => {
     const user = req.user; 
     const fileStr= `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
-    const uploadResult = await uploadToCloudinary(fileStr, req.file.originalname);
-    const {fileId,fileUrl}=uploadResult;
+    // const uploadResult = await uploadToCloudinary(fileStr, req.file.originalname);
+    // const {fileId,fileUrl}=uploadResult;
+    const megaLink = req.megaLink;
     const userId = user._id;
     const {specialization,experienceYears,bio,
           github,linkedin, coursesCanTeach } = req.body;
@@ -42,8 +43,8 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         instructorRequest.linkedin=linkedin;
         instructorRequest.coursesCanTeach=coursesCanTeach;
         instructorRequest.cv={
-            fileId,
-            fileUrl
+            fileId:null,
+            fileUrl:megaLink
         }
         await instructorRequest.save();
         res.status(200).json({
