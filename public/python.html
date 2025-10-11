@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منهج Python للمبتدئين - المستوى الأول</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .python-logo {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .session {
+            margin-bottom: 50px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .session-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        
+        .session-content {
+            padding: 30px;
+            background: white;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .code-window {
+            background: #282c34;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            background: #21252b;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+        
+        .code-title {
+            color: #abb2bf;
+            font-size: 0.9em;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .python-icon {
+            color: #3776ab;
+            font-weight: bold;
+        }
+        
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .code-content pre {
+            margin: 0;
+        }
+        
+        .code-content code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: auto;
+            transition: background 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #5568d3;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .note strong {
+            color: #856404;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border-right: 4px solid #dc3545;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .warning strong {
+            color: #721c24;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-right: 4px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .exercise {
+            background: #e7f3ff;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .exercise-title {
+            color: #1976D2;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .homework {
+            background: #fff8e1;
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        
+        .homework-title {
+            color: #f57c00;
+            font-weight: bold;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: right;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', monospace;
+            margin: 15px 0;
+        }
+        
+        .output-title {
+            color: #4ec9b0;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-right: 30px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .break {
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            color: #666;
+        }
+        
+        .nav {
+            position: sticky;
+            top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .nav a {
+            display: block;
+            padding: 10px;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px 0;
+            transition: background 0.3s;
+        }
+        
+        .nav a:hover {
+            background: #f0f0f0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="python-logo">🐍</div>
+            <h1>منهج Python للمبتدئين</h1>
+            <p>المستوى الأول - 8 جلسات × 80 دقيقة</p>
+        </div>
+        
+        <div class="content">
+            <!-- Navigation -->
+            <div class="nav">
+                <strong style="color: #667eea; font-size: 1.2em;">الجلسات:</strong>
+                <a href="#session1">الجلسة 1: مقدمة البرمجة و Print</a>
+                <a href="#session2">الجلسة 2: المتغيرات والأنواع</a>
+                <a href="#session3">الجلسة 3: Input والتحويل</a>
+                <a href="#session4">الجلسة 4: العمليات الحسابية</a>
+                <a href="#session5">الجلسة 5: المقارنات والمنطق</a>
+                <a href="#session6">الجلسة 6: الشروط</a>
+                <a href="#session7">الجلسة 7: القوائم والحلقات</a>
+                <a href="#session8">الجلسة 8: المشاريع النهائية</a>
+            </div>
+
+            <!-- Session 1 -->
+            <div class="session" id="session1">
+                <div class="session-header">
+                    📅 الجلسة الأولى: مقدمة البرمجة و Print (80 دقيقة)
+                </div>
+                <div class="session-content">
+                    <h3>الجزء الأول (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">1️⃣ مفهوم البرمجة</div>
+                        <p><strong>ما هي البرمجة؟</strong></p>
+                        <ul>
+                            <li>البرمجة = كتابة تعليمات للكمبيوتر ينفذها بالترتيب</li>
+                            <li>الكمبيوتر ينفذ ما تقوله بالضبط (لا يفهم، يطيع فقط)</li>
+                        </ul>
+                        
+                        <p><strong>Compiler vs Interpreter:</strong></p>
+                        <ul>
+                            <li><strong>Compiler:</strong> يترجم الكود كله دفعة واحدة لملف تنفيذي (مثل: C, C++)</li>
+                            <li><strong>Interpreter:</strong> ينفذ الكود سطر بسطر مباشرة (مثل: Python)</li>
+                        </ul>
+                        
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> مثال توضيحي
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("Hello")
+print("World")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="output">
+                            <div class="output-title">النتيجة:</div>
+                            Hello<br>
+                            World
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">2️⃣ Console App vs UI App</div>
+                        <p><strong>Console Application:</strong></p>
+                        <ul>
+                            <li>تطبيق يعمل في نافذة نصية (Terminal/CMD)</li>
+                            <li>المستخدم يكتب نص، البرنامج يرد بنص</li>
+                        </ul>
+                        
+                        <p><strong>UI Application:</strong></p>
+                        <ul>
+                            <li>تطبيق له واجهة رسومية (أزرار، نوافذ، صور)</li>
+                            <li>نفس المنطق لكن بشكل أجمل</li>
+                        </ul>
+                        
+                        <div class="note">
+                            <strong>لماذا نبدأ بـ Console؟</strong><br>
+                            أسهل للتعلم والتركيز على المنطق البرمجي، بعدها نقدر ننقل نفس المنطق لـ UI
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">3️⃣ نموذج بناء أي تطبيق</div>
+                        <div class="success">
+                            <strong>القاعدة الذهبية:</strong><br>
+                            <div style="text-align: center; font-size: 1.5em; margin: 15px 0; color: #155724;">
+                                INPUT → PROCESS → OUTPUT<br>
+                                إدخال → معالجة → إخراج
+                            </div>
+                        </div>
+                        
+                        <p><strong>مثال حياتي:</strong> آلة البيع</p>
+                        <ul>
+                            <li>تدخل نقود (input)</li>
+                            <li>تختار منتج (process)</li>
+                            <li>تستلم المنتج (output)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="break">🚪 راحة (10 دقائق)</div>
+                    
+                    <h3>الجزء الثاني (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">4️⃣ تسلسل التنفيذ</div>
+                        <p><strong>القاعدة:</strong> الكود ينفذ من <strong>أعلى لأسفل</strong> سطر بسطر</p>
+                        
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> example.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("السطر الأول")
+print("السطر الثاني")
+print("السطر الثالث")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="output">
+                            <div class="output-title">النتيجة:</div>
+                            السطر الأول<br>
+                            السطر الثاني<br>
+                            السطر الثالث
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">5️⃣ أمر print() بالتفصيل</div>
+                        
+                        <p><strong>الاستخدام الأساسي:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> print_basic.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("Hello World")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>طباعة أكثر من قيمة:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> multiple_values.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("اسمي", "علي", "وعمري", 12)
+# النتيجة: اسمي علي وعمري 12</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تغيير الفاصل بين القيم (sep):</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> separator.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("A", "B", "C", sep="-")
+# النتيجة: A-B-C
+
+print(1, 2, 3, sep=" | ")
+# النتيجة: 1 | 2 | 3</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تغيير نهاية السطر (end):</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> end_parameter.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("Hello", end=" ")
+print("World")
+# النتيجة: Hello World (في نفس السطر)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>دمج النصوص بـ +:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> concatenation.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("مرحبا " + "بك")
+# النتيجة: مرحبا بك</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ ملاحظة مهمة:</strong>
+                            <div class="code-window" style="margin-top: 10px;">
+                                <div class="code-header">
+                                    <span class="code-dot dot-red"></span>
+                                    <span class="code-dot dot-yellow"></span>
+                                    <span class="code-dot dot-green"></span>
+                                    <span class="code-title">
+                                        <span class="python-icon">🐍</span> warning_example.py
+                                    </span>
+                                </div>
+                                <div class="code-content">
+<pre><code class="language-python">print("العدد: " + 5)  # ❌ خطأ! لا يمكن دمج نص ورقم
+print("العدد: " + str(5))  # ✅ صح بعد التحويل</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p><strong>f-strings (الأسهل والأفضل):</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> f_strings.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">name = "أحمد"
+age = 15
+print(f"اسمي {name} وعمري {age}")
+# النتيجة: اسمي أحمد وعمري 15</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-title">💻 تدريب عملي خلال الجلسة</div>
+                        
+                        <p><strong>تمرين 1:</strong> اطبع اسمك في سطر ومدينتك في سطر آخر</p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> exercise1.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">print("محمد")
+print("القاهرة")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تمرين 2:</strong> اطبع جملة "Python is fun!" باستخدام f-string</p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> exercise2.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">lang = "Python"
+print(f"{lang} is fun!")</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="homework">
+                        <div class="homework-title">📝 واجب الجلسة الأولى</div>
+                        
+                        <p><strong>السؤال 1:</strong> اشرح الفرق بين Compiler و Interpreter بكلماتك الخاصة.</p>
+                        
+                        <p><strong>السؤال 2:</strong> اكتب برنامج يطبع:</p>
+                        <div class="output">
+                            مرحباً بك في عالم البرمجة!<br>
+                            اسمي: [اسمك]<br>
+                            المدينة: [مدينتك]
+                        </div>
+                        
+                        <p><strong>السؤال 3:</strong> اطبع جدول الضرب للرقم 5 (من 1 إلى 3) بهذا الشكل:</p>
+                        <div class="output">
+                            5 x 1 = 5<br>
+                            5 x 2 = 10<br>
+                            5 x 3 = 15
+                        </div>
+                        
+                        <p><strong>السؤال 4:</strong> استخدم f-string لطباعة معلوماتك (الاسم، العمر، الهواية)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session 2 -->
+            <div class="session" id="session2">
+                <div class="session-header">
+                    📅 الجلسة الثانية: المتغيرات وأنواع البيانات (80 دقيقة)
+                </div>
+                <div class="session-content">
+                    <h3>الجزء الأول (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">1️⃣ ما هي المتغيرات؟</div>
+                        <p><strong>التعريف:</strong> المتغير = صندوق نحفظ فيه معلومة</p>
+                        
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> variables_intro.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">name = "علي"        # صندوق اسمه name فيه "علي"
+age = 12           # صندوق اسمه age فيه الرقم 12
+
+# استخدام المتغيرات
+student_name = "أحمد"
+print("مرحباً", student_name)
+print("عمرك؟")
+print("شكراً", student_name)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="note">
+                            <strong>لماذا نستخدم المتغيرات؟</strong><br>
+                            لحفظ البيانات وإعادة استخدامها - بدل ما نكتب القيمة كل مرة، نستخدم اسم المتغير
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <div class="section-title">2️⃣ قواعد تسمية المتغيرات</div>
+                        
+                        <p><strong>القواعد الأساسية:</strong></p>
+                        <ol>
+                            <li>يبدأ بحرف أو underscore <code>_</code> (لا يبدأ برقم)</li>
+                            <li>يحتوي على حروف وأرقام و <code>_</code> فقط</li>
+                            <li>حساس لحالة الأحرف: <code>Age</code> ≠ <code>age</code></li>
+                            <li>لا يمكن استخدام كلمات محجوزة (مثل: print, if, for)</li>
+                        </ol>
+                        
+                        <p><strong>أمثلة صحيحة:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> valid_names.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">name = "محمد"
+student_1 = "علي"
+_age = 15
+firstName = "أحمد"
+SCORE = 100  # ثابت (Constant)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>أمثلة خاطئة:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> invalid_names.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">2name = "علي"        # ❌ يبدأ برقم
+student-name = "محمد"  # ❌ يحتوي على -
+my name = "أحمد"     # ❌ يحتوي على مسافة</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="break">🚪 راحة (10 دقائق)</div>
+                    
+                    <h3>الجزء الثاني (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">3️⃣ أنواع البيانات (Data Types)</div>
+                        
+                        <table>
+                            <tr>
+                                <th>النوع</th>
+                                <th>الوصف</th>
+                                <th>مثال</th>
+                            </tr>
+                            <tr>
+                                <td><strong>String</strong></td>
+                                <td>نصوص وكلمات</td>
+                                <td><code>"محمد"</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Integer</strong></td>
+                                <td>أعداد صحيحة</td>
+                                <td><code>15</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Float</strong></td>
+                                <td>أعداد عشرية</td>
+                                <td><code>3.14</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Boolean</strong></td>
+                                <td>صح أو خطأ</td>
+                                <td><code>True</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>None</strong></td>
+                                <td>لا شيء</td>
+                                <td><code>None</code></td>
+                            </tr>
+                        </table>
+                        
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> data_types.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python"># String (نصوص)
+name = "محمد"
+city = 'القاهرة'
+
+# Integer (أعداد صحيحة)
+age = 15
+score = 100
+
+# Float (أعداد عشرية)
+height = 1.75
+price = 99.99
+
+# Boolean (منطقي)
+is_student = True
+passed_exam = False
+
+# None (لا شيء)
+result = None
+
+# معرفة نوع المتغير
+print(type(name))    # <class 'str'>
+print(type(age))     # <class 'int'>
+print(type(height))  # <class 'float'>
+print(type(is_student))  # <class 'bool'></code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-title">💻 تدريب عملي</div>
+                        
+                        <p><strong>تمرين 1:</strong> أنشئ متغير من كل نوع واطبع نوعه</p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> exercise_types.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">text = "Python"
+number = 42
+decimal = 9.8
+flag = True
+
+print(type(text))    # str
+print(type(number))  # int
+print(type(decimal)) # float
+print(type(flag))    # bool</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="homework">
+                        <div class="homework-title">📝 واجب الجلسة الثانية</div>
+                        
+                        <p><strong>السؤال 1:</strong> أنشئ متغيرات لمعلوماتك الشخصية (اسم، عمر، طول، طالب أم لا)</p>
+                        
+                        <p><strong>السؤال 2:</strong> حدد أي الأسماء صحيحة وأيها خاطئة:</p>
+                        <ul>
+                            <li><code>user_name</code></li>
+                            <li><code>3students</code></li>
+                            <li><code>my-score</code></li>
+                            <li><code>_value</code></li>
+                            <li><code>student Name</code></li>
+                        </ul>
+                        
+                        <p><strong>السؤال 3:</strong> اكتب برنامج يطبع نوع 5 متغيرات مختلفة</p>
+                        
+                        <p><strong>السؤال 4:</strong> أنشئ متغيرات لمنتج في متجر (اسم المنتج، السعر، الكمية، متوفر أم لا)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session 3 -->
+            <div class="session" id="session3">
+                <div class="session-header">
+                    📅 الجلسة الثالثة: Input والتحويل بين الأنواع (80 دقيقة)
+                </div>
+                <div class="session-content">
+                    <h3>الجزء الأول (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">1️⃣ أمر input()</div>
+                        
+                        <p><strong>ما هو input()?</strong></p>
+                        <ul>
+                            <li>يستقبل بيانات من المستخدم</li>
+                            <li>يتوقف البرنامج حتى يكتب المستخدم ويضغط Enter</li>
+                        </ul>
+                        
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> input_basic.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">name = input("ما اسمك؟ ")
+print("مرحباً", name)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ ملاحظة مهمة جداً:</strong>
+                            <div class="code-window" style="margin-top: 10px;">
+                                <div class="code-header">
+                                    <span class="code-dot dot-red"></span>
+                                    <span class="code-dot dot-yellow"></span>
+                                    <span class="code-dot dot-green"></span>
+                                    <span class="code-title">
+                                        <span class="python-icon">🐍</span> input_type.py
+                                    </span>
+                                </div>
+                                <div class="code-content">
+<pre><code class="language-python">age = input("كم عمرك؟ ")
+print(type(age))  # <class 'str'>
+
+# input() دائماً يرجع String حتى لو المستخدم كتب رقم!</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p><strong>المشكلة:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> input_problem.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">age = input("عمرك؟ ")  # لو كتب "15"
+next_year = age + 1     # ❌ خطأ! لا يمكن جمع نص ورقم
+
+# TypeError: can only concatenate str (not "int") to str</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="break">🚪 راحة (10 دقائق)</div>
+                    
+                    <h3>الجزء الثاني (35 دقيقة)</h3>
+                    
+                    <div class="section">
+                        <div class="section-title">2️⃣ التحويل بين الأنواع (Type Conversion)</div>
+                        
+                        <p><strong>الدوال الأساسية:</strong></p>
+                        <ul>
+                            <li><code>int()</code> → تحويل لعدد صحيح</li>
+                            <li><code>float()</code> → تحويل لعدد عشري</li>
+                            <li><code>str()</code> → تحويل لنص</li>
+                            <li><code>bool()</code> → تحويل لمنطقي</li>
+                        </ul>
+                        
+                        <p><strong>تحويل String إلى Integer:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> str_to_int.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">age_str = input("عمرك؟ ")      # "15"
+age = int(age_str)              # 15
+next_year = age + 1             # 16
+print("العام القادم عمرك:", next_year)
+
+# طريقة مختصرة
+age = int(input("عمرك؟ "))
+print("بعد 5 سنوات:", age + 5)</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تحويل String إلى Float:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> str_to_float.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">height = float(input("طولك بالمتر؟ "))  # 1.75
+print("طولك:", height, "متر")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تحويل Number إلى String:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> num_to_str.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">age = 15
+message = "عمري " + str(age) + " سنة"
+print(message)  # عمري 15 سنة</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>أمثلة متنوعة:</strong></p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> conversion_examples.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python"># int to float
+x = 5
+y = float(x)    # 5.0
+
+# float to int (يحذف الكسر)
+z = 9.7
+w = int(z)      # 9
+
+# string to int
+s = "123"
+n = int(s)      # 123
+
+# أي شيء to string
+print(str(100))   # "100"
+print(str(3.14))  # "3.14"
+print(str(True))  # "True"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="exercise">
+                        <div class="exercise-title">💻 تدريب عملي</div>
+                        
+                        <p><strong>تمرين 1:</strong> برنامج يحسب مساحة مستطيل</p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> rectangle_area.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">width = float(input("العرض: "))
+height = float(input("الطول: "))
+area = width * height
+print(f"المساحة = {area}")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <p><strong>تمرين 2:</strong> برنامج يحسب عمرك بالأشهر</p>
+                        <div class="code-window">
+                            <div class="code-header">
+                                <span class="code-dot dot-red"></span>
+                                <span class="code-dot dot-yellow"></span>
+                                <span class="code-dot dot-green"></span>
+                                <span class="code-title">
+                                    <span class="python-icon">🐍</span> age_in_months.py
+                                </span>
+                                <button class="copy-btn" onclick="copyCode(this)">نسخ الكود</button>
+                            </div>
+                            <div class="code-content">
+<pre><code class="language-python">age_years = int(input("عمرك بالسنوات؟ "))
+age_months = age_years * 12
+print(f"عمرك = {age_months} شهر")</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="homework">
+                        <div class="homework-title">📝 واجب الجلسة الثالثة</div>
+                        
+                        <p><strong>السؤال 1:</strong> اكتب برنامج يطلب اسمك وعمرك ويطبع "أهلاً [الاسم]، عمرك [العمر] سنة"</p>
+                        
+                        <p><strong>السؤال 2:</strong> برنامج يحول درجة الحرارة من سيليزية لفهرنهايت<br>
+                        الصيغة: <code>F = C × 9/5 + 32</code></p>
+                        
+                        <p><strong>السؤال 3:</strong> برنامج يحسب معدل درجتين</p>
+                        
+                        <p><strong>السؤال 4:</strong> برنامج لمتجر يطلب (اسم منتج، سعر، كمية) ويطبع السعر الإجمالي</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding: 40px; background: #f8f9fa; margin: 40px 0; border-radius: 15px;">
+                <h2 style="color: #667eea;">🚀 هذا نموذج للجلسات الثلاث الأولى</h2>
+                <p style="font-size: 1.1em; color: #666;">باقي الجلسات (4-8) ستكون بنفس التنسيق الاحترافي</p>
+                <p style="margin-top: 20px;">هل تريد إكمال باقي الجلسات؟</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize syntax highlighting
+        hljs.highlightAll();
+        
+        // Copy code function
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-window').querySelector('code');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ تم النسخ';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            });
+        }
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('.nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>
