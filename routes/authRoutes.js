@@ -35,7 +35,7 @@ router.get('/google/callback',
     // إصدار JWT
     const token = generateToken({ id: req.user._id });
     const user = req.user;
-    res.redirect(`https://code-minds.vercel.app/profile?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
+    res.redirect(`https://code-minds.netlify.app/profile?token=${token}&user=${encodeURIComponent(JSON.stringify(user))}`);
 
   }
 );
