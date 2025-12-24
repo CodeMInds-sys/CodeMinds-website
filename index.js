@@ -205,8 +205,20 @@ const initializeStudentCourseProgress = async () => {
   }
 };
 
+
+
 // Uncomment to run the initialization script
 // initializeStudentCourseProgress();
+
+
+//read image
+const fs = require("fs");
+const fileContent = fs.readFileSync("./uploads/img.jpg", "base64");
+// console.log(fileContent);
+// run gemini
+const {runGemini} = require("./utils/gemini");
+// runGemini({image:fileContent,prompt:"give me a description of this image"})
+
 
 // Export the Express app
 

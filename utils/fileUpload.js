@@ -35,9 +35,9 @@ const upload = (allowedTypes)=>{
 const handleUploadError = (error, req, res, next) => {
     if (error instanceof multer.MulterError) {
         if (error.code === 'LIMIT_FILE_SIZE') {
-            return next(new AppError('حجم الملف كبير جداً. الحد الأقصى 5 ميجابايت', 400));
+            return next(new AppError('File size is too large', 400));
         }
-        return next(new AppError('خطأ في رفع الملف', 400));
+        return next(new AppError('File upload error', 400));
     }
     next(error);
 };
