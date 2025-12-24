@@ -212,11 +212,11 @@ const initializeStudentCourseProgress = async () => {
 
 
 //read image
-const fs = require("fs");
-const fileContent = fs.readFileSync("./uploads/img.jpg", "base64");
+// const fs = require("fs");
+// const fileContent = fs.readFileSync("./uploads/img.jpg", "base64");
 // console.log(fileContent);
 // run gemini
-const {runGemini} = require("./utils/gemini");
+// const {runGemini} = require("./utils/gemini");
 // runGemini({image:fileContent,prompt:"give me a description of this image"})
 
 
