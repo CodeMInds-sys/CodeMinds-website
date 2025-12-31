@@ -210,7 +210,7 @@ const initializeStudentCourseProgress = async () => {
 // Uncomment to run the initialization script
 // initializeStudentCourseProgress();
 
-     
+
 //read image
 // const fs = require("fs");
 // const fileContent = fs.readFileSync("./uploads/img.jpg", "base64");
