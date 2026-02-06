@@ -7,7 +7,7 @@ const uploadFileToGoogleDrive = require('../utils/googleDrive');
 const megaMiddleware = require('../utils/mega');
 const uploadFile = upload(['application/pdf','image/jpeg', 'image/png', 'image/jpg']);
 router.route('/')
-    .post(auth, uploadFile.single('cv'), megaMiddleware, instructorController.createInstructor)
+    .post(auth, uploadFile.single('cv'), instructorController.createInstructor)
     .get(instructorController.getInstructors);    
 
 router.route('/:id')

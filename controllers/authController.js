@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Student=require("../models/student")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -11,6 +12,14 @@ const fs = require('fs').promises;
 const Logger = require('../utils/logger');
 
 
+const emailORphone=(data)=>{
+    if(data.includes("@")){
+        return "email"
+    }
+    else{
+        return "phone"
+    }
+}
 
 const sendVerificationEmail = async (email, name, verificationUrl) => {
     try {
@@ -87,11 +96,62 @@ const authController = {
 
     }),
 
+    registerWithPhone:asyncHandler( async (req,res,next)=>{
+        const {name,phone,password,age,gender}=req.body;
+        const existingUser=await User.findOne({phone}).lean();
+        let user,student;
+        if(! existingUser){
+        try{    
+             const hashedPassword=bcrypt.hashSync(password, 10); 
+        user= await User.create({
+                name,
+                password:hashedPassword,
+                phone,
+            });
+        student = await new Student({
+        age,
+        gender,
+        user:user._id
+            });
+        // Logger.info(student);
+
+
+        await student.save();
+        }
+        catch(error){
+            await User.findByIdAndDelete(user._id);
+            Logger.error('Error registering user', error);
+            throw new AppError('Failed to register user. Please try again', 500);
+        }
+        }
+        else{
+            user=existingUser;
+            student=await Student.findOne({user:user._id});
+            if(!student){
+                throw new AppError('user is not a student', 400);
+            }
+        }
+
+
+
+
+
+    user.role='student';
+    user.profileRef=student._id;
+    user.profileModel='Student';
+    await user.save();
+
+    res.status(201).json({
+        success: true,
+        data: student,
+        message: 'تم إضافة الطالب بنجاح'
+    });
+    }),
     // تسجيل الدخول
     login: asyncHandler(async (req, res) => {
         const { email, password ,rememberMe } = req.body;  
-
-        let user = await User.findOne({ email })
+        const type=emailORphone(email);
+        let user = await User.findOne({ [type]: email })
         .populate('profileRef')
   
         if (!user ) {

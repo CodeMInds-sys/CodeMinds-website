@@ -27,13 +27,13 @@ exports.getInstructors = asyncHandler(async (req, res) => {
 
 exports.createInstructor = asyncHandler(async (req, res) => {
     const user = req.user; 
-    const fileStr= `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    // const fileStr= `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     // const uploadResult = await uploadToCloudinary(fileStr, req.file.originalname);
-    // const {fileId,fileUrl}=uploadResult;
-    const megaLink = req.megaLink;
+    // const {url,public_id}=uploadResult;
+    // const megaLink = req.megaLink;
     const userId = user._id;
     const {specialization,experienceYears,bio,
-          github,linkedin, coursesCanTeach } = req.body;
+          github,linkedin, coursesCanTeach,cvLink } = req.body;
     const instructorRequest = await Instructor.findOne({ user: userId });
     if(instructorRequest){
         instructorRequest.specialization=specialization;
@@ -43,8 +43,8 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         instructorRequest.linkedin=linkedin;
         instructorRequest.coursesCanTeach=coursesCanTeach;
         instructorRequest.cv={
-            fileId:null,
-            fileUrl:megaLink
+            fileId:'',
+            fileUrl:cvLink
         }
         await instructorRequest.save();
         res.status(200).json({
@@ -63,8 +63,8 @@ exports.createInstructor = asyncHandler(async (req, res) => {
         linkedin,
         coursesCanTeach,
         cv:{
-            fileId:"notttt",
-            fileUrl:megaLink
+            fileId:'',
+            fileUrl:cvLink
         }
     });
     await instructor.save();

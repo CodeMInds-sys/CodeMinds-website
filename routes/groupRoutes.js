@@ -22,6 +22,7 @@ router
 router.get('/status/:status',checkRole('manager', 'admin'), groupController.getGroupsWithStatus);
 
 router.post('/addStudent', groupController.addStudentToGroup);
+router.post('/manage/addStudent', checkRole('manager', 'admin'), groupController.addStudentToGroupByManager);
 router.get('/instructorGroups/:id', groupController.getGroupsOfInstructor);
 
 router.post('/addLecToGroup', groupController.addLectureToGroup);

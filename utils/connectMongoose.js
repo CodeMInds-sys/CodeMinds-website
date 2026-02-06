@@ -9,7 +9,7 @@
 
 const dropIndex=async()=>{
     try {
-        await mongoose.connection.db.collection('instructors').dropIndex('email_1');
+        await mongoose.connection.db.collection('users').dropIndex('email_1');
         logger.info(`Index dropped successfully`);
       } catch (error) {
         logger.error(`Index drop failed: ${error.message}`);
