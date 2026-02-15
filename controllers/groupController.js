@@ -652,11 +652,13 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
 
 exports.editLectureToGroup = asyncHandler(async (req, res) => {
     const { lectureId, title, description, objectives, date, videos } = req.body;
-    const group = await Group.findById(req.params.id);
-    if (!group) {
-        throw new AppError('group not found', 404);
-    }
-    const lecture = await Lecture.findById(lectureId);
+    // const group = await Group.findById(req.params.id);
+    // if (!group) {
+    //     throw new AppError('group not found', 404);
+    // }
+
+    
+    const lecture = await Lecture.findById(req.params.id);
     if (!lecture) {
         throw new AppError('lecture not found', 404);
     }

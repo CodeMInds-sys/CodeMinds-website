@@ -25,6 +25,7 @@ exports.getInstructors = asyncHandler(async (req, res) => {
     });
 });
 
+
 exports.createInstructor = asyncHandler(async (req, res) => {
     const user = req.user; 
     // const fileStr= `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
