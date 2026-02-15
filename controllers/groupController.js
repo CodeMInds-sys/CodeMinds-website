@@ -669,8 +669,8 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
     lecture.videos = videos;
     await lecture.save();
 
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+    // await setGroupsCache();
+    // await delCache(`groups:instructor:${group.instructor}`);
 
     res.status(200).json({
         success: true,
