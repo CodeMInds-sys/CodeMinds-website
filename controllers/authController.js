@@ -10,7 +10,47 @@ const { generateToken, verifyToken } = require('../middlewares/jwt');
 const path = require('path');
 const fs = require('fs').promises;
 const Logger = require('../utils/logger');
+function normalizePhone(input) {
+  if (!input) return null;
 
+  // 1. شيل أي حاجة مش رقم
+  let phone = input.replace(/\D/g, "");
+
+  // ======================
+  // 🇪🇬 مصر
+  // ======================
+  if (phone.startsWith("20")) {
+    phone = "0" + phone.slice(2);
+  }
+
+  if (phone.startsWith("1") && phone.length === 10) {
+    phone = "0" + phone;
+  }
+
+  // تحقق مصري
+  if (/^01[0-25][0-9]{8}$/.test(phone)) {
+    return phone;
+  }
+
+  // ======================
+  // 🇸🇦 السعودية
+  // ======================
+  if (phone.startsWith("966")) {
+    phone = "0" + phone.slice(3);
+  }
+
+  if (phone.startsWith("5") && phone.length === 9) {
+    phone = "0" + phone;
+  }
+
+  // تحقق سعودي
+  if (/^05[0-9]{8}$/.test(phone)) {
+    return phone;
+  }
+
+  // ❌ لو مش مطابق لأي دولة
+  return null;
+}
 
 const emailORphone=(data)=>{
     if(data.includes("@")){
@@ -97,31 +137,6 @@ const authController = {
     }),
 
 
-    registerWithPhone: asyncHandler(async (req, res) => {
-        const {name,phone,password}=req.body;
-        const existingPhone = await User.findOne({ phone });
-        if (existingPhone ) {
-            throw new AppError('user already exists  ', 400);
-        }
-        const email = `${phone}@default.com`;
-
-        const user=await User.create({
-            name,
-            email,
-            password,
-            phone,
-        });
-        if (!user) throw new AppError('User not created', 404);
-
-        res.status(201).json({
-            success: true,
-            message:"user created successfully"
-        });
-
-    }),
-
-
-
 
 
 
@@ -135,7 +150,7 @@ const authController = {
         user= await User.create({
                 name,
                 password:hashedPassword,
-                phone,
+                phone:normalizePhone(phone)
             });
         student = await new Student({
         age,
@@ -148,9 +163,12 @@ const authController = {
         await student.save();
         }
         catch(error){
-            await User.findByIdAndDelete(user._id);
+            const existingUser=await User.findOne({phone});
+            if(existingUser){
+                await User.findByIdAndDelete(existingUser._id);
+            }
             Logger.error('Error registering user', error);
-            throw new AppError('Failed to register user. Please try again', 500);
+            throw new AppError(error.message || 'Failed to register user. Please try again', 500);
         }
         }
         else{

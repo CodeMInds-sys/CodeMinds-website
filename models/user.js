@@ -15,12 +15,20 @@ const userSchema = new mongoose.Schema({
         trim: true,
         match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'email is invalid']
     },
+
+
+
     phone: {
-        type: String,
-        required: [true, 'phone is required'],
-        match: [/^01[0-2,5]{1}[0-9]{8}$/, 'phone is invalid'],
-        trim: true,
+  type: String,
+  required: [true, 'phone is required'],
+  trim: true,
+  validate: {
+    validator: function (value) {
+      return /^(01[0-2,5][0-9]{8}|05[0-9]{8})$/.test(value);
     },
+    message: 'phone is invalid',
+  },
+},
     password: {
         type: String,
         minlength: [8, 'password must be at least 8 characters long'],
@@ -63,16 +71,67 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// حذف الـ index القديم عند تشغيل التطبيق
-userSchema.pre('save', async function() {
-    try {
-        await this.collection.dropIndex('email_1');
-    } catch (error) {
-        // تجاهل الخطأ إذا لم يكن الـ index موجوداً
-    }
+
+
+
+function normalizePhone(input) {
+  if (!input) return null;
+
+  // 1. شيل أي حاجة مش رقم
+  let phone = input.replace(/\D/g, "");
+
+  // ======================
+  // 🇪🇬 مصر
+  // ======================
+  if (phone.startsWith("20")) {
+    phone = "0" + phone.slice(2);
+  }
+
+  if (phone.startsWith("1") && phone.length === 10) {
+    phone = "0" + phone;
+  }
+
+  // تحقق مصري
+  if (/^01[0-25][0-9]{8}$/.test(phone)) {
+    return phone;
+  }
+
+  // ======================
+  // 🇸🇦 السعودية
+  // ======================
+  if (phone.startsWith("966")) {
+    phone = "0" + phone.slice(3);
+  }
+
+  if (phone.startsWith("5") && phone.length === 9) {
+    phone = "0" + phone;
+  }
+
+  // تحقق سعودي
+  if (/^05[0-9]{8}$/.test(phone)) {
+    return phone;
+  }
+
+  // ❌ لو مش مطابق لأي دولة
+  return null;
+}
+
+
+// // حذف الـ index القديم عند تشغيل التطبيق
+// userSchema.pre('save', async function() {
+//     try {
+//         await this.collection.dropIndex('email_1');
+//     } catch (error) {
+//         // تجاهل الخطأ إذا لم يكن الـ index موجوداً
+//     }
+// });
+
+userSchema.pre("save", function (next) {
+  if (this.phone) {
+    this.phone = normalizePhone(this.phone);
+  }
+  next();
 });
-
-
 
 // compare password 
 userSchema.methods.comparePassword = async function(candidatePassword) {
