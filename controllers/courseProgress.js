@@ -79,28 +79,42 @@ exports.updateLectureProgress = asyncHandler(async (req, res) => {
         throw new AppError('Course progress not found', 404);
     }
     const {lectureId,attendance,notes,engagement,taskStatus,submittedAt,score,taskNotes}=req.body;
+    const lectureProgress = courseProgress.lectureProgress.find(lp => lp.lecture.toString() === lectureId);
+
+
     // const lectureScore=;
-    const lectureProgress = new LectureProgress({
-        student:courseProgress.student,
-        lecture:lectureId,
-        attendance,
-        notes,
-        engagement,
-        // lectureScore,
-        task:{
-            taskStatus,
-            submittedAt,
-            score,
-            notes:taskNotes
-        }
-    });
-    courseProgress.lectureProgress.push(lectureProgress);
+    if (!lectureProgress) {
+        // add lecture progress
+        const newLectureProgress =  new LectureProgress({
+            lecture: lectureId,
+            attendance,
+            notes,
+            engagement,
+            task: {
+                taskStatus,
+                submittedAt,
+                score,
+                notes: taskNotes
+            }
+        });  
+        courseProgress.lectureProgress.push(newLectureProgress);
+        await courseProgress.save();
+    }
+    lectureProgress.attendance=attendance;
+    lectureProgress.notes=notes;
+    lectureProgress.engagement=engagement;
+    lectureProgress.task.taskStatus=taskStatus;
+    lectureProgress.task.submittedAt=submittedAt;
+    lectureProgress.task.score=score;
+    lectureProgress.task.notes=taskNotes;
+    await lectureProgress.save();
     await courseProgress.save();
     res.status(200).json({
         success: true,
         data: lectureProgress,
-        message: 'Lecture progress added successfully'
+        message: 'Lecture progress updated successfully'
     });
+ 
 });
 
 

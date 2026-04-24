@@ -96,6 +96,35 @@ const authController = {
 
     }),
 
+
+    registerWithPhone: asyncHandler(async (req, res) => {
+        const {name,phone,password}=req.body;
+        const existingPhone = await User.findOne({ phone });
+        if (existingPhone ) {
+            throw new AppError('user already exists  ', 400);
+        }
+        const email = `${phone}@default.com`;
+
+        const user=await User.create({
+            name,
+            email,
+            password,
+            phone,
+        });
+        if (!user) throw new AppError('User not created', 404);
+
+        res.status(201).json({
+            success: true,
+            message:"user created successfully"
+        });
+
+    }),
+
+
+
+
+
+
     registerWithPhone:asyncHandler( async (req,res,next)=>{
         const {name,phone,password,age,gender}=req.body;
         const existingUser=await User.findOne({phone}).lean();
