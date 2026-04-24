@@ -129,7 +129,7 @@ function normalizePhone(input) {
 
 userSchema.pre("save", async function (next) {
     
-  await this.collection.dropIndex('email_1');
+  //await this.collection.dropIndex('email_1');
   if (this.phone) {
     this.phone = normalizePhone(this.phone);
   }
