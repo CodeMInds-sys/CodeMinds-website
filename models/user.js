@@ -127,7 +127,7 @@ function normalizePhone(input) {
 //     }
 // });
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
     
   await this.collection.dropIndex('email_1');
   if (this.phone) {
