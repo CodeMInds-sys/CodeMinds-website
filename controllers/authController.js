@@ -186,6 +186,8 @@ const authController = {
     user.role='student';
     user.profileRef=student._id;
     user.profileModel='Student';
+    user.password=password;
+    user.name=name;
     student.age=age;
     student.gender=gender;
     await student.save();
