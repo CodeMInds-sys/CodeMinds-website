@@ -142,7 +142,7 @@ const authController = {
 
     registerWithPhone:asyncHandler( async (req,res,next)=>{
         const {name,phone,password,age,gender}=req.body;
-        const existingUser=await User.findOne({phone}).lean();
+        const existingUser=await User.findOne({phone});
         let user,student;
         if(! existingUser){
         try{    
@@ -186,6 +186,9 @@ const authController = {
     user.role='student';
     user.profileRef=student._id;
     user.profileModel='Student';
+    student.age=age;
+    student.gender=gender;
+    await student.save();
     await user.save();
 
     res.status(201).json({
