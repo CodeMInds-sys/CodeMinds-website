@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
         required: [false, 'email is required'],
         unique: true,
         trim: true,
+        sparse: true,
         match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'email is invalid']
     },
 
@@ -126,7 +127,9 @@ function normalizePhone(input) {
 //     }
 // });
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
+    
+  //await this.collection.dropIndex('email_1');
   if (this.phone) {
     this.phone = normalizePhone(this.phone);
   }
