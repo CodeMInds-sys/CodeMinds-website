@@ -12,6 +12,7 @@ const CourseProgress = require('../models/courseProgress').courseProgress;
 const LectureProgress = require('../models/courseProgress').LectureProgress;
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
+const normalizePhone = require('../utils/normalizePhone');
 
 // Helper function to fetch all groups and cache them in Redis
 const setGroupsCache = async () => {
@@ -287,7 +288,8 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
 
 exports.addStudentToGroupByManager=asyncHandler( async (req,res)=>{
     const {phone,groupId} = req.body;
-    const user=await User.findOne({phone});
+    const normalizedPhone = normalizePhone(phone);
+    const user=await User.findOne({phone:normalizedPhone});
     if (!user) {
         throw new AppError('user with this phone not found', 404);
     }
