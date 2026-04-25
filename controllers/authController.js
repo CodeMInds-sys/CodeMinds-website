@@ -144,9 +144,10 @@ const authController = {
         const {name,phone,password,age,gender}=req.body;
         const existingUser=await User.findOne({phone});
         let user,student;
+        const hashedPassword=bcrypt.hashSync(password, 10); 
+
         if(! existingUser){
         try{    
-             const hashedPassword=bcrypt.hashSync(password, 10); 
         user= await User.create({
                 name,
                 password:hashedPassword,
@@ -186,7 +187,7 @@ const authController = {
     user.role='student';
     user.profileRef=student._id;
     user.profileModel='Student';
-    user.password=password;
+    user.password=hashedPassword;
     user.name=name;
     student.age=age;
     student.gender=gender;
