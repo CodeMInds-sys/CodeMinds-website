@@ -34,7 +34,7 @@ const lectureProgressSchema= new mongoose.Schema({
         default : ""
     },
     task: {
-        taskStatus: { type: String, enum:["pending","completed","failed","submitted"], default: "pending" },
+        taskStatus: { type: String, enum:["pending","completed","failed","submitted","graded"], default: "pending" },
         submittedAt: { type: Date },
         file:{
             type:String,
