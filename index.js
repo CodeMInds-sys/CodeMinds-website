@@ -50,7 +50,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
-app.use("/api/instructor", instructorRoutes);
+app.use("/api/instructors", instructorRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/requests", requestsRoutes);
@@ -63,7 +63,10 @@ app.get("*", (req, res) => {
   Logger.info("Root endpoint accessed");
   res.send("not found api");
 });
+  
+const dns = require('dns');
 
+// dns.setDefaultResultOrder('ipv4first');
 // Error handling middleware
 app.use((err, req, res, next) => {
   // Log error details
@@ -221,5 +224,9 @@ const initializeStudentCourseProgress = async () => {
 
 
 // Export the Express app
-
+ 
 module.exports = app;
+  
+
+ 
+     

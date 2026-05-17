@@ -166,6 +166,9 @@ const authController = {
     login: asyncHandler(async (req, res) => {
         const { email, password ,rememberMe } = req.body;  
         const type=emailORphone(email);
+        if(type=="phone"){
+            email = normalizePhone(email);
+        }
         let user = await User.findOne({ [type]: email })
         .populate('profileRef')
   

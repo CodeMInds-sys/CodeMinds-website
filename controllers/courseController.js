@@ -4,6 +4,9 @@ const AppError = require('../utils/AppError');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinary');
 const { bufferToFile } = require('../utils/fileUpload');
 const fs = require('fs');
+
+const {getCach,setCash,deleteCash}=require('../utils/redisClient');
+
 function getPublicIdFromUrl(url) {
     const parts = url.split('/');
     const fileName = parts.pop(); // آخر جزء في الرابط
@@ -72,9 +75,22 @@ exports.createCourse = asyncHandler(async (req, res) => {
 
   
 exports.getCourses = asyncHandler(async (req, res) => {
-    const courses = await Course.find()
+    // console.log("getting courses");
+    let courses=JSON.parse(await getCach('courses'));
+    // console.log(courses);
+    if(!courses){
+        // console.log("courses not found in cache");
+        courses=await Course.find();
+        // console.log(courses);
+        
+        await setCash('courses', JSON.stringify(courses));
+        // console.log("courses set in cache");
+    }
+    
+    // const courses = await Course.find()
         // .populate('instructors', 'name email ')
         // .populate('createdBy', 'name');
+        
 
     res.status(200).json({
         success: true,
@@ -167,3 +183,16 @@ exports.deleteCourse = asyncHandler(async (req, res) => {
         message: 'تم حذف الكورس بنجاح'
     });
 }); 
+
+
+
+
+
+
+
+
+
+
+
+
+

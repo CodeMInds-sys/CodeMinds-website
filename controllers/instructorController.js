@@ -7,18 +7,20 @@ const { uploadToCloudinary } = require('../utils/cloudinary');
 
 
 exports.getInstructors = asyncHandler(async (req, res) => {
-    const instructors = await User.find({ role: 'instructor' })
+    const status=req.params.status;
+    let instructors = await User.find({ role: 'instructor' })
     .populate(
         {
             path: 'profileRef',
-            match: { status: 'pending' },
-            // select: 'status specialization coursesCanTeach'
+            match: { status: status },
         }
     )
-    if(!instructors){
+
+    instructors = instructors.filter(instructor => instructor.profileRef);
+
+    if (instructors.length === 0) {
         throw new AppError('instructors not found', 404);
     }
-    // const acceptedInstructors = instructors.filter(instructor => instructor.profileRef.status === 'pending');
     res.status(200).json({
         success: true,
         data: instructors
@@ -116,8 +118,8 @@ exports.deleteInstructor = asyncHandler(async (req, res) => {
 });
 
 exports.getInstructor = asyncHandler(async (req, res) => {
-    const instructor = await User.findById(req.params.id)
-        .select('name email specialization courses');
+    const instructor = await Instructor.findById(req.params.id)
+        // .select('name email specialization courses');
 
     if (!instructor) {
         throw new AppError('المحاضر غير موجود', 404);
@@ -128,3 +130,41 @@ exports.getInstructor = asyncHandler(async (req, res) => {
         data: instructor
     });
 }); 
+
+
+exports.acceptORrejectInstructor = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { status, interviewDate } = req.body;
+
+    if (!['accepted', 'rejected'].includes(status)) {
+        throw new AppError('Invalid status. Status must be "accepted" or "rejected".', 400);
+    }
+
+    const instructorRequest = await Instructor.findById(id);
+
+    if (!instructorRequest) {
+        throw new AppError('Instructor request not found', 404);
+    }
+
+    instructorRequest.status = status;
+    if (interviewDate) {
+        instructorRequest.interviewDate = interviewDate;
+    }
+
+    await instructorRequest.save();
+
+    // If rejected, revert the user's role and clear profile references
+    // if (status === 'rejected') {
+    //     await User.findByIdAndUpdate(instructorRequest.user, {
+    //         role: 'user',
+    //         profileRef: null,
+    //         profileModel: null
+    //     });
+    // }
+
+    res.status(200).json({
+        success: true,
+        data: instructorRequest,
+        message: `Instructor application has been ${status}`
+    });
+});

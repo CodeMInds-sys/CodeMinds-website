@@ -4,7 +4,7 @@ const Course = require('../models/course');
 const ReqToEnroll = require('../models/reqToEnroll');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
-
+const {getCach,setCash,deleteCash}=require('../utils/redisClient');
 exports.createStudent = asyncHandler(async (req, res) => {
     const {age,gender} = req.body;
     const user = req.user;
@@ -31,10 +31,14 @@ exports.createStudent = asyncHandler(async (req, res) => {
 
 
 exports.getStudents = asyncHandler(async (req, res) => {
-    const students = await User.find({ role: 'student' })
+    let students=JSON.parse(await getCach('students'));
+    if(!students){
+        students = await User.find({ role: 'student' })
         .select('name email phone courses groups profileRef profileModel')
         .populate('profileRef');
         // .populate('courses');
+        await setCash('students', JSON.stringify(students));
+    }
     
     res.status(200).json({
         success: true,
@@ -42,6 +46,8 @@ exports.getStudents = asyncHandler(async (req, res) => {
         data: students
     });
 });
+    
+
 
 exports.updateStudent = asyncHandler(async (req, res) => {
     const student = await User.findByIdAndUpdate(
@@ -53,6 +59,7 @@ exports.updateStudent = asyncHandler(async (req, res) => {
     if (!student) {
         throw new AppError('الطالب غير موجود', 404);
     }
+    await deleteCash('students');
 
     res.status(200).json({
         success: true,
@@ -70,6 +77,7 @@ exports.deleteStudent = asyncHandler(async (req, res) => {
 
     await student.remove();
 
+    await deleteCash('students');
     res.status(200).json({
         success: true,
         message: 'تم حذف الطالب بنجاح'
@@ -77,12 +85,16 @@ exports.deleteStudent = asyncHandler(async (req, res) => {
 });
 
 exports.getStudent = asyncHandler(async (req, res) => {
-    const student = await User.findById(req.params.id)
+    let student = JSON.parse(await getCash(req.params.id));
+    if(!student){
+    student = await User.findById(req.params.id)
         .select('name email phone courses groups profileRef profileModel')
         .populate('enrolledCourses', 'name description');
 
-    if (!student) {
-        throw new AppError('الطالب غير موجود', 404);
+        if (!student) {
+            throw new AppError('الطالب غير موجود', 404);
+        }
+    await setCash(req.params.id, JSON.stringify(student));
     }
 
     res.status(200).json({

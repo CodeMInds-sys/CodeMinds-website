@@ -14,28 +14,22 @@ const LectureProgress = require('../models/courseProgress').LectureProgress;
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 const normalizePhone = require('../utils/normalizePhone');
 
-// Helper function to fetch all groups and cache them in Redis
-const setGroupsCache = async () => {
-    const groups = await Group.find({})
-    .populate({
-        path: 'instructor',
-        select: 'name email phone profileRef profileModel'
-    })
-    .populate({
-        path: 'course',
-        select: 'title'
-    })
-    .populate({
-        path: 'students',
-        select: 'name email phone profileRef profileModel'
-    })
-    .populate({
-        path: 'lectures',
-        // select: 'title date description'
-    });
-    const cacheKey = `groups:all`;
-    await setCache(cacheKey, JSON.stringify(groups));
-}
+
+// cache keys
+// 1: groups    
+// 2: group:{groupId}
+// 3: groupsOfInstructor:${instructorId}
+// 4: groups:${status}
+// 5: group:students:${groupId}
+
+
+
+// // Helper function to fetch all groups and cache them in Redis
+
+
+
+
+
 exports.createGroup = asyncHandler(async (req, res) => {
     console.log(req.user);
     const { title, startDate, endDate, totalSeats, instructorId, courseId, } = req.body;
@@ -55,8 +49,11 @@ exports.createGroup = asyncHandler(async (req, res) => {
     await course.save();
     
     await group.save();
-    await setGroupsCache();
-    await delCache(`groups:instructor:${instructorId}`);
+
+    await delCache(`groups`);
+    await delCache(`groupsOfInstructor:${instructorId}`);
+    await delCache(`groups:${group.status}`);
+
     res.status(201).json({
         success: true,
         data: group,
@@ -66,18 +63,10 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 
 exports.getGroups = asyncHandler(async (req, res) => {
-    const cacheKey = `groups:all`;
-    // const cachedGroups = await getCache(cacheKey);
-    if (false) {
-        return res.status(200).json({
-            success: true,
-            data: JSON.parse(cachedGroups),
-            message: 'groups fetched successfully from cache'
-        });
-    } else {
-        // await setGroupsCache();
-        // const groups = await getCache(cacheKey);
-        const groups=await Group.find({})
+
+    let groups= JSON.parse(await getCache(`groups`));
+    if (!groups) {
+        groups=await Group.find({})
         .populate({
             path: 'instructor',
             select: 'name email phone profileRef profileModel'
@@ -98,60 +87,66 @@ exports.getGroups = asyncHandler(async (req, res) => {
             path: 'lectures',
             // select: 'title date description'
         });
-        return res.status(200).json({
-            success: true,
-            data: groups,
-            message: 'get group success'
-        });
+        await setCache(`groups`, JSON.stringify(groups));
+
+
     }
 
 
-
+    return res.status(200).json({
+        success: true,
+        data: groups,
+        message: 'get group success'
+    });
 });
 
 
 exports.getGroup=asyncHandler(async(req,res)=>{
-    const group=await Group.findById(req.params.id)
-    .populate({
-        path: 'instructor',
-        select: 'name email '
-    })
-    .populate({
-        path: 'course',
-        select: 'title'
-    })
-    .populate({
-        path: 'students',
-        select:'user courseProgress',
-        populate:{
-            path:'user courseProgress',
-            select:'name course'
-        },
-    })
-    .populate({
-        path: 'lectures',
-        // select: 'title date description'
-    }).lean();
-    if (!group) {
-        throw new AppError('Group not found', 404);
+
+    let group=JSON.parse(await getCache(`group:${req.params.id}`));
+    if(!group){
+        group=await Group.findById(req.params.id)
+        .populate({
+            path: 'instructor',
+            select: 'name email '
+        })
+        .populate({
+            path: 'course',
+            select: 'title'
+        })
+        .populate({
+            path: 'students',
+            select:'user courseProgress',
+            populate:{
+                path:'user courseProgress',
+                select:'name course'
+            },
+        })
+        .populate({
+            path: 'lectures',
+            // select: 'title date description'
+        }).lean();
+        if (!group) {
+            throw new AppError('Group not found', 404);
+        }
+
+        let students=[];
+    
+        group.students.forEach(async(student) => {
+            let studentId=student._id;
+            let userId=student.user._id; 
+            let name=student.user.name; 
+            // let courseProgress=student.courseProgress;
+            let courseProgress=student.courseProgress.find((progress)=>progress.course.toString()       === group.course._id.toString());
+            console.log(student.courseProgress[0].course);
+            console.log(group.course._id);
+            console.log(courseProgress);
+            students.push({studentId,userId,name,courseProgress:courseProgress._id});
+        });
+        group.students=students;
+
+        await setCache(`group:${req.params.id}`, JSON.stringify(group));
     }
-
-    let students=[];
-   
-    group.students.forEach(async(student) => {
-        let studentId=student._id;
-        let userId=student.user._id; 
-        let name=student.user.name; 
-        // let courseProgress=student.courseProgress;
-        let courseProgress=student.courseProgress.find((progress)=>progress.course.toString()       === group.course._id.toString());
-        console.log(student.courseProgress[0].course);
-        console.log(group.course._id);
-        console.log(courseProgress);
-        students.push({studentId,userId,name,courseProgress:courseProgress._id});
-    });
-    group.students=students;
-
-
     res.status(200).json({
         success: true,
         data: group,
@@ -176,8 +171,12 @@ exports.updateGroup= asyncHandler( async(req,res)=>{
         throw new AppError('Group not found', 404);
     }
     await group.save();
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+
+    await delCache(`group:${group._id}`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+
+
     res.status(200).json({
         success: true,
         data: group
@@ -204,8 +203,12 @@ exports.deleteGroup = asyncHandler(async (req, res) => {
     if (!deletedGroup) {
         throw new AppError('Group not found', 404);
     }
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+    await delCache(`groups`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+    await delCache(`groups:${group.status}`);
+
+    await delCache(`group:${group._id}`);
+
     res.status(200).json({
         success: true,
         data: group
@@ -269,14 +272,21 @@ exports.addStudentToGroup = asyncHandler(async (req, res) => {
     reqToEnroll.group=groupId;  
     reqToEnroll.joined=true;
     await reqToEnroll.save();
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
     // populate group before response
     const populatedGroup = await Group.findById(groupId)
         .populate('instructor', 'name email phone profileRef profileModel')
         .populate('course', 'title')
         .populate('students', 'name email phone profileRef profileModel')
         .populate('lectures');
+
+
+    await delCache(`group:${groupId}`);
+    await delCache(`groups:`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+    await delCache(`group:students:${groupId}`);
+
+
     res.status(200).json({
         success: true,
         message: 'student added to group successfully', 
@@ -339,14 +349,23 @@ exports.addStudentToGroupByManager=asyncHandler( async (req,res)=>{
     await student.save();
     
 
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+
     // populate group before response
     const populatedGroup = await Group.findById(groupId)
         .populate('instructor', 'name email phone profileRef profileModel')
         .populate('course', 'title')
         .populate('students', 'name email phone profileRef profileModel')
         .populate('lectures');
+
+
+    await delCache(`group:${groupId}`);
+    await delCache(`groups:`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+    await delCache(`group:students:${groupId}`);
+
+
+
     res.status(200).json({
         success: true,
         message: 'student added to group successfully', 
@@ -402,14 +421,21 @@ exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
     await student.save();
     
 
-    await setGroupsCache();
-    await delCache(`groups:instructor:${group.instructor}`);
+
     // populate group before response
     const populatedGroup = await Group.findById(groupId)
         .populate('instructor', 'name email phone profileRef profileModel')
         .populate('course', 'title')
         .populate('students', 'name email phone profileRef profileModel')
         .populate('lectures');
+
+
+    await delCache(`group:${groupId}`);
+    await delCache(`groups:`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+    await delCache(`group:students:${groupId}`);
+
     res.status(200).json({
         success: true,
         message: 'student added to group successfully', 
@@ -421,16 +447,16 @@ exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
  
 exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
-    const cacheKey = `groupsOfInstructor-${instructorId}`; // Cache key for instructor's groups
-    const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
-    // if (cachedGroups) {
-    //     return res.status(200).json({
-    //         success: true,
-    //         data: JSON.parse(cachedGroups),
-    //         message: 'groups fetched successfully from cache'
-    //     });
-    // }else{
-        const groups = await Group.find({ instructor: instructorId },{title:1,course:1})
+    const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
+    let groups =JSON.parse(await getCache(cacheKey)); // Try to get instructor's groups from Redis cache
+    if (groups) {
+        return res.status(200).json({
+            success: true,
+            data: groups,
+            message: 'groups fetched successfully from cache'
+        });
+    }else{
+        groups = await Group.find({ instructor: instructorId },{title:1,course:1})
         .populate({
             path: 'course',
             select: 'title'
@@ -442,7 +468,7 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
             success: true,
             data: groups
         });
-    // }
+    }
 
 });
 
@@ -458,11 +484,17 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
         throw new AppError("Invalid status",400);
     }
     const getGroupsFromDB=async(condition)=>{
-        return await Group.find(condition,{title:1,course:1})
+        groups=await JSON.parse(await getCache(`groups:${status}`));
+        if (groups) {
+            return groups;
+        }
+        groups = await Group.find(condition,{title:1,course:1})
         .populate({
             path: 'course',
             select: 'title'
         })
+        await setCache(`groups:${status}`, JSON.stringify(groups));
+        return groups;
     }
 
     if(status===statusEnum.inProgress){
@@ -480,15 +512,15 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
 })
 exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
-    const cacheKey = `groupsOfInstructor-${instructorId}`; // Cache key for instructor's groups
+    const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
     const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
-    // if (cachedGroups) {
-    //     return res.status(200).json({
-    //         success: true,
-    //         data: JSON.parse(cachedGroups),
-    //         message: 'groups fetched successfully from cache'
-    //     });
-    // }else{
+    if (cachedGroups) {
+        return res.status(200).json({
+            success: true,
+            data: JSON.parse(cachedGroups),
+            message: 'groups fetched successfully from cache'
+        });
+    }else{
         const groups = await Group.find({ instructor: instructorId })
         .populate({
             path: 'course',
@@ -516,7 +548,7 @@ exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
             success: true,
             data: groups
         });
-    // }
+    }
 
 });
 
@@ -526,8 +558,11 @@ exports.getGroupStudents = asyncHandler(async (req, res) => {
     if (!groupId) {
         throw new AppError('group id is required', 400);
     }
-    const group = await Group.findById(groupId,{students:1,})
-
+    let data=[];
+    
+    data=JSON.parse(await getCache(`group:${groupId}`));
+    if(!data){
+    let group = await Group.findById(groupId,{students:1,})
     .populate({
         path: 'students',
         select: 'user age gender profileRef profileModel courseProgress',
@@ -549,7 +584,6 @@ exports.getGroupStudents = asyncHandler(async (req, res) => {
     if (!group) {
         throw new AppError('group not found', 404);
     }
-    let data=[]
     if (!group.course) {
         throw new AppError('course not found', 404);
     }
@@ -571,6 +605,9 @@ exports.getGroupStudents = asyncHandler(async (req, res) => {
             courseProgress:courseProgress._id
         })
     }
+    await setCache(`group:students:${groupId}`, JSON.stringify(data));
+}
+
     res.status(200).json({
         success: true,
         data: data
@@ -640,8 +677,13 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
         await thisCourseProgress.save();
         await thisStudent.save();
     }
-    // await setGroupsCache();
-    // await delCache(`groups:instructor:${group.instructor}`);
+
+    await delCache(`group:${groupId}`);
+    await delCache(`groups`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
+    // await delCache(`group:students:${groupId}`);
+
 
     res.status(200).json({
         success: true,
@@ -653,11 +695,7 @@ exports.addLectureToGroup = asyncHandler(async (req, res) => {
 
 
 exports.editLectureToGroup = asyncHandler(async (req, res) => {
-    const { lectureId, title, description, objectives, date, videos } = req.body;
-    // const group = await Group.findById(req.params.id);
-    // if (!group) {
-    //     throw new AppError('group not found', 404);
-    // }
+    const { title, description, objectives, date, videos } = req.body;
 
     
     const lecture = await Lecture.findById(req.params.id);
@@ -671,8 +709,10 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
     lecture.videos = videos;
     await lecture.save();
 
-    // await setGroupsCache();
-    // await delCache(`groups:instructor:${group.instructor}`);
+    await delCache(`group:${lecture.group}`);
+    await delCache(`groups`);
+    await delCache(`groups:${group.status}`);
+    await delCache(`groupsOfInstructor:${group.instructor}`);
 
     res.status(200).json({
         success: true,

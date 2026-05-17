@@ -11,59 +11,43 @@ const ReqToEnroll = require('../models/reqToEnroll');
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 
-// Helper function to fetch all groups and cache them in Redis
-const setGroupsCache = async () => {
-    const groups = await Group.find({})
-    .populate({
-        path: 'instructor',
-        select: 'name email phone profileRef profileModel'
-    })
-    .populate({
-        path: 'course',
-        select: 'title'
-    })
-    .populate({
-        path: 'students',
-        select: 'name email phone profileRef profileModel'
-    })
-    .populate({
-        path: 'lectures',
-        // select: 'title date description'
-    });
-    const cacheKey = `groups:all`;
-    await setCache(cacheKey, JSON.stringify(groups));
-}
-
 
 
 exports.getCourseProgress = asyncHandler(async (req, res) => {
     const progressId=req.params.id;
-    const courseProgress = await CourseProgress.findById(progressId)
-    .populate({
-        path: 'student',
-        select:'user',
-        populate:{
-            path:'user',
-            select:'name email phone profileRef profileModel'
-        }
-    })
-    .populate({
-        path: 'course',
-        select: 'title'
-    })
-    .populate({
-        path: 'lectureProgress',
-        select: 'lecture',
-        populate:{
-            path:'lecture',
-            select:'title'
-        }
-    })
-  
+    let courseProgress = JSON.parse(await getCache(progressId));
+    if(!courseProgress){   
+        courseProgress= await CourseProgress.findById(progressId)
+        .populate({
+            path: 'student',
+            select:'user',
+            populate:{
+                path:'user',
+                select:'name email phone profileRef profileModel'
+            }
+        })
+        .populate({
+            path: 'course',
+            select: 'title'
+        })
+        .populate({
+            path: 'lectureProgress',
+            select: 'lecture',
+            populate:{
+                path:'lecture',
+                select:'title'
+            }
+        })
+    
 
-    if (!courseProgress) {
-        throw new AppError('Course progress not found', 404);
+        if (!courseProgress) {
+            throw new AppError('Course progress not found', 404);
+        }
+
+        await setCache(progressId, JSON.stringify(courseProgress));
     }
+    
+
     res.status(200).json({
         success: true,
         data: courseProgress,
@@ -109,6 +93,9 @@ exports.updateLectureProgress = asyncHandler(async (req, res) => {
     lectureProgress.task.notes=taskNotes;
     await lectureProgress.save();
     await courseProgress.save();
+
+    await delCache(progressId);
+    
     res.status(200).json({
         success: true,
         data: lectureProgress,
