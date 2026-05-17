@@ -5,8 +5,8 @@ const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinar
 const { bufferToFile } = require('../utils/fileUpload');
 const fs = require('fs');
 
-const {getCach,setCash,deleteCash}=require('../utils/redisClient');
-
+const {getCache,setCache,delCache}=require('../utils/redisClient');
+ 
 function getPublicIdFromUrl(url) {
     const parts = url.split('/');
     const fileName = parts.pop(); // آخر جزء في الرابط
@@ -76,14 +76,14 @@ exports.createCourse = asyncHandler(async (req, res) => {
   
 exports.getCourses = asyncHandler(async (req, res) => {
     // console.log("getting courses");
-    let courses=JSON.parse(await getCach('courses'));
+    let courses=JSON.parse(await getCache('courses'));
     // console.log(courses);
     if(!courses){
         // console.log("courses not found in cache");
         courses=await Course.find();
         // console.log(courses);
         
-        await setCash('courses', JSON.stringify(courses));
+        await setCache('courses', JSON.stringify(courses));
         // console.log("courses set in cache");
     }
     

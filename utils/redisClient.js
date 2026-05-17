@@ -104,11 +104,11 @@ async function setCache(key, value) {
   return await redis.set(key, value);
 }
 
-async function deleteCache(key) {
+async function delCache(key) {
   return await redis.del(key);
 }
 module.exports = {
-  getCach:getCache,
-  setCash:setCache,
-  deleteCash:deleteCache,
+  getCache,
+  setCache,
+  delCache
 };
