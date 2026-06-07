@@ -41,11 +41,12 @@ const requestsRoutes = require("./routes/requestsRoutes");
 const questionRoutes = require("./routes/question");
 const feedbackRoutes = require("./routes/feedBack");
 const courseProgressRoutes = require("./routes/courseProgress");
+const packageRoutes = require("./routes/package");
 
 // Static files
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("uploads"));
-
+   
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -57,6 +58,8 @@ app.use("/api/requests", requestsRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/courseProgress", courseProgressRoutes);
+app.use("/api/packages", packageRoutes);
+
 
 // 404 Handler
 app.get("*", (req, res) => {
@@ -115,6 +118,7 @@ const Student = require("./models/student");
 const Instructor = require("./models/instructor");
 const ReqToEnroll = require("./models/reqToEnroll");
 const FeedBack = require("./models/feedBack");
+
 
 // Helper script to initialize course progress for students
 const initializeStudentCourseProgress = async () => {
