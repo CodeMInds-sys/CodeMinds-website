@@ -22,10 +22,32 @@ const PackagePurchaseSchema = new mongoose.Schema({
     default: 'pending' 
   },
 
-  paymentProof: { type: String },
   paymentDate:{ type: Date },
   startedAt: { type: Date },
 
+  paymentProof: {
+  type: String, // image url
+  },
+
+  proofAnalysis: {
+    detectedAmount: Number,
+    sender: String,
+    receiver: String,
+    confidence: Number, // نسبة ثقة الـ AI
+    extractedText: String, // OCR text لو محتاجه
+  },
+
+  proofVerification: {
+    status: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending"
+    },
+    verifiedAt: Date,
+    notes: String
+
+    
+  }
 }, { timestamps: true });
 
 // optional computed field

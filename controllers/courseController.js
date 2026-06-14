@@ -53,6 +53,7 @@ exports.createCourse = asyncHandler(async (req, res) => {
       imageUrl,
     });
     // in case error delete image fromt coudinary agai
+    delCache("courses");
     res.status(201).json({
       success: true,
       message:"course created successfully",
@@ -140,7 +141,7 @@ exports.updateCourse = asyncHandler(async (req, res) => {
           imageUrl = uploadResult.url;
           imagePublicId = uploadResult.public_id;
           course.imageUrl=imageUrl;
-
+          delCache("courses")
           console.log(imageUrl,imagePublicId);
         } catch (error) {
           console.error('Error uploading to Cloudinary:', error);
@@ -159,6 +160,7 @@ exports.updateCourse = asyncHandler(async (req, res) => {
     course.description=description? description:course.description;
     course.price=price? price:course.price;
     await course.save();
+    delCache("courses");
     res.status(200).json({
         success: true,
         data: course
