@@ -163,7 +163,8 @@ exports.updateCourse = asyncHandler(async (req, res) => {
     delCache("courses");
     res.status(200).json({
         success: true,
-        data: course
+        data: course,
+        message: 'تم تحديث بيانات الكورس بنجاح'
     });
 });
 
