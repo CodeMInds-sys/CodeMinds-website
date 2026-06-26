@@ -9,7 +9,7 @@ const path = require("path");
 const connectMongoose = require("./utils/connectMongoose");
 const Logger = require("./utils/logger");
 const passport = require("./passport");
- 
+  
 // Initialize Express app
 const app = express();
 const port = process.env.PORT || 3000;

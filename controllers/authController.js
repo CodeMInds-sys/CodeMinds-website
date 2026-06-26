@@ -164,7 +164,7 @@ const authController = {
     }),
     // تسجيل الدخول
     login: asyncHandler(async (req, res) => {
-        const { email, password ,rememberMe } = req.body;  
+        let { email, password ,rememberMe } = req.body;  
         const type=emailORphone(email);
         if(type=="phone"){
             email = normalizePhone(email);
