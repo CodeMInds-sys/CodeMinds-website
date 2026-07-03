@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل الإلكترونيات | Electronics Guide</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #0f1117;
+    --bg2:       #171b26;
+    --bg3:       #1e2333;
+    --card:      #232840;
+    --border:    #2e3452;
+    --border2:   #3d4570;
+
+    --txt:       #e8eaf2;
+    --txt2:      #9aa0c0;
+    --txt3:      #5c638a;
+
+    --blue:      #4f8ef7;
+    --blue-bg:   #162040;
+    --blue-glow: rgba(79,142,247,0.18);
+
+    --green:     #3dd68c;
+    --green-bg:  #0d2a1e;
+
+    --amber:     #f5a623;
+    --amber-bg:  #2a1e08;
+
+    --red:       #f05252;
+    --red-bg:    #2a0e0e;
+
+    --purple:    #a78bfa;
+    --purple-bg: #1e1535;
+
+    --teal:      #22d3ee;
+    --teal-bg:   #082030;
+
+    --radius:    10px;
+    --radius-lg: 16px;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--txt);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1f35 50%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(79,142,247,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue-bg); border: 1px solid var(--blue);
+    border-radius: 20px; padding: 4px 14px;
+    font-size: 12px; color: var(--blue);
+    margin-bottom: .75rem; letter-spacing: 1px;
+  }
+  header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; margin-bottom: .3rem; }
+  header h1 span { color: var(--blue); }
+  header p { color: var(--txt2); font-size: 14px; }
+
+  /* ===== NAV TABS ===== */
+  .nav-wrap {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+  }
+  .nav-tabs {
+    display: flex; gap: 2px;
+    padding: .5rem .75rem;
+    min-width: max-content;
+  }
+  .nav-btn {
+    padding: 7px 14px; border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: transparent; color: var(--txt2);
+    font-size: 13px; cursor: pointer;
+    white-space: nowrap; transition: all .2s;
+    font-family: inherit;
+  }
+  .nav-btn:hover { background: var(--bg3); color: var(--txt); }
+  .nav-btn.active {
+    background: var(--blue-bg); border-color: var(--blue);
+    color: var(--blue); font-weight: 600;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ===== SECTION TITLE ===== */
+  .sec-title {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .sec-title .icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .sec-title h2 { font-size: 1.2rem; font-weight: 700; }
+  .sec-title .sub { font-size: 12px; color: var(--txt2); margin-top: 1px; }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .card-title { font-size: 14px; font-weight: 600; margin-bottom: .5rem; }
+  .card p, .card li { font-size: 13px; color: var(--txt2); line-height: 1.75; }
+  .card ul, .card ol { padding-right: 1.25rem; }
+  .card li { margin-bottom: 4px; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* ===== HIGHLIGHT BOXES ===== */
+  .box {
+    border-radius: var(--radius); padding: .75rem 1rem;
+    font-size: 13px; margin: .75rem 0;
+    border-right: 3px solid;
+  }
+  .box-blue   { background: var(--blue-bg);   border-color: var(--blue);   color: #93b8fc; }
+  .box-green  { background: var(--green-bg);  border-color: var(--green);  color: #6ee7b0; }
+  .box-amber  { background: var(--amber-bg);  border-color: var(--amber);  color: #fbc878; }
+  .box-red    { background: var(--red-bg);    border-color: var(--red);    color: #fc9a9a; }
+  .box-purple { background: var(--purple-bg); border-color: var(--purple); color: #c4b5fd; }
+  .box-teal   { background: var(--teal-bg);   border-color: var(--teal);   color: #67e8f9; }
+
+  /* ===== FORMULA ===== */
+  .formula {
+    background: var(--bg); border: 1px solid var(--blue);
+    border-radius: var(--radius); padding: .75rem 1.25rem;
+    text-align: center; font-size: 1.3rem; font-weight: 700;
+    color: var(--blue); letter-spacing: 3px; margin: .75rem 0;
+  }
+
+  /* ===== BADGE ===== */
+  .badge {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+    margin: 2px;
+  }
+  .badge-blue   { background: var(--blue-bg);   color: var(--blue); }
+  .badge-green  { background: var(--green-bg);  color: var(--green); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber); }
+  .badge-red    { background: var(--red-bg);     color: var(--red); }
+  .badge-purple { background: var(--purple-bg); color: var(--purple); }
+
+  /* ===== SLIDERS ===== */
+  .slider-row {
+    display: flex; align-items: center; gap: 12px;
+    margin: .6rem 0;
+  }
+  .slider-label { font-size: 13px; color: var(--txt2); min-width: 130px; }
+  .slider-row input[type=range] {
+    flex: 1; -webkit-appearance: none; height: 5px;
+    background: var(--border2); border-radius: 3px; outline: none;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--blue);
+    cursor: pointer; border: 2px solid var(--bg);
+  }
+  .slider-val {
+    font-size: 13px; font-weight: 700; color: var(--blue);
+    min-width: 55px; text-align: left; direction: ltr;
+  }
+
+  /* ===== RESULT CARDS ===== */
+  .result-strip { display: flex; gap: 10px; flex-wrap: wrap; margin: .75rem 0; }
+  .result-item {
+    background: var(--bg); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: .6rem 1rem; flex: 1; min-width: 100px;
+  }
+  .result-lbl { font-size: 11px; color: var(--txt3); }
+  .result-num { font-size: 1.3rem; font-weight: 700; color: var(--blue); direction: ltr; }
+  .result-unit { font-size: 11px; color: var(--txt2); }
+
+  /* ===== CANVAS ===== */
+  canvas { display: block; width: 100%; border-radius: var(--radius); }
+  .canvas-wrap {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1rem; margin-bottom: .75rem; overflow: hidden;
+  }
+
+  /* ===== COMPARE TABLE ===== */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: .75rem 0; }
+  .compare-table th {
+    background: var(--bg); padding: .6rem .75rem; text-align: right;
+    border-bottom: 2px solid var(--border2); color: var(--txt2); font-weight: 600;
+  }
+  .compare-table td { padding: .55rem .75rem; border-bottom: 1px solid var(--border); }
+  .compare-table tr:hover td { background: var(--bg3); }
+
+  /* ===== AC WAVE ===== */
+  .wave-wrap {
+    position: relative; overflow: hidden;
+    background: var(--bg); border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== STEP CIRCLES ===== */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 14px; align-items: flex-start; padding: .75rem 0; }
+  .step + .step { border-top: 1px solid var(--border); }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: var(--blue-bg); border: 1px solid var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--blue);
+  }
+  .step-body { flex: 1; }
+  .step-body strong { font-size: 14px; color: var(--txt); display: block; margin-bottom: 3px; }
+  .step-body span { font-size: 12px; color: var(--txt2); }
+
+  /* ===== QUIZ ===== */
+  .quiz-q { font-size: 14px; font-weight: 600; margin-bottom: .6rem; }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-opt {
+    padding: .6rem .9rem; border: 1px solid var(--border2);
+    border-radius: var(--radius); font-size: 13px; cursor: pointer;
+    background: var(--bg3); color: var(--txt2); transition: all .2s;
+    text-align: right; font-family: inherit;
+  }
+  .quiz-opt:hover { border-color: var(--blue); color: var(--txt); }
+  .quiz-opt.correct { background: var(--green-bg); border-color: var(--green); color: #6ee7b0; }
+  .quiz-opt.wrong   { background: var(--red-bg);   border-color: var(--red);   color: #fc9a9a; }
+  .quiz-feedback { font-size: 13px; margin-top: .5rem; padding: .5rem .75rem; border-radius: var(--radius); }
+  .q-nav { display: flex; justify-content: space-between; margin-top: 1rem; gap: 10px; }
+  .q-nav button {
+    flex:1; padding: .6rem; border-radius: var(--radius);
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--txt); font-size: 13px; cursor: pointer; font-family: inherit;
+    transition: all .2s;
+  }
+  .q-nav button:hover { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+  .q-progress { font-size: 12px; color: var(--txt3); text-align: center; margin-top: .5rem; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center; padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--txt3);
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">⚡ للطلاب من سن ١٢–١٥</div>
+  <h1>دليل <span>الإلكترونيات</span> | Electronics Guide</h1>
+  <p>من الدوائر الكهربائية لـ قانون أوم — خطوة خطوة بالعربي والإنجليزي</p>
+</header>
+
+<!-- NAV -->
+<div class="nav-wrap">
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="showPage('ohm')">⚡ قانون أوم</button>
+    <button class="nav-btn" onclick="showPage('meter')">🔬 الأفوميتر</button>
+    <button class="nav-btn" onclick="showPage('acdc')">🔋 AC / DC</button>
+    <button class="nav-btn" onclick="showPage('series')">🔗 التوالي والتوازي</button>
+    <button class="nav-btn" onclick="showPage('circuits')">⚠️ أنواع الدوائر</button>
+    <button class="nav-btn" onclick="showPage('quiz')">📝 اختبار</button>
+  </div>
+</div>
+
+<!-- ==================== PAGE 1: OHM ==================== -->
+<div id="page-ohm" class="page active">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--blue-bg)">⚡</div>
+    <div>
+      <h2>فرق الجهد، التيار، والمقاومة</h2>
+      <div class="sub">Voltage · Current · Resistance — Ohm's Law</div>
+    </div>
+  </div>
+
+  <!-- Analogy cards -->
+  <div class="grid3">
+    <div class="card" style="border-color:var(--blue);">
+      <div style="font-size:2rem;text-align:center;margin-bottom:.5rem">🪣</div>
+      <div class="card-title" style="color:var(--blue);">فرق الجهد — Voltage (V)</div>
+      <p>تخيل تانكين مية، واحد أعلى من التاني.<br>
+      <strong style="color:var(--txt)">فرق الارتفاع</strong> بينهم = فرق الجهد.<br>
+      بيتقاس بـ <span class="badge badge-blue">Volt — V</span></p>
+    </div>
+    <div class="card" style="border-color:var(--teal);">
+      <div style="font-size:2rem;text-align:center;margin-bottom:.5rem">💧</div>
+      <div class="card-title" style="color:var(--teal);">التيار — Current (A)</div>
+      <p>المية اللي <strong style="color:var(--txt)">بتتحرك</strong> في الماسورة من التانك العالي للواطي.<br>
+      في الكهرباء = الإلكترونات المتحركة.<br>
+      بيتقاس بـ <span class="badge badge-blue">Ampere — A</span></p>
+    </div>
+    <div class="card" style="border-color:var(--amber);">
+      <div style="font-size:2rem;text-align:center;margin-bottom:.5rem">🔩</div>
+      <div class="card-title" style="color:var(--amber);">المقاومة — Resistance (Ω)</div>
+      <p>صمام (valve) في الماسورة <strong style="color:var(--txt)">بيضيّق</strong> مرور المية.<br>
+      كل ما زاد، التيار قلّ.<br>
+      بيتقاس بـ <span class="badge badge-amber">Ohm — Ω</span></p>
+    </div>
+  </div>
+
+  <div class="formula">I = V ÷ R</div>
+  <div class="box box-blue">
+    <strong>قانون أوم — Ohm's Law:</strong><br>
+    التيار (I) = فرق الجهد (V) ÷ المقاومة (R)<br>
+    كل ما الجهد زاد → التيار زاد &nbsp;|&nbsp; كل ما المقاومة زادت → التيار قلّ
+  </div>
+
+  <!-- Interactive tank simulation -->
+  <div class="card">
+    <div class="card-title">🎮 تجربة تفاعلية — Water Tank Simulation</div>
+    <div class="canvas-wrap"><canvas id="tankC" height="180"></canvas></div>
+    <div class="slider-row">
+      <span class="slider-label">⚡ فرق الجهد — Voltage</span>
+      <input type="range" id="sl_v" min="1" max="12" value="6" step="1" oninput="updateOhm()">
+      <span class="slider-val"><span id="sv_v">6</span> V</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">🔩 المقاومة — Resistance</span>
+      <input type="range" id="sl_r" min="1" max="12" value="3" step="1" oninput="updateOhm()">
+      <span class="slider-val"><span id="sv_r">3</span> Ω</span>
+    </div>
+    <div class="result-strip">
+      <div class="result-item">
+        <div class="result-lbl">الجهد — Voltage</div>
+        <div class="result-num" id="r_v">6</div>
+        <div class="result-unit">Volt (V)</div>
+      </div>
+      <div class="result-item">
+        <div class="result-lbl">المقاومة — Resistance</div>
+        <div class="result-num" id="r_r" style="color:var(--amber)">3</div>
+        <div class="result-unit">Ohm (Ω)</div>
+      </div>
+      <div class="result-item">
+        <div class="result-lbl">التيار — Current</div>
+        <div class="result-num" id="r_i" style="color:var(--green)">2.0</div>
+        <div class="result-unit">Ampere (A)</div>
+      </div>
+    </div>
+    <div class="formula" id="ohm_formula" style="font-size:1rem">I = 6 ÷ 3 = 2.0 A</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📌 أمثلة حقيقية — Real Examples</div>
+    <table class="compare-table">
+      <thead><tr><th>المكوّن</th><th>الجهد</th><th>التيار</th><th>المقاومة</th></tr></thead>
+      <tbody>
+        <tr><td>💡 LED صغيرة</td><td>3.3 V</td><td>20 mA (0.02 A)</td><td>165 Ω</td></tr>
+        <tr><td>🔦 لمبة يدوية</td><td>1.5 V</td><td>100 mA</td><td>15 Ω</td></tr>
+        <tr><td>📱 شارجر موبايل</td><td>5 V</td><td>1–2 A</td><td>2.5–5 Ω</td></tr>
+        <tr><td>🚗 بطارية عربية</td><td>12 V</td><td>متغير</td><td>متغير</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== PAGE 2: METER ==================== -->
+<div id="page-meter" class="page">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--purple-bg)">🔬</div>
+    <div>
+      <h2>الأفوميتر — Multimeter</h2>
+      <div class="sub">كيف تقيس الجهد والتيار والمقاومة</div>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--purple)">
+    <div class="card-title" style="color:var(--purple)">الأفوميتر — Multimeter إيه ده؟</div>
+    <p>جهاز بيقيس ٣ حاجات أساسية في أي دايرة كهربائية:<br>
+    <span class="badge badge-blue">Voltage — الجهد</span>
+    <span class="badge badge-amber">Resistance — المقاومة</span>
+    <span class="badge badge-green">Current — التيار</span></p>
+    <div class="box box-purple" style="margin-top:.75rem">
+      🖥️ الشاشة بتعرض القيمة رقمياً — Digital display shows the measured value<br>
+      🔴 سلك أحمر = (+) Positive &nbsp;|&nbsp; ⚫ سلك أسود = (−) Negative / COM
+    </div>
+  </div>
+
+  <!-- Meter tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap">
+    <button class="nav-btn active" onclick="showMeter('volt')" id="mt-volt">⚡ قياس الجهد</button>
+    <button class="nav-btn" onclick="showMeter('amp')" id="mt-amp">💧 قياس التيار</button>
+    <button class="nav-btn" onclick="showMeter('res')" id="mt-res">🔩 قياس المقاومة</button>
+  </div>
+
+  <div id="m-volt" class="card" style="border-color:var(--blue)">
+    <div class="card-title" style="color:var(--blue)">⚡ قياس الجهد — Voltage Measurement</div>
+    <div class="grid2">
+      <div>
+        <div class="box box-blue"><strong>إزاي تقيس الجهد؟ — How to measure?</strong></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">١</div><div class="step-body"><strong>اختار DCV أو V</strong><span>للجهد المستمر (DC) زي البطارية</span></div></div>
+          <div class="step"><div class="step-num">٢</div><div class="step-body"><strong>سلك أحمر → فتحة VΩ</strong><span>Red probe → VΩ socket</span></div></div>
+          <div class="step"><div class="step-num">٣</div><div class="step-body"><strong>سلك أسود → COM</strong><span>Black probe → COM socket</span></div></div>
+          <div class="step"><div class="step-num">٤</div><div class="step-body"><strong>حط الطرفين على المكوّن</strong><span>Touch both sides of the component — على التوازي ⚡</span></div></div>
+          <div class="step"><div class="step-num">٥</div><div class="step-body"><strong>اقرأ الرقم</strong><span>Read the number in Volts (V)</span></div></div>
+        </div>
+      </div>
+      <div>
+        <canvas id="meterC_v" height="200" style="background:var(--bg);border-radius:var(--radius);"></canvas>
+        <div class="box box-amber" style="margin-top:.5rem">
+          ⚠️ <strong>مهم جداً!</strong><br>
+          الفولتميتر بيتوصل <strong>على التوازي</strong> (parallel) — جنب المكوّن مش في النص!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="m-amp" class="card" style="display:none;border-color:var(--green)">
+    <div class="card-title" style="color:var(--green)">💧 قياس التيار — Current Measurement</div>
+    <div class="grid2">
+      <div>
+        <div class="box box-green"><strong>إزاي تقيس التيار؟ — How to measure?</strong></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">١</div><div class="step-body"><strong>اختار DCA أو A</strong><span>للتيار المستمر (DC)</span></div></div>
+          <div class="step"><div class="step-num">٢</div><div class="step-body"><strong>سلك أحمر → فتحة A</strong><span>Red probe → A socket (مش VΩ!)</span></div></div>
+          <div class="step"><div class="step-num">٣</div><div class="step-body"><strong>سلك أسود → COM</strong><span>Black probe → COM</span></div></div>
+          <div class="step"><div class="step-num">٤</div><div class="step-body"><strong>قطع الدايرة وحط المتر في النص</strong><span>Break the circuit — put meter in series!</span></div></div>
+          <div class="step"><div class="step-num">٥</div><div class="step-body"><strong>اقرأ الرقم بالأمبير</strong><span>Read in Ampere (A) or mA</span></div></div>
+        </div>
+      </div>
+      <div>
+        <canvas id="meterC_a" height="200" style="background:var(--bg);border-radius:var(--radius);"></canvas>
+        <div class="box box-red" style="margin-top:.5rem">
+          ⚠️ <strong>خطر!</strong><br>
+          الأميتر بيتوصل <strong>على التوالي</strong> (series) — لو وصّلته على التوازي هيتبخر!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="m-res" class="card" style="display:none;border-color:var(--amber)">
+    <div class="card-title" style="color:var(--amber)">🔩 قياس المقاومة — Resistance Measurement</div>
+    <div class="grid2">
+      <div>
+        <div class="box box-amber"><strong>إزاي تقيس المقاومة؟ — How to measure?</strong></div>
+        <div class="steps">
+          <div class="step"><div class="step-num">١</div><div class="step-body"><strong>أوقف الدايرة أولاً!</strong><span>Power OFF — لازم تفصل الكهرباء</span></div></div>
+          <div class="step"><div class="step-num">٢</div><div class="step-body"><strong>فصّل المقاومة من الدايرة</strong><span>Remove resistor from circuit</span></div></div>
+          <div class="step"><div class="step-num">٣</div><div class="step-body"><strong>اختار Ω على المتر</strong><span>Select Ohm (Ω) setting</span></div></div>
+          <div class="step"><div class="step-num">٤</div><div class="step-body"><strong>لمس طرفي المقاومة</strong><span>Touch both leads of the resistor</span></div></div>
+          <div class="step"><div class="step-num">٥</div><div class="step-body"><strong>اقرأ بالأوم Ω أو كيلو أوم kΩ</strong><span>Read in Ohm (Ω) or kilo-Ohm (kΩ)</span></div></div>
+        </div>
+      </div>
+      <div>
+        <canvas id="meterC_r" height="200" style="background:var(--bg);border-radius:var(--radius);"></canvas>
+        <div class="box box-amber" style="margin-top:.5rem">
+          💡 <strong>كيلو أوم kΩ = ١٠٠٠ أوم</strong><br>
+          1 kΩ = 1000 Ω &nbsp;|&nbsp; مقاومة 4.7 kΩ = 4700 Ω
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 3: AC/DC ==================== -->
+<div id="page-acdc" class="page">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--teal-bg)">🔋</div>
+    <div>
+      <h2>التيار المتردد والمستمر</h2>
+      <div class="sub">AC (Alternating Current) vs DC (Direct Current)</div>
+    </div>
+  </div>
+
+  <!-- DC Card -->
+  <div class="card" style="border-color:var(--green)">
+    <div class="card-title" style="color:var(--green);font-size:1.1rem">🔋 التيار المستمر — DC (Direct Current)</div>
+    <div class="grid2">
+      <div>
+        <p><strong style="color:var(--txt)">إيه ده؟ — What is it?</strong><br>
+        تيار بيتدفق في <strong style="color:var(--green)">اتجاه واحد ثابت</strong> طول الوقت.<br>
+        الإلكترونات بتتحرك من − لـ + دايماً.</p>
+        <div class="box box-green" style="margin-top:.75rem">
+          <strong>أمثلة — Examples:</strong><br>
+          🔋 البطارية العادية (AA, AAA, 9V)<br>
+          📱 بطارية الموبايل واللاب توب<br>
+          🚗 بطارية العربية (12V)<br>
+          ⚡ مخرج USB (5V DC)<br>
+          🌞 الخلايا الشمسية — Solar panels
+        </div>
+        <div class="box box-blue">
+          <strong>ليه DC؟ — Why use DC?</strong><br>
+          أجهزة الإلكترونيات (Arduino, sensors, motors) كلها بتشتغل على DC لأنه ثابت ومنظّم.
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="dcWave" height="120"></canvas></div>
+        <p style="font-size:12px;color:var(--txt2);text-align:center">الخط ثابت → الجهد ثابت اتجاهه</p>
+        <div class="box box-amber" style="margin-top:.5rem">
+          <strong>شكل الموجة — Waveform:</strong><br>
+          خط أفقي مستقيم — يعني مفيش تغيير في الاتجاه
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AC Card -->
+  <div class="card" style="border-color:var(--blue)">
+    <div class="card-title" style="color:var(--blue);font-size:1.1rem">🔌 التيار المتردد — AC (Alternating Current)</div>
+    <div class="grid2">
+      <div>
+        <p><strong style="color:var(--txt)">إيه ده؟ — What is it?</strong><br>
+        تيار بيغيّر اتجاهه <strong style="color:var(--blue)">بسرعة كبيرة</strong> — بيروح وييجي.<br>
+        في مصر وأوروبا: <strong style="color:var(--blue)">50 Hz</strong> (50 مرة في الثانية!)<br>
+        في أمريكا: <strong style="color:var(--blue)">60 Hz</strong></p>
+        <div class="box box-blue" style="margin-top:.75rem">
+          <strong>أمثلة — Examples:</strong><br>
+          🏠 الكهرباء في البيت (220V في مصر)<br>
+          💡 اللمب والتكييف والفرن<br>
+          🔌 كل حاجة بتتوصل في الفيشة<br>
+          🏭 المصانع والمحركات الكبيرة<br>
+          ⚡ محطات توليد الكهرباء
+        </div>
+        <div class="box box-red">
+          ⚠️ <strong>تحذير — Warning:</strong><br>
+          الـ AC في البيت (220V) خطير جداً على الجسم!<br>
+          Never touch AC wires — دايماً اتعامل مع DC في الكورس ده
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="acWave" height="120"></canvas></div>
+        <p style="font-size:12px;color:var(--txt2);text-align:center">موجة sinusoidal — بتروح وتيجي</p>
+        <div class="box box-teal" style="margin-top:.5rem">
+          <strong>Frequency تردد:</strong><br>
+          50 Hz = الاتجاه بيتغير 50 مرة/ثانية<br>
+          الموجة دي اسمها <strong>Sine wave — موجة جيبية</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison -->
+  <div class="card">
+    <div class="card-title">⚖️ مقارنة DC vs AC</div>
+    <table class="compare-table">
+      <thead><tr><th>الخاصية</th><th style="color:var(--green)">DC 🔋</th><th style="color:var(--blue)">AC 🔌</th></tr></thead>
+      <tbody>
+        <tr><td>الاتجاه</td><td style="color:var(--green)">ثابت واحد</td><td style="color:var(--blue)">بيتغير</td></tr>
+        <tr><td>الجهد في مصر</td><td style="color:var(--green)">1.5V – 12V</td><td style="color:var(--blue)">220V</td></tr>
+        <tr><td>التردد</td><td style="color:var(--green)">صفر (0 Hz)</td><td style="color:var(--blue)">50 Hz</td></tr>
+        <tr><td>الاستخدام الرئيسي</td><td style="color:var(--green)">إلكترونيات وأجهزة محمولة</td><td style="color:var(--blue)">البيوت والمصانع</td></tr>
+        <tr><td>الخطورة</td><td style="color:var(--green)">منخفضة (لو &lt;24V)</td><td style="color:var(--red)">⚠️ عالية جداً</td></tr>
+        <tr><td>النقل على مسافات</td><td style="color:var(--txt2)">صعب</td><td style="color:var(--blue)">سهل وكفء</td></tr>
+        <tr><td>شكل الموجة</td><td style="color:var(--green)">خط مستقيم</td><td style="color:var(--blue)">موجة جيبية</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- AC → DC conversion -->
+  <div class="card" style="border-color:var(--purple)">
+    <div class="card-title" style="color:var(--purple)">🔄 تحويل AC لـ DC — AC to DC Conversion</div>
+    <p style="font-size:13px;color:var(--txt2)">معظم الأجهزة الإلكترونية بتاخد AC من الفيشة وبتحوّله لـ DC جوّاها!</p>
+    <div style="display:flex;align-items:center;gap:8px;margin:.75rem 0;flex-wrap:wrap">
+      <div class="badge badge-blue" style="font-size:13px;padding:6px 14px">🔌 220V AC</div>
+      <div style="color:var(--txt3);font-size:1.3rem">→</div>
+      <div class="badge badge-purple" style="font-size:13px;padding:6px 14px">🔄 Transformer + Rectifier</div>
+      <div style="color:var(--txt3);font-size:1.3rem">→</div>
+      <div class="badge badge-green" style="font-size:13px;padding:6px 14px">⚡ 5V DC</div>
+    </div>
+    <div class="box box-purple">
+      شارجر الموبايل بتاعك عمله ده! بياخد AC من الحيطة → يحوّله لـ 5V DC للموبايل.<br>
+      Your phone charger converts 220V AC → 5V DC!
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 4: SERIES/PARALLEL ==================== -->
+<div id="page-series" class="page">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--amber-bg)">🔗</div>
+    <div>
+      <h2>التوالي والتوازي</h2>
+      <div class="sub">Series & Parallel — Resistors & Batteries</div>
+    </div>
+  </div>
+
+  <!-- Series resistors -->
+  <div class="card" style="border-color:var(--amber)">
+    <div class="card-title" style="color:var(--amber);font-size:1.1rem">➡️ المقاومات على التوالي — Series Resistors</div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:13px;color:var(--txt2)">لما المقاومات تتوصل ورا بعض — التيار ليه مسار واحد بس يعدي فيه.</p>
+        <div class="formula" style="font-size:1rem;margin:.5rem 0">R_total = R₁ + R₂ + R₃</div>
+        <div class="box box-amber">
+          <strong>قواعد التوالي — Series Rules:</strong><br>
+          ✅ التيار (I) ثابت في كل المقاومات<br>
+          ✅ الجهد بيتقسم — Voltage divides<br>
+          ✅ المقاومة الكلية = مجموعهم<br>
+          ✅ لو واحدة اتكسرت → الدايرة كلها وقفت!
+        </div>
+        <div class="box box-blue">
+          <strong>Voltage Divider مقسم الجهد:</strong><br>
+          لو R₁ = 2Ω و R₂ = 3Ω → R₁ بتاخد 40% من الجهد و R₂ بتاخد 60%<br>
+          يعني كل مقاومة بتاخد نصيبها بالنسبة!
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="seriesC" height="150"></canvas></div>
+        <div class="slider-row">
+          <span class="slider-label">R₁ (Ω)</span>
+          <input type="range" id="sr1" min="1" max="10" value="3" step="1" oninput="calcSeries()">
+          <span class="slider-val"><span id="sr1v">3</span> Ω</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">R₂ (Ω)</span>
+          <input type="range" id="sr2" min="1" max="10" value="4" step="1" oninput="calcSeries()">
+          <span class="slider-val"><span id="sr2v">4</span> Ω</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Voltage (V)</span>
+          <input type="range" id="svlt" min="1" max="12" value="9" step="1" oninput="calcSeries()">
+          <span class="slider-val"><span id="svv">9</span> V</span>
+        </div>
+        <div class="result-strip">
+          <div class="result-item"><div class="result-lbl">R_total</div><div class="result-num" id="srt" style="color:var(--amber)">7</div><div class="result-unit">Ω</div></div>
+          <div class="result-item"><div class="result-lbl">Current I</div><div class="result-num" id="si" style="color:var(--green)">1.3</div><div class="result-unit">A</div></div>
+        </div>
+        <div id="series_eq" class="formula" style="font-size:.9rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parallel resistors -->
+  <div class="card" style="border-color:var(--teal)">
+    <div class="card-title" style="color:var(--teal);font-size:1.1rem">⬆️ المقاومات على التوازي — Parallel Resistors</div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:13px;color:var(--txt2)">لما المقاومات تنفرع عند نقطة — التيار بيتقسم بينهم وبيتجمع تاني.</p>
+        <div class="formula" style="font-size:.85rem;margin:.5rem 0">1/R_total = 1/R₁ + 1/R₂</div>
+        <div class="box box-teal">
+          <strong>قواعد التوازي — Parallel Rules:</strong><br>
+          ✅ الجهد (V) ثابت على كل المقاومات<br>
+          ✅ التيار بيتقسم — Current divides<br>
+          ✅ R_total أصغر من أصغر مقاومة!<br>
+          ✅ لو واحدة اتكسرت → البقية شغّالة
+        </div>
+        <div class="box box-blue">
+          <strong>مثال حياتي — Real example:</strong><br>
+          الغرفة في بيتك: كل لمبة وكل فيشة موصّلين على التوازي.<br>
+          Every outlet in your room is in parallel — لو لمبة اتكسرت الباقي شغّال!
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="parallelC" height="150"></canvas></div>
+        <div class="slider-row">
+          <span class="slider-label">R₁ (Ω)</span>
+          <input type="range" id="pr1" min="1" max="10" value="4" step="1" oninput="calcParallel()">
+          <span class="slider-val"><span id="pr1v">4</span> Ω</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">R₂ (Ω)</span>
+          <input type="range" id="pr2" min="1" max="10" value="6" step="1" oninput="calcParallel()">
+          <span class="slider-val"><span id="pr2v">6</span> Ω</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Voltage (V)</span>
+          <input type="range" id="pvlt" min="1" max="12" value="6" step="1" oninput="calcParallel()">
+          <span class="slider-val"><span id="pvv">6</span> V</span>
+        </div>
+        <div class="result-strip">
+          <div class="result-item"><div class="result-lbl">R_total</div><div class="result-num" id="prt" style="color:var(--teal)">2.4</div><div class="result-unit">Ω</div></div>
+          <div class="result-item"><div class="result-lbl">I_total</div><div class="result-num" id="pit" style="color:var(--green)">2.5</div><div class="result-unit">A</div></div>
+        </div>
+        <div id="parallel_eq" class="formula" style="font-size:.85rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batteries -->
+  <div class="card" style="border-color:var(--green)">
+    <div class="card-title" style="color:var(--green);font-size:1.1rem">🔋 البطاريات — Batteries in Series & Parallel</div>
+    <div class="grid2">
+      <div style="background:var(--bg);border-radius:var(--radius);padding:1rem;border:1px solid var(--border)">
+        <div style="color:var(--green);font-weight:600;margin-bottom:.5rem">🔋🔋🔋 توالي — Series</div>
+        <div class="formula" style="font-size:1rem;margin:.5rem 0">V_total = V₁ + V₂ + V₃</div>
+        <p style="font-size:12px;color:var(--txt2)">3 بطاريات 1.5V = 4.5V إجمالي<br>
+        الفولت بيتجمع — التيار ثابت<br>
+        مثال: ريموت التلفزيون 🎮</p>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--radius);padding:1rem;border:1px solid var(--border)">
+        <div style="color:var(--blue);font-weight:600;margin-bottom:.5rem">🔋 توازي — Parallel</div>
+        <div class="formula" style="font-size:1rem;margin:.5rem 0">I_total = I₁ + I₂ + I₃</div>
+        <p style="font-size:12px;color:var(--txt2)">3 بطاريات 1.5V → لسه 1.5V<br>
+        الفولت ثابت — التيار بيتجمع<br>
+        مثال: باور بنك يدوم أطول ⚡</p>
+      </div>
+    </div>
+    <div class="canvas-wrap" style="margin-top:.75rem"><canvas id="battC" height="160"></canvas></div>
+  </div>
+</div>
+
+<!-- ==================== PAGE 5: CIRCUITS ==================== -->
+<div id="page-circuits" class="page">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--red-bg)">⚠️</div>
+    <div>
+      <h2>أنواع الدوائر الكهربائية</h2>
+      <div class="sub">Open · Closed · Short Circuit</div>
+    </div>
+  </div>
+
+  <!-- Closed Circuit -->
+  <div class="card" style="border-color:var(--green)">
+    <div class="card-title" style="color:var(--green);font-size:1.1rem">✅ الدايرة المغلقة — Closed Circuit</div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:13px;color:var(--txt2)"><strong style="color:var(--txt)">إيه ده؟</strong><br>
+        الدايرة المغلقة هي الدايرة الشغّالة — فيها مسار كامل للتيار يعدي فيه.</p>
+        <div class="box box-green">
+          <strong>Closed Circuit = دايرة كاملة</strong><br>
+          بطارية → سلك → مقاومة أو مكوّن → بطارية<br>
+          ✅ التيار بيعدي<br>
+          ✅ اللمبة بتضوي<br>
+          ✅ الجهاز بيشتغل
+        </div>
+        <div class="box box-blue">
+          <strong>أمثلة — Examples:</strong><br>
+          💡 لما بتضغط زرار النور في الأوضة — closed circuit<br>
+          📱 لما الموبايل شغّال — closed circuit داخلي<br>
+          🔦 لما بتفتح الفلاشة — closed circuit
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="closedC" height="160"></canvas></div>
+        <div class="box box-green" style="margin-top:.5rem;text-align:center">
+          ✅ الدايرة شغّالة — Current is flowing!<br>
+          اللمبة بتضوي 💡
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Open Circuit -->
+  <div class="card" style="border-color:var(--amber)">
+    <div class="card-title" style="color:var(--amber);font-size:1.1rem">🔓 الدايرة المفتوحة — Open Circuit</div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:13px;color:var(--txt2)"><strong style="color:var(--txt)">إيه ده؟</strong><br>
+        في انقطاع في السلك — التيار مش قادر يعدي خالص.</p>
+        <div class="box box-amber">
+          <strong>Open Circuit = دايرة مكسورة</strong><br>
+          I = V ÷ ∞ = 0 Ampere<br>
+          ❌ مفيش تيار<br>
+          ❌ اللمبة مش بتضوي<br>
+          ❌ الجهاز مش شغّال
+        </div>
+        <div class="box box-blue">
+          <strong>أسباب الدايرة المفتوحة — Causes:</strong><br>
+          🔌 سلك مقطوع أو مفصول<br>
+          🔑 أوف الكوباية (switch OFF)<br>
+          💡 لمبة اتفصلت من العمدة<br>
+          🔩 مقاومة محروقة (burned resistor)<br>
+          🔋 البطارية خلصت
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="openC" height="160"></canvas></div>
+        <div class="box box-amber" style="margin-top:.5rem;text-align:center">
+          ❌ الدايرة مش شغّالة — No current!<br>
+          اللمبة مطفية 💡
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Short Circuit -->
+  <div class="card" style="border-color:var(--red)">
+    <div class="card-title" style="color:var(--red);font-size:1.1rem">⚡ القصر الكهربائي — Short Circuit</div>
+    <div class="grid2">
+      <div>
+        <p style="font-size:13px;color:var(--txt2)"><strong style="color:var(--txt)">إيه ده؟</strong><br>
+        سلك بيوصّل طرفي البطارية مباشرة من غير أي مقاومة — زيرو مقاومة!</p>
+        <div class="formula" style="font-size:1rem;margin:.5rem 0">I = V ÷ 0 = ∞ !</div>
+        <div class="box box-red">
+          <strong>⚠️ القصر الكهربائي — DANGER!</strong><br>
+          🔥 تيار ضخم جداً يعدي<br>
+          🌡️ حرارة عالية في الأسلاك<br>
+          💥 حريق أو انفجار<br>
+          🔋 البطارية تتلف فوراً<br>
+          ☠️ خطر على الحياة مع AC!
+        </div>
+        <div class="box box-amber">
+          <strong>الحماية من القصر — Protection:</strong><br>
+          🔌 الفيوز (Fuse) — بيقطع عند تيار عالي<br>
+          🔌 Circuit Breaker — كاسر دايرة أوتوماتيك<br>
+          💡 المقاومة دايماً موجودة في الدايرة السليمة
+        </div>
+      </div>
+      <div>
+        <div class="canvas-wrap"><canvas id="shortC" height="160"></canvas></div>
+        <div class="box box-red" style="margin-top:.5rem;text-align:center">
+          ⚠️ خطر! — DANGER!<br>
+          تيار كبير جداً 🔥 احتمال حريق!
+        </div>
+      </div>
+    </div>
+    <!-- Examples of short circuit -->
+    <div class="card-title" style="margin-top:1rem">💥 أمثلة على القصر الكهربائي — Short Circuit Examples</div>
+    <div class="grid3" style="margin-top:.5rem">
+      <div style="background:var(--red-bg);border:1px solid var(--red);border-radius:var(--radius);padding:.75rem">
+        <div style="font-size:1.5rem;text-align:center">🔌</div>
+        <div style="font-size:12px;font-weight:600;color:var(--red);text-align:center;margin:.3rem 0">كابل محروق</div>
+        <p style="font-size:11px;color:var(--txt2)">لو الكابل اتكشف عزله — الأسلاك بتلمس بعض → short circuit → حريق في الحيطة</p>
+      </div>
+      <div style="background:var(--red-bg);border:1px solid var(--red);border-radius:var(--radius);padding:.75rem">
+        <div style="font-size:1.5rem;text-align:center">💧</div>
+        <div style="font-size:12px;font-weight:600;color:var(--red);text-align:center;margin:.3rem 0">مية في الكهرباء</div>
+        <p style="font-size:11px;color:var(--txt2)">المية بتوصّل الكهرباء → لو مية وقعت على لوحة — short circuit خطير جداً!</p>
+      </div>
+      <div style="background:var(--red-bg);border:1px solid var(--red);border-radius:var(--radius);padding:.75rem">
+        <div style="font-size:1.5rem;text-align:center">🔋</div>
+        <div style="font-size:12px;font-weight:600;color:var(--red);text-align:center;margin:.3rem 0">قصر في البطارية</div>
+        <p style="font-size:11px;color:var(--txt2)">لو عملة معدنية وقعت على طرفي بطارية → short circuit → البطارية تسخن جداً وتتلف</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary comparison -->
+  <div class="card">
+    <div class="card-title">📊 مقارنة أنواع الدوائر — Circuit Types Summary</div>
+    <table class="compare-table">
+      <thead><tr><th>النوع</th><th>المقاومة</th><th>التيار</th><th>الحالة</th><th>الخطورة</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-green">✅ Closed</span></td>
+          <td style="color:var(--green)">طبيعية</td>
+          <td style="color:var(--green)">طبيعي</td>
+          <td style="color:var(--green)">شغّال ✓</td>
+          <td>آمن ✓</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-amber">🔓 Open</span></td>
+          <td style="color:var(--amber)">لا نهاية ∞</td>
+          <td style="color:var(--amber)">صفر (0A)</td>
+          <td style="color:var(--amber)">مش شغّال ✗</td>
+          <td>آمن ✓ (مفيش تيار)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-red">⚡ Short</span></td>
+          <td style="color:var(--red)">≈ 0 Ω</td>
+          <td style="color:var(--red)">ضخم جداً ∞</td>
+          <td style="color:var(--red)">خطير! 🔥</td>
+          <td style="color:var(--red)">⚠️ خطر جداً!</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ==================== PAGE 6: QUIZ ==================== -->
+<div id="page-quiz" class="page">
+  <div class="sec-title">
+    <div class="icon" style="background:var(--purple-bg)">📝</div>
+    <div>
+      <h2>اختبر نفسك — Test Yourself</h2>
+      <div class="sub">٨ أسئلة على الدروس اللي اتعلمناها</div>
+    </div>
+  </div>
+
+  <div class="card" id="quiz-card">
+    <div class="q-progress" id="q-progress">سؤال ١ من ٨</div>
+    <div style="height:1px;background:var(--border);margin:.75rem 0;"></div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-options" id="quiz-opts"></div>
+    <div class="quiz-feedback" id="quiz-fb" style="display:none"></div>
+    <div class="q-nav">
+      <button id="q-prev" onclick="prevQ()">← السابق</button>
+      <button id="q-next" onclick="nextQ()">التالي ←</button>
+    </div>
+  </div>
+
+  <div class="card" id="quiz-result" style="display:none;text-align:center">
+    <div style="font-size:3rem;margin-bottom:.5rem" id="result-emoji"></div>
+    <div style="font-size:1.5rem;font-weight:700;margin-bottom:.5rem" id="result-score"></div>
+    <div style="font-size:14px;color:var(--txt2);margin-bottom:1rem" id="result-msg"></div>
+    <button onclick="restartQuiz()" style="padding:.7rem 2rem;border-radius:var(--radius);border:1px solid var(--blue);background:var(--blue-bg);color:var(--blue);font-size:14px;cursor:pointer;font-family:inherit">
+      🔄 ابدأ من الأول
+    </button>
+  </div>
+</div>
+
+<footer>
+  ⚡ Electronics Guide for Students | دليل الإلكترونيات للطلاب<br>
+  Hardware Course — Ages 12–15 | كورس هاردوير — من ١٢ لـ ١٥ سنة
+</footer>
+
+<script>
+/* ========================
+   NAV & PAGE SWITCHING
+======================== */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'acdc')    { drawDCWave(); drawACWave(); }
+  if (id === 'series')  { calcSeries(); calcParallel(); drawBatteries(); }
+  if (id === 'circuits'){ drawClosed(); drawOpen(); drawShort2(); }
+  if (id === 'quiz')    { renderQ(); }
+}
+
+function showMeter(type) {
+  ['volt','amp','res'].forEach(t => {
+    document.getElementById('m-' + t).style.display = 'none';
+    document.getElementById('mt-' + t).classList.remove('active');
+  });
+  document.getElementById('m-' + type).style.display = 'block';
+  document.getElementById('mt-' + type).classList.add('active');
+  if (type === 'volt') drawMeter('meterC_v', '#4f8ef7', 'DCV', '6.0 V', 'VΩ');
+  if (type === 'amp')  drawMeter('meterC_a', '#3dd68c', 'DCA', '0.50 A', 'A');
+  if (type === 'res')  drawMeter('meterC_r', '#f5a623', 'Ω', '330 Ω', 'VΩ');
+}
+
+/* ========================
+   COLORS
+======================== */
+const C = {
+  bg:     '#0f1117', bg2: '#171b26', bg3: '#1e2333', card: '#232840',
+  border: '#2e3452', border2: '#3d4570',
+  txt:    '#e8eaf2', txt2: '#9aa0c0', txt3: '#5c638a',
+  blue:   '#4f8ef7', green: '#3dd68c', amber: '#f5a623',
+  red:    '#f05252', purple: '#a78bfa', teal: '#22d3ee'
+};
+
+/* ========================
+   PAGE 1: OHM LAW — TANK
+======================== */
+let flowOff = 0, tankRAF;
+function updateOhm() {
+  const V = +document.getElementById('sl_v').value;
+  const R = +document.getElementById('sl_r').value;
+  const I = (V / R).toFixed(2);
+  document.getElementById('sv_v').textContent = V;
+  document.getElementById('sv_r').textContent = R;
+  document.getElementById('r_v').textContent = V;
+  document.getElementById('r_r').textContent = R;
+  document.getElementById('r_i').textContent = I;
+  document.getElementById('ohm_formula').textContent = `I = ${V} ÷ ${R} = ${I} A`;
+}
+
+function drawTank() {
+  const cv = document.getElementById('tankC');
+  if (!cv) return;
+  cv.width = cv.offsetWidth * window.devicePixelRatio || 800;
+  cv.height = 180 * (window.devicePixelRatio || 1);
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.scale(dpr, dpr);
+  const w = W / dpr, h = H / dpr;
+
+  const V = +document.getElementById('sl_v').value;
+  const R = +document.getElementById('sl_r').value;
+  const I = V / R;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const tankW = 100, fullH = 120, tankY = 20;
+  const t1x = 40, t2x = 360;
+  const level1 = Math.round((V / 12) * (fullH - 15) + 15);
+  const level2 = 18;
+  const t1WY = tankY + fullH - level1;
+  const t2WY = tankY + fullH - level2;
+
+  function drawTankShape(tx, waterY, col) {
+    const wH = tankY + fullH - waterY;
+    ctx.fillStyle = col;
+    ctx.fillRect(tx + 2, waterY, tankW - 4, wH - 2);
+    ctx.strokeStyle = C.border2; ctx.lineWidth = 2;
+    ctx.strokeRect(tx, tankY, tankW, fullH);
+  }
+  drawTankShape(t1x, t1WY, 'rgba(79,142,247,0.55)');
+  drawTankShape(t2x, t2WY, 'rgba(79,142,247,0.35)');
+
+  // labels
+  ctx.fillStyle = C.txt2; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('التانك ١', t1x + tankW/2, tankY + fullH + 16);
+  ctx.fillText('التانك ٢', t2x + tankW/2, tankY + fullH + 16);
+
+  // voltage bracket
+  const bx = t1x + tankW + 12;
+  ctx.strokeStyle = C.amber; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(bx, t1WY); ctx.lineTo(bx+6, t1WY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx+3, t1WY); ctx.lineTo(bx+3, t2WY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx, t2WY); ctx.lineTo(bx+6, t2WY); ctx.stroke();
+  ctx.fillStyle = C.amber; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(`V=${V}`, bx+10, (t1WY+t2WY)/2+5);
+
+  // pipe
+  const pipeY = tankY + fullH - 8, pipeH = 14;
+  const pX1 = t1x + tankW, pX2 = t2x;
+  const valveX = (pX1+pX2)/2 - 20, valveW = 40;
+  const vH = Math.max(14, Math.round((R/12)*30)+14);
+
+  ctx.fillStyle = C.border2;
+  ctx.fillRect(pX1, pipeY, valveX-pX1, pipeH);
+  ctx.fillRect(valveX+valveW, pipeY, pX2-(valveX+valveW), pipeH);
+  ctx.fillStyle = C.amber;
+  ctx.fillRect(valveX, pipeY-(vH-pipeH)/2, valveW, vH);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('R', valveX+valveW/2, pipeY+pipeH/2+4);
+  ctx.fillStyle = C.txt2; ctx.font='10px sans-serif';
+  ctx.fillText(`${R}Ω`, valveX+valveW/2, pipeY+pipeH+18);
+
+  // water in pipe
+  ctx.fillStyle = 'rgba(79,142,247,0.6)';
+  ctx.fillRect(pX1+2, pipeY+2, valveX-pX1-4, pipeH-4);
+  ctx.fillRect(valveX+valveW+2, pipeY+2, pX2-(valveX+valveW)-4, pipeH-4);
+
+  // flow dots
+  const speed = Math.min(I*2.5, 18);
+  for (let s=0; s<2; s++) {
+    const sx1 = s===0 ? pX1+2 : valveX+valveW+2;
+    const sw  = s===0 ? valveX-pX1-4 : pX2-(valveX+valveW)-4;
+    for (let d=0; d<5; d++) {
+      const dx = ((d*24 + flowOff*speed) % sw + sw) % sw;
+      ctx.fillStyle='rgba(255,255,255,0.75)';
+      ctx.beginPath(); ctx.arc(sx1+dx, pipeY+pipeH/2, 3, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  ctx.fillStyle = C.green; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(`I = ${I.toFixed(2)} A`, (pX1+pX2)/2, pipeY-8);
+
+  flowOff += 0.12;
+  tankRAF = requestAnimationFrame(drawTank);
+}
+
+/* ========================
+   PAGE 2: METER DRAWINGS
+======================== */
+function drawMeter(id, col, mode, reading, socket) {
+  const cv = document.getElementById(id);
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = 180, H = 200;
+  cv.width = W; cv.height = H;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = C.bg3; ctx.beginPath(); ctx.roundRect(10,10,160,180,12); ctx.fill();
+  ctx.strokeStyle = C.border2; ctx.lineWidth=1.5; ctx.stroke();
+  // screen
+  ctx.fillStyle='#0d1a0d'; ctx.beginPath(); ctx.roundRect(22,22,136,50,6); ctx.fill();
+  ctx.fillStyle='#4ade80'; ctx.font='bold 18px monospace'; ctx.textAlign='center';
+  ctx.fillText(reading, 90, 54);
+  // mode label
+  ctx.fillStyle=col; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(mode, 90, 98);
+  // sockets
+  [['COM',44,'#888'],['VΩ',90,'#888'],[socket==='A'?'A':'VΩ',136,col==='#3dd68c'?col:'#888']].forEach(([lbl,x,sc])=>{
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(x,130,8,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=sc; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle=C.txt2; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(lbl,x,147);
+  });
+  // probes
+  const probeX = socket==='A' ? 136 : 90;
+  ctx.strokeStyle='#555'; ctx.lineWidth=3; ctx.lineCap='round';
+  ctx.beginPath(); ctx.moveTo(44,138); ctx.lineTo(44,195); ctx.stroke();
+  ctx.fillStyle='#888'; ctx.beginPath(); ctx.arc(44,197,3,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#cc3333'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(probeX,138); ctx.lineTo(probeX,195); ctx.stroke();
+  ctx.fillStyle='#ee4444'; ctx.beginPath(); ctx.arc(probeX,197,3,0,Math.PI*2); ctx.fill();
+}
+
+/* ========================
+   PAGE 3: AC/DC WAVES
+======================== */
+function drawDCWave() {
+  const cv = document.getElementById('dcWave');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  ctx.canvas.height = 120;
+  const W=cv.offsetWidth||400, H=120;
+  cv.width=W; cv.height=H;
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(62,72,130,0.3)'; ctx.lineWidth=0.5;
+  for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // zero line
+  ctx.strokeStyle=C.border2; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+  // DC line
+  const dcY = H/2 - 35;
+  ctx.strokeStyle=C.green; ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(20,dcY);ctx.lineTo(W-20,dcY);ctx.stroke();
+  ctx.fillStyle=C.green; ctx.font='11px sans-serif'; ctx.textAlign='start';
+  ctx.fillText('DC — ثابت الاتجاه', 25, dcY-6);
+  ctx.fillStyle=C.txt3; ctx.textAlign='center';
+  ctx.fillText('V', 14, H/2+4);
+  ctx.fillText('0', 14, dcY+4);
+  ctx.fillStyle=C.txt3; ctx.font='10px sans-serif';
+  ctx.fillText('الوقت (time) →', W/2, H-4);
+}
+
+let acPhase=0, acRAF;
+function drawACWave() {
+  const cv = document.getElementById('acWave');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  ctx.canvas.height = 120;
+  const W=cv.offsetWidth||400, H=120;
+  cv.width=W; cv.height=H;
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(62,72,130,0.3)'; ctx.lineWidth=0.5;
+  for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // zero line
+  ctx.strokeStyle=C.border2; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+  // AC wave
+  ctx.strokeStyle=C.blue; ctx.lineWidth=2.5;
+  ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const y = H/2 - 38*Math.sin(((x/W)*4*Math.PI)+acPhase);
+    x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // labels
+  ctx.fillStyle=C.blue; ctx.font='11px sans-serif'; ctx.textAlign='start';
+  ctx.fillText('AC — موجة جيبية (Sine wave)', 25, 14);
+  ctx.fillStyle=C.txt3; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('الوقت (time) →', W/2, H-4);
+  acPhase += 0.04;
+  acRAF = requestAnimationFrame(drawACWave);
+}
+
+/* ========================
+   PAGE 4: SERIES CIRCUIT
+======================== */
+function calcSeries() {
+  const R1=+document.getElementById('sr1').value;
+  const R2=+document.getElementById('sr2').value;
+  const V =+document.getElementById('svlt').value;
+  document.getElementById('sr1v').textContent=R1;
+  document.getElementById('sr2v').textContent=R2;
+  document.getElementById('svv').textContent=V;
+  const Rt=R1+R2, I=(V/Rt).toFixed(2);
+  document.getElementById('srt').textContent=Rt;
+  document.getElementById('si').textContent=I;
+  document.getElementById('series_eq').textContent=`R_total = ${R1}+${R2} = ${Rt}Ω  |  I = ${V}÷${Rt} = ${I}A`;
+  drawSeriesCircuit(R1,R2,V);
+}
+
+function drawSeriesCircuit(R1,R2,V) {
+  const cv=document.getElementById('seriesC');
+  if(!cv) return;
+  const W=cv.offsetWidth||400, H=150;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const y=H/2, lh=48, lx=30, rx=W-30;
+  const r1x=W*0.3, r2x=W*0.65;
+  // wires
+  ctx.strokeStyle=C.blue; ctx.lineWidth=2.5; ctx.lineJoin='round';
+  // top
+  ctx.beginPath();ctx.moveTo(lx,y-lh);ctx.lineTo(r1x-20,y-lh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(r1x+20,y-lh);ctx.lineTo(r2x-20,y-lh);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(r2x+20,y-lh);ctx.lineTo(rx,y-lh);ctx.stroke();
+  // right + bottom
+  ctx.beginPath();ctx.moveTo(rx,y-lh);ctx.lineTo(rx,y+lh);ctx.lineTo(lx,y+lh);ctx.lineTo(lx,y-lh);ctx.stroke();
+  // resistors
+  [[r1x,R1,'R₁'],[r2x,R2,'R₂']].forEach(([rx2,rv,lbl])=>{
+    ctx.fillStyle=C.amber; ctx.beginPath(); ctx.roundRect(rx2-18,y-lh-10,36,20,4); ctx.fill();
+    ctx.fillStyle='#1a1200'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(`${rv}Ω`,rx2,y-lh+4);
+    ctx.fillStyle=C.amber; ctx.font='bold 10px sans-serif';
+    ctx.fillText(lbl,rx2,y-lh-14);
+  });
+  // battery
+  ctx.strokeStyle=C.txt3; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(lx-4,y-12);ctx.lineTo(lx+4,y-12);ctx.stroke();
+  ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(lx-10,y+5);ctx.lineTo(lx+10,y+5);ctx.stroke();
+  ctx.fillStyle=C.txt2; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(`${V}V`,lx,y+22);
+  // current arrow
+  ctx.strokeStyle=C.green; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(lx+15,y+lh+10);ctx.lineTo(rx-15,y+lh+10);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle=C.green; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('I ثابت ←', W/2, y+lh+22);
+}
+
+/* ========================
+   PAGE 4: PARALLEL CIRCUIT
+======================== */
+function calcParallel() {
+  const R1=+document.getElementById('pr1').value;
+  const R2=+document.getElementById('pr2').value;
+  const V =+document.getElementById('pvlt').value;
+  document.getElementById('pr1v').textContent=R1;
+  document.getElementById('pr2v').textContent=R2;
+  document.getElementById('pvv').textContent=V;
+  const Rt=1/(1/R1+1/R2), I=(V/Rt);
+  document.getElementById('prt').textContent=Rt.toFixed(1);
+  document.getElementById('pit').textContent=I.toFixed(2);
+  document.getElementById('parallel_eq').textContent=`1/R = 1/${R1}+1/${R2} → R=${Rt.toFixed(1)}Ω  |  I=${I.toFixed(2)}A`;
+  drawParallelCircuit(R1,R2,V);
+}
+
+function drawParallelCircuit(R1,R2,V) {
+  const cv=document.getElementById('parallelC');
+  if(!cv) return;
+  const W=cv.offsetWidth||400, H=150;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const topY=15, botY=H-15, lx=40, rx=W-40;
+  // rails
+  ctx.strokeStyle=C.blue; ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(lx,topY);ctx.lineTo(lx,botY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(rx,topY);ctx.lineTo(rx,botY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lx,topY);ctx.lineTo(rx,topY);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(lx,botY);ctx.lineTo(rx,botY);ctx.stroke();
+  // two branches
+  const mid1=topY+(botY-topY)*0.35, mid2=topY+(botY-topY)*0.7;
+  const cx=W/2;
+  [[mid1,R1,'R₁'],[mid2,R2,'R₂']].forEach(([by,rv,lbl])=>{
+    ctx.strokeStyle=C.blue; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(lx,by);ctx.lineTo(cx-22,by);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx+22,by);ctx.lineTo(rx,by);ctx.stroke();
+    ctx.fillStyle=C.amber;
+    ctx.beginPath();ctx.roundRect(cx-22,by-10,44,20,4);ctx.fill();
+    ctx.fillStyle='#1a1200'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(`${rv}Ω`,cx,by+4);
+    ctx.fillStyle=C.amber; ctx.font='bold 10px sans-serif';
+    ctx.fillText(lbl,cx,by-14);
+  });
+  // battery
+  ctx.strokeStyle=C.txt3; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(lx-4,H/2-10);ctx.lineTo(lx+4,H/2-10);ctx.stroke();
+  ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(lx-10,H/2+6);ctx.lineTo(lx+10,H/2+6);ctx.stroke();
+  ctx.fillStyle=C.txt2; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(`${V}V`,lx,H/2+22);
+  ctx.fillStyle=C.teal; ctx.font='10px sans-serif';
+  ctx.fillText('V ثابت على الفرعين', cx, botY+12);
+}
+
+/* ========================
+   PAGE 4: BATTERIES
+======================== */
+function drawBatteries() {
+  const cv=document.getElementById('battC');
+  if(!cv) return;
+  const W=cv.offsetWidth||400, H=160;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const half=W/2;
+  // Title series
+  ctx.fillStyle=C.green; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('توالي → 3×1.5V = 4.5V', half/2, 18);
+  // draw 3 series batteries
+  const bw=36,bh=22,sy=H/2-11;
+  [60,110,160].forEach((bx,i)=>{
+    ctx.fillStyle='#1d4520'; ctx.fillRect(bx,sy,bw,bh);
+    ctx.fillStyle=C.green; ctx.lineWidth=0.5; ctx.strokeRect(bx,sy,bw,bh);
+    ctx.fillStyle='#fff'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('1.5V',bx+bw/2,sy+bh/2+3);
+    if(i<2){ctx.fillStyle=C.border2;ctx.fillRect(bx+bw,sy+bh/4,8,bh/2);}
+  });
+  ctx.strokeStyle=C.green; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(60,sy);ctx.lineTo(60,sy-20);ctx.lineTo(215,sy-20);ctx.lineTo(215,sy+bh+10);ctx.lineTo(60,sy+bh+10);ctx.lineTo(60,sy+bh);ctx.stroke();
+  ctx.fillStyle=C.green; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('→ 4.5V', 137, sy+bh+26);
+  // Title parallel
+  ctx.fillStyle=C.blue; ctx.font='bold 12px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('توازي → لسه 1.5V (تيار أكتر)', half+half/2, 18);
+  // draw 3 parallel batteries
+  const px=half+30;
+  [H/2-36,H/2-12,H/2+12].forEach((by)=>{
+    ctx.fillStyle='#0d1e30'; ctx.fillRect(px,by,bw,bh);
+    ctx.fillStyle=C.blue; ctx.lineWidth=0.5; ctx.strokeRect(px,by,bw,bh);
+    ctx.fillStyle='#fff'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('1.5V',px+bw/2,by+bh/2+3);
+  });
+  ctx.strokeStyle=C.blue; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(px,H/2-36);ctx.lineTo(px-15,H/2-36);ctx.lineTo(px-15,H/2+34);ctx.lineTo(px,H/2+34);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(px+bw,H/2-36);ctx.lineTo(px+bw+15,H/2-36);ctx.lineTo(px+bw+15,H/2+34);ctx.lineTo(px+bw,H/2+34);ctx.stroke();
+  ctx.fillStyle=C.blue; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('→ 1.5V × تيار', px+bw/2, H/2+52);
+}
+
+/* ========================
+   PAGE 5: CIRCUIT DIAGRAMS
+======================== */
+function drawClosed() {
+  drawCircuitType('closedC','closed');
+}
+function drawOpen() {
+  drawCircuitType('openC','open');
+}
+function drawShort2() {
+  drawCircuitType('shortC','short');
+}
+
+function drawCircuitType(id, type) {
+  const cv=document.getElementById(id);
+  if(!cv) return;
+  const W=cv.offsetWidth||400, H=160;
+  cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const p=30, cy=H/2;
+  const col = type==='closed'?C.green : type==='open'?C.amber : C.red;
+  ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.lineJoin='round';
+  // bottom wire
+  ctx.beginPath();ctx.moveTo(p,cy+40);ctx.lineTo(W-p,cy+40);ctx.stroke();
+  // left wire (battery)
+  ctx.beginPath();ctx.moveTo(p,cy+40);ctx.lineTo(p,cy-40);ctx.stroke();
+  // right wire
+  ctx.beginPath();ctx.moveTo(W-p,cy+40);ctx.lineTo(W-p,cy-40);ctx.stroke();
+  // top segment logic
+  if(type==='closed') {
+    ctx.beginPath();ctx.moveTo(p,cy-40);ctx.lineTo(W-p,cy-40);ctx.stroke();
+    // bulb (circle with X)
+    const bx=W/2;
+    ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(bx,cy-40,14,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bx-10,cy-50);ctx.lineTo(bx+10,cy-30);
+    ctx.moveTo(bx+10,cy-50);ctx.lineTo(bx-10,cy-30);ctx.stroke();
+    // glow
+    ctx.fillStyle='rgba(255,240,100,0.25)';
+    ctx.beginPath();ctx.arc(bx,cy-40,22,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ffe066'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('💡 شغّالة!',bx,cy-40+36);
+  } else if(type==='open') {
+    // left part of top
+    ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(p,cy-40);ctx.lineTo(W/2-25,cy-40);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(W/2+25,cy-40);ctx.lineTo(W-p,cy-40);ctx.stroke();
+    // break mark
+    ctx.strokeStyle=C.red; ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(W/2-20,cy-46);ctx.lineTo(W/2+20,cy-34);ctx.stroke();
+    ctx.fillStyle=C.amber; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('✕ انقطاع!',W/2,cy-40-14);
+    ctx.fillStyle=C.txt3; ctx.font='11px sans-serif';
+    ctx.fillText('I = 0 A', W/2, cy+10);
+  } else { // short
+    ctx.strokeStyle=col; ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(p,cy-40);ctx.lineTo(W-p,cy-40);ctx.stroke();
+    // sparks
+    ctx.strokeStyle='#ffd700'; ctx.lineWidth=2;
+    for(let i=0;i<5;i++){
+      const sx=W/2+(i-2)*18, sy2=cy-40;
+      ctx.beginPath();
+      ctx.moveTo(sx,sy2-4);ctx.lineTo(sx+5,sy2+6);ctx.lineTo(sx-5,sy2+6);ctx.lineTo(sx,sy2-4);
+      ctx.stroke();
+    }
+    ctx.fillStyle=C.red; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('⚡ تيار ضخم! حريق 🔥',W/2,cy-40-14);
+    ctx.fillStyle=col; ctx.font='bold 10px sans-serif';
+    ctx.fillText('R≈0 → I=∞', W/2, cy+10);
+  }
+  // Battery on left
+  ctx.strokeStyle=C.txt2; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(p-5,cy-8);ctx.lineTo(p+5,cy-8);ctx.stroke();
+  ctx.lineWidth=3;
+  ctx.beginPath();ctx.moveTo(p-10,cy+6);ctx.lineTo(p+10,cy+6);ctx.stroke();
+  ctx.fillStyle=C.txt2; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('🔋',p,cy+25);
+}
+
+/* ========================
+   QUIZ
+======================== */
+const questions = [
+  { q:'قانون أوم بيقول إن التيار (I) يساوي إيه؟', opts:['V × R','V ÷ R','R ÷ V','V + R'], ans:1, exp:'صح! I = V ÷ R — قانون أوم الأساسي' },
+  { q:'لو الجهد 12V والمقاومة 4Ω، التيار = ؟', opts:['3 A','48 A','0.3 A','8 A'], ans:0, exp:'12 ÷ 4 = 3 Ampere ✓' },
+  { q:'الأفوميتر بيتوصل إزاي لما بتقيس الفولت؟', opts:['توالي (في النص)','توازي (جنب المكوّن)','من غير ما تفصل','مع البطارية بس'], ans:1, exp:'الفولتميتر دايماً على التوازي — Parallel connection ✓' },
+  { q:'DC يعني إيه؟', opts:['Digital Circuit','Direct Current','Dangerous Current','Divided Connection'], ans:1, exp:'DC = Direct Current — تيار مستمر بيتدفق في اتجاه واحد ✓' },
+  { q:'التيار المتردد AC في مصر تردده كام؟', opts:['60 Hz','100 Hz','50 Hz','25 Hz'], ans:2, exp:'في مصر وأوروبا التردد 50 Hz — في أمريكا 60 Hz ✓' },
+  { q:'في التوالي (series)، إيه اللي بيكون ثابت؟', opts:['الجهد','التيار','المقاومة','الكل'], ans:1, exp:'في التوالي التيار (I) ثابت على كل المكوّنات، لكن الجهد بيتقسم ✓' },
+  { q:'Short Circuit (قصر كهربائي) بيحصل لما إيه؟', opts:['المقاومة تبقى عالية','السلك ينقطع','السلك يوصّل طرفي البطارية مباشرة','البطارية تخلص'], ans:2, exp:'القصر بيحصل لما مسار من غير مقاومة — التيار بيبقى ضخم جداً ويسبب حريق ✓' },
+  { q:'Open Circuit يعني إيه؟', opts:['دايرة شغّالة','دايرة فيها قصر','انقطاع في الدايرة','مقاومة عالية'], ans:2, exp:'Open Circuit = في انقطاع، مفيش تيار (I = 0) — اللمبة مش بتضوي ✓' },
+];
+
+let qIdx=0, answers=Array(questions.length).fill(null), score=0;
+
+function renderQ() {
+  const q=questions[qIdx];
+  document.getElementById('q-progress').textContent=`سؤال ${qIdx+1} من ${questions.length}`;
+  document.getElementById('quiz-q').textContent=q.q;
+  const opts=document.getElementById('quiz-opts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt';
+    btn.textContent=o;
+    btn.onclick=()=>answerQ(i);
+    if(answers[qIdx]!==null){
+      if(i===q.ans) btn.classList.add('correct');
+      else if(i===answers[qIdx]) btn.classList.add('wrong');
+      btn.onclick=null;
+    }
+    opts.appendChild(btn);
+  });
+  const fb=document.getElementById('quiz-fb');
+  if(answers[qIdx]!==null){
+    fb.style.display='block';
+    fb.style.background=answers[qIdx]===q.ans?'var(--green-bg)':'var(--red-bg)';
+    fb.style.color=answers[qIdx]===q.ans?'#6ee7b0':'#fc9a9a';
+    fb.textContent=(answers[qIdx]===q.ans?'✅ ':'❌ ')+q.exp;
+  } else { fb.style.display='none'; }
+}
+
+function answerQ(i) {
+  if(answers[qIdx]!==null) return;
+  answers[qIdx]=i;
+  if(i===questions[qIdx].ans) score++;
+  renderQ();
+}
+
+function nextQ() {
+  if(qIdx<questions.length-1){ qIdx++; renderQ(); }
+  else showResult();
+}
+function prevQ() {
+  if(qIdx>0){ qIdx--; renderQ(); }
+}
+
+function showResult() {
+  document.getElementById('quiz-card').style.display='none';
+  document.getElementById('quiz-result').style.display='block';
+  const pct=Math.round(score/questions.length*100);
+  const emojis=['😢','😕','😊','🎉','🏆'];
+  const ei=pct<40?0:pct<60?1:pct<80?2:pct<100?3:4;
+  document.getElementById('result-emoji').textContent=emojis[ei];
+  document.getElementById('result-score').textContent=`${score} / ${questions.length} (${pct}%)`;
+  const msgs=['راجع الدروس تاني يا صديقي!','كويس! بس فيه مجال للتحسين.','ممتاز! عمل جيد جداً!','رائع! قريب من المثالية!','مثالي! 🏆 أنت بطل الإلكترونيات!'];
+  document.getElementById('result-msg').textContent=msgs[ei];
+}
+
+function restartQuiz() {
+  qIdx=0; answers=Array(questions.length).fill(null); score=0;
+  document.getElementById('quiz-card').style.display='block';
+  document.getElementById('quiz-result').style.display='none';
+  renderQ();
+}
+
+/* ========================
+   INIT
+======================== */
+window.addEventListener('load', ()=>{
+  updateOhm();
+  drawTank();
+  drawMeter('meterC_v','#4f8ef7','DCV','6.0 V','VΩ');
+  calcSeries();
+  calcParallel();
+  renderQ();
+});
+
+// Stop animations when page not visible
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    cancelAnimationFrame(tankRAF);
+    cancelAnimationFrame(acRAF);
+  });
+});
+</script>
+</body>
+</html>
