@@ -480,7 +480,7 @@ const sendEmailtoAllUsers =asyncHandler(async (subject, message) => {
     <div>
         <h1> easy register and login </h1>
         <p>now you can login to your account with one click by clicking on continue with google or continue with facebook</p>
-        <button> <a href="https://code-minds.vercel.app/login"> go to log in page </a></button>
+        <button> <a href="https://code-minds-five.vercel.app/login"> go to log in page </a></button>
     </div>
     `
     for (const user of users) {
