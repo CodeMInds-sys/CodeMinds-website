@@ -10,10 +10,15 @@ const checkRole = require('../middlewares/checkRole');
 const Logger = require('../utils/logger');
 
 router.route('/:status')
-    .get(instructorController.getInstructors);    
+    .get(instructorController.getInstructors); 
+    
+    
+router.route('/create')
+    .post(auth, uploadFile.single('cv'), instructorController.createInstructor);
+
+
 
 router.route('/instructor/:id')
-    .post(auth, uploadFile.single('cv'), instructorController.createInstructor)
     .get(instructorController.getInstructor)
     .put(auth, instructorController.updateInstructor)
     .delete(auth, instructorController.deleteInstructor)
