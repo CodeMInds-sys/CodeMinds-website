@@ -484,28 +484,43 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
     }
     if(!statusEnum[status]){
         throw new AppError("Invalid status",400);
-    }
-    const getGroupsFromDB=async(condition)=>{
-        groups=await JSON.parse(await getCache(`groups:${status}`));
-        if (groups) {
-            return groups;
-        }
-        groups = await Group.find(condition,{title:1,course:1})
-        .populate({
-            path: 'course',
-            select: 'title'
-        })
-        await setCache(`groups:${status}`, JSON.stringify(groups));
-        return groups;
-    }
+            }
+        const getGroupsFromDB = async (condition) => {
+            const cachedGroups = await getCache(`groups:${status}`);
 
-    if(status===statusEnum.inProgress){
-        groups=await getGroupsFromDB({startDate:{$lte:Date.now()},endDate:{$gte:Date.now()}})         
-    }else if(status===statusEnum.pending){
-        groups=await getGroupsFromDB({startDate:{$gt:Date.now()}})
-    }else if(status===statusEnum.ended){
-        groups=await getGroupsFromDB({endDate:{$lt:Date.now()}})
-    }
+            if (cachedGroups) {
+                return JSON.parse(cachedGroups);
+            }
+
+            const groups = await Group.find(condition, {
+                title: 1,
+                course: 1
+            }).populate({
+                path: "course",
+                select: "title"
+            });
+
+            await setCache(`groups:${status}`, JSON.stringify(groups));
+
+            return groups;
+        };
+
+        if (status === statusEnum.inProgress) {
+            groups = await getGroupsFromDB({
+                startDate: { $lte: Date.now() },
+                endDate: { $gte: Date.now() }
+            });
+        } else if (status === statusEnum.pending) {
+            groups = await getGroupsFromDB({
+                startDate: { $gt: Date.now() }
+            });
+        } else if (status === statusEnum.ended) {
+            groups = await getGroupsFromDB({
+                endDate: { $lt: Date.now() }
+            });
+        }
+
+    
 
     res.status(200).json({
         success: true,
