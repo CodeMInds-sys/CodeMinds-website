@@ -172,6 +172,8 @@ exports.updateGroup= asyncHandler( async(req,res)=>{
     }
     await group.save();
 
+    await delCache(`groups`);
+
     await delCache(`group:${group._id}`);
     await delCache(`groups:${group.status}`);
     await delCache(`groupsOfInstructor:${group.instructor}`);

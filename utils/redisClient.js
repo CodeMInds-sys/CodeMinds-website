@@ -83,6 +83,9 @@ redis.on("error", (err) => {
 
         console.log("✅ Redis Connected");
 
+            await delCache(`groups`);
+        console.log("✅ Deleted groups cache");
+
     } catch (err) {
         console.error("Redis connection failed:", err);
     }
