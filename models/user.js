@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema({
   type: String,
   required: [true, 'phone is required'],
   trim: true,
+  unique: [true, 'phone already exists'],
   validate: {
     validator: function (value) {
       return /^(01[0-2,5][0-9]{8}|05[0-9]{8})$/.test(value);
