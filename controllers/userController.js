@@ -63,6 +63,21 @@ const getViews = asyncHandler(async (req, res) => {
 });
 
 
+const showAllUsers = asyncHandler(async (req, res) => {
+    const { role } = req.params;
+    let users;
+    if(role=='all'){
+        users = await User.find({})
+    }else{
+        users = await User.find({role}).populate('profileRef')
+    }
+    // .populate('profi')
+    res.status(200).json({
+        success: true,
+        users
+    });
+});
+
 // const uploadFileToGoogleDrive = asyncHandler(async (req, res) => {
 //     const { file } = req;
 //     const {fileId,fileUrl}=req;
@@ -89,5 +104,6 @@ const getViews = asyncHandler(async (req, res) => {
 module.exports = {
     viewUser,
     getViews,
+    showAllUsers,
     // uploadFileToGoogleDrive
 }
