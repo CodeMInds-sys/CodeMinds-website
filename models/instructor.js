@@ -58,5 +58,5 @@ const instructorRequestSchema = new mongoose.Schema(
 
 
 
-
-module.exports = mongoose.model("Instructor", instructorRequestSchema);
+const Instructor= mongoose.model("Instructor", instructorRequestSchema);
+module.exports = Instructor;

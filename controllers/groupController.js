@@ -64,7 +64,7 @@ exports.createGroup = asyncHandler(async (req, res) => {
 
 exports.getGroups = asyncHandler(async (req, res) => {
 
-    let groups= JSON.parse(await getCache(`groups`));
+    let groups= 0; //JSON.parse(await getCache(`groups`));
     if (!groups) {
         groups=await Group.find({})
         .populate({
@@ -87,7 +87,7 @@ exports.getGroups = asyncHandler(async (req, res) => {
             path: 'lectures',
             // select: 'title date description'
         });
-        await setCache(`groups`, JSON.stringify(groups));
+        // await setCache(`groups`, JSON.stringify(groups));
 
 
     }
@@ -103,7 +103,7 @@ exports.getGroups = asyncHandler(async (req, res) => {
 
 exports.getGroup=asyncHandler(async(req,res)=>{
 
-    let group=JSON.parse(await getCache(`group:${req.params.id}`));
+    let group=0;//JSON.parse(await getCache(`group:${req.params.id}`));
     if(!group){
         group=await Group.findById(req.params.id)
         .populate({
@@ -145,7 +145,7 @@ exports.getGroup=asyncHandler(async(req,res)=>{
         });
         group.students=students;
 
-        await setCache(`group:${req.params.id}`, JSON.stringify(group));
+        // await setCache(`group:${req.params.id}`, JSON.stringify(group));
     }
     res.status(200).json({
         success: true,
@@ -450,7 +450,7 @@ exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
 exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
-    let groups =JSON.parse(await getCache(cacheKey)); // Try to get instructor's groups from Redis cache
+    // let groups =JSON.parse(await getCache(cacheKey)); // Try to get instructor's groups from Redis cache
     if (groups) {
         return res.status(200).json({
             success: true,
@@ -465,7 +465,7 @@ exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
         })
 
         // Cache the instructor's groups data in Redis
-        await setCache(cacheKey, JSON.stringify(groups));
+        // await setCache(cacheKey, JSON.stringify(groups));
         res.status(200).json({
             success: true,
             data: groups
@@ -500,7 +500,7 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
                 select: "title"
             });
 
-            await setCache(`groups:${status}`, JSON.stringify(groups));
+            // await setCache(`groups:${status}`, JSON.stringify(groups));
 
             return groups;
         };
@@ -530,7 +530,7 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
 exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
-    const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
+    // const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
     if (cachedGroups) {
         return res.status(200).json({
             success: true,
@@ -560,7 +560,7 @@ exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
         })
 
         // Cache the instructor's groups data in Redis
-        await setCache(cacheKey, JSON.stringify(groups));
+        // await setCache(cacheKey, JSON.stringify(groups));
         res.status(200).json({
             success: true,
             data: groups
@@ -577,7 +577,7 @@ exports.getGroupStudents = asyncHandler(async (req, res) => {
     }
     let data=[];
     
-    data=JSON.parse(await getCache(`group:${groupId}`));
+    data=0;//JSON.parse(await getCache(`group:${groupId}`));
     if(!data){
     let group = await Group.findById(groupId,{students:1,})
     .populate({
@@ -622,7 +622,7 @@ exports.getGroupStudents = asyncHandler(async (req, res) => {
             courseProgress:courseProgress._id
         })
     }
-    await setCache(`group:students:${groupId}`, JSON.stringify(data));
+    // await setCache(`group:students:${groupId}`, JSON.stringify(data));
 }
 
     res.status(200).json({

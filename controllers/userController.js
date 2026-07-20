@@ -5,8 +5,9 @@ const auth = require("../middlewares/jwt");
 const Guest = require("../models/guest");
 const  sendEmail  = require("../utils/sendEmail");
 const Student = require("../models/student");
-const {CourseProgress} = require("../models/courseProgress");
+const {courseProgress} = require("../models/courseProgress");
 const Instructor = require("../models/instructor");
+const Group=require("../models/group");
 
 
 const viewUser = asyncHandler(async (req, res) => {
@@ -119,11 +120,28 @@ const deleteUser = asyncHandler(async (req, res) => {
         let student = await Student.findById(user.profileRef);
         if(student && student.courseProgress.length > 0){
             // delete the student's course progress
+ 
             for(let i=0;i<student.courseProgress.length;i++){
-                await CourseProgress.findByIdAndDelete(student.courseProgress[i]);
+                console.log(student.courseProgress[i]);
+                
+                await courseProgress.findByIdAndDelete(student.courseProgress[i]);
             }
             
         }
+
+        // delete the student from the groups
+        for( const group of student.groups){
+            // console.log(groups);
+            
+        const existGroup = await Group.findById(group);
+              existGroup.students= existGroup.students.filter(item => item !== student._id);
+
+              await existGroup.save()
+
+        }
+        
+
+
         await Student.findByIdAndDelete(user.profileRef);
     }else if(user.role === 'instructor'){
         // delete the instructor's profile

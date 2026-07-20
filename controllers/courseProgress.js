@@ -15,7 +15,7 @@ const { setCache, getCache, delCache } = require('../utils/redisClient');
 
 exports.getCourseProgress = asyncHandler(async (req, res) => {
     const progressId=req.params.id;
-    let courseProgress = JSON.parse(await getCache(progressId));
+    let courseProgress =0; //JSON.parse(await getCache(progressId));
     if(!courseProgress){   
         courseProgress= await CourseProgress.findById(progressId)
         .populate({
@@ -44,7 +44,7 @@ exports.getCourseProgress = asyncHandler(async (req, res) => {
             throw new AppError('Course progress not found', 404);
         }
 
-        await setCache(progressId, JSON.stringify(courseProgress));
+        // await setCache(progressId, JSON.stringify(courseProgress));
     }
     
 

@@ -120,6 +120,31 @@ const ReqToEnroll = require("./models/reqToEnroll");
 const FeedBack = require("./models/feedBack");
 
 
+
+const deleteRepeatedStudents = async () => {
+      const students= await Student.find({});
+      console.log("Total students:", students.length);
+
+      for (const student of students) {
+
+        const exist =await User.findById(student.user);
+        if( !exist ){
+          console.log(student.user+" not exist ");
+          await Student.findByIdAndDelete(student._id)
+          console.log(student._id+" deleted");
+          
+           
+        }else{
+          console.log(exist.name+"have a user profile");
+          
+        }
+        
+      }
+
+
+};
+deleteRepeatedStudents()
+
 // Helper script to initialize course progress for students
 const initializeStudentCourseProgress = async () => {
   const students = await Student.find({}).populate({
@@ -229,6 +254,10 @@ const initializeStudentCourseProgress = async () => {
 
 // Export the Express app
  
+
+
+
+
 module.exports = app;
   
 
