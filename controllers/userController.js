@@ -130,14 +130,12 @@ const deleteUser = asyncHandler(async (req, res) => {
         }
 
         // delete the student from the groups
-        for( const group of student.groups){
-            // console.log(groups);
-            
-        const existGroup = await Group.findById(group);
-              existGroup.students= existGroup.students.filter(item => item !== student._id);
-
-              await existGroup.save()
-
+        // console.log("student is : "+student);
+        
+        for (const groupId of student.groups) {
+        await Group.findByIdAndUpdate(groupId, {
+            $pull: { students: student._id }
+        });
         }
         
 

@@ -130,7 +130,7 @@ const deleteRepeatedStudents = async () => {
         const exist =await User.findById(student.user);
         if( !exist ){
           console.log(student.user+" not exist ");
-          await Student.findByIdAndDelete(student._id)
+          // await Student.findByIdAndDelete(student._id)
           console.log(student._id+" deleted");
           
            
@@ -143,7 +143,7 @@ const deleteRepeatedStudents = async () => {
 
 
 };
-deleteRepeatedStudents()
+// deleteRepeatedStudents()
 
 // Helper script to initialize course progress for students
 const initializeStudentCourseProgress = async () => {
