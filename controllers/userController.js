@@ -5,7 +5,7 @@ const auth = require("../middlewares/jwt");
 const Guest = require("../models/guest");
 const  sendEmail  = require("../utils/sendEmail");
 const Student = require("../models/student");
-const CourseProgress = require("../models/courseProgress");
+const {CourseProgress} = require("../models/courseProgress");
 const Instructor = require("../models/instructor");
 
 
@@ -117,13 +117,14 @@ const deleteUser = asyncHandler(async (req, res) => {
     }else if(user.role === 'student'){
         // delete the student's profile
         let student = await Student.findById(user.profileRef);
-        if(student){
+        if(student && student.courseProgress.length > 0){
             // delete the student's course progress
             for(let i=0;i<student.courseProgress.length;i++){
                 await CourseProgress.findByIdAndDelete(student.courseProgress[i]);
             }
             
         }
+        await Student.findByIdAndDelete(user.profileRef);
     }else if(user.role === 'instructor'){
         // delete the instructor's profile
         let instructor = await Instructor.findById(user.profileRef);
@@ -140,6 +141,8 @@ const deleteUser = asyncHandler(async (req, res) => {
             message: 'instructor rejected'
         });
     }
+
+    await User.findByIdAndDelete(id);
     res.status(200).json({
         success: true,
         message: 'user deleted successfully'

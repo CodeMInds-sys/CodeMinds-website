@@ -486,11 +486,11 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
         throw new AppError("Invalid status",400);
             }
         const getGroupsFromDB = async (condition) => {
-            const cachedGroups = await getCache(`groups:${status}`);
+            // const cachedGroups = await getCache(`groups:${status}`);
 
-            if (cachedGroups) {
-                return JSON.parse(cachedGroups);
-            }
+            // if (cachedGroups) {
+            //     return JSON.parse(cachedGroups);
+            // }
 
             const groups = await Group.find(condition, {
                 title: 1,
