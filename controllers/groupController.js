@@ -450,7 +450,7 @@ exports.addStudentToGroupWithInviteLink = asyncHandler(async (req, res) => {
 exports.getGroupsOfInstructor = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
-    // let groups =JSON.parse(await getCache(cacheKey)); // Try to get instructor's groups from Redis cache
+    let groups =0 ;//JSON.parse(await getCache(cacheKey)); // Try to get instructor's groups from Redis cache
     if (groups) {
         return res.status(200).json({
             success: true,
@@ -486,7 +486,7 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
         throw new AppError("Invalid status",400);
             }
         const getGroupsFromDB = async (condition) => {
-            // const cachedGroups = await getCache(`groups:${status}`);
+            const cachedGroups = 0;// await getCache(`groups:${status}`);
 
             // if (cachedGroups) {
             //     return JSON.parse(cachedGroups);
@@ -530,7 +530,7 @@ exports.getGroupsWithStatus=asyncHandler(async(req,res)=>{
 exports.getGroupsOfInstructor__old = asyncHandler(async (req, res) => {
     const instructorId = req.params.id;
     const cacheKey = `groupsOfInstructor:${instructorId}`; // Cache key for instructor's groups
-    // const cachedGroups = await getCache(cacheKey); // Try to get instructor's groups from Redis cache
+    const cachedGroups =0;// await getCache(cacheKey); // Try to get instructor's groups from Redis cache
     if (cachedGroups) {
         return res.status(200).json({
             success: true,

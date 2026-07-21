@@ -120,6 +120,23 @@ const ReqToEnroll = require("./models/reqToEnroll");
 const FeedBack = require("./models/feedBack");
 
 
+// clean groups from not exist students
+
+const cleanGroups=async ()=>{
+  const groups=await Group.find({});
+
+  for ( grp of groups){
+      for ( std of grp.students){
+        const existStudent=await Student.findById(std);
+        if(! existStudent){
+            await Group.findByIdAndUpdate(grp, {
+            $pull: { students: std }
+        });
+        }
+      }
+  }
+}
+// cleanGroups();
 
 const deleteRepeatedStudents = async () => {
       const students= await Student.find({});
@@ -144,6 +161,10 @@ const deleteRepeatedStudents = async () => {
 
 };
 // deleteRepeatedStudents()
+
+
+
+
 
 // Helper script to initialize course progress for students
 const initializeStudentCourseProgress = async () => {
