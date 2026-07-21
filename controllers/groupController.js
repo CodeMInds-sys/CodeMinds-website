@@ -13,6 +13,7 @@ const LectureProgress = require('../models/courseProgress').LectureProgress;
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 const normalizePhone = require('../utils/normalizePhone');
+const path = require('path');
 
 
 // cache keys
@@ -715,7 +716,9 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
     const { title, description, objectives, date, videos } = req.body;
 
     
-    const lecture = await Lecture.findById(req.params.id);
+    const lecture = await Lecture.findById(req.params.id).populate({
+        path:"group"
+    });
     if (!lecture) {
         throw new AppError('lecture not found', 404);
     }
@@ -728,8 +731,8 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
 
     await delCache(`group:${lecture.group}`);
     await delCache(`groups`);
-    await delCache(`groups:${group.status}`);
-    await delCache(`groupsOfInstructor:${group.instructor}`);
+    await delCache(`groups:${lecture.group.status}`);
+    await delCache(`groupsOfInstructor:${lecture.group.instructor}`);
 
     res.status(200).json({
         success: true,
