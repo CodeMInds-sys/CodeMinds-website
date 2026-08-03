@@ -10,6 +10,8 @@ const ReqToEnroll = require('../models/reqToEnroll');
 const {courseProgress,lectureProgressSchema} = require('../models/courseProgress');
 const CourseProgress = require('../models/courseProgress').courseProgress;
 const LectureProgress = require('../models/courseProgress').LectureProgress;
+const Purchase = require('../models/Purchase');
+const Package = require('../models/package');
 // Import Redis cache functions from the redisClient utility
 const { setCache, getCache, delCache } = require('../utils/redisClient');
 const normalizePhone = require('../utils/normalizePhone');
@@ -334,7 +336,6 @@ exports.addStudentToGroupByManager=asyncHandler( async (req,res)=>{
     
     // push student to group
     group.students.push(student);
-    await group.save();
     
     // push group to student
     student.groups.push(groupId);
@@ -346,12 +347,23 @@ exports.addStudentToGroupByManager=asyncHandler( async (req,res)=>{
         course:group.course,
         lectureProgress:[]
     })
-    await courseProgress.save();
     student.courseProgress.push(courseProgress._id);
 
-    await student.save();
     
-
+ // create purchase for student
+    const myPackage = await Package.findOne({numberOfMonths:1,course:group.course});
+    if(!myPackage){
+        throw new AppError('package not found', 404);
+    }
+    const purchase = await Purchase.create({ 
+        student: student._id, 
+        package : myPackage._id ,
+        totalSessions: myPackage.numberOfSessions, 
+        requiredAmount: myPackage.price
+    });
+    await group.save();
+    await courseProgress.save();
+    await student.save();
 
     // populate group before response
     const populatedGroup = await Group.findById(groupId)
@@ -366,6 +378,7 @@ exports.addStudentToGroupByManager=asyncHandler( async (req,res)=>{
     await delCache(`groups:${group.status}`);
     await delCache(`groupsOfInstructor:${group.instructor}`);
     await delCache(`group:students:${groupId}`);
+
 
 
 
@@ -740,9 +753,6 @@ exports.editLectureToGroup = asyncHandler(async (req, res) => {
         data: lecture
     });
 });
-
-
-
 
 
 

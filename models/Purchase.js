@@ -13,28 +13,34 @@ const PackagePurchaseSchema = new mongoose.Schema({
     required: true 
   },
 
+  requiredAmount: { type: Number, required: true },
+  paidAmount: { type: Number, default: 0 },
   totalSessions: { type: Number, required: true },
   consumedSessions: { type: Number, default: 0 },
 
   status: { 
     type: String, 
-    enum: ['pending', 'active', 'paused', 'expired', 'cancelled'], 
+    enum: ['pending', 'paid','late'], 
     default: 'pending' 
   },
 
-  paymentDate:{ type: Date },
-  startedAt: { type: Date },
+  paymentDate:{
+     type: Date,
+  },
+  startedAt: { 
+    type: Date,
+   },
 
   paymentProof: {
   type: String, // image url
   },
 
   proofAnalysis: {
-    detectedAmount: Number,
-    sender: String,
-    receiver: String,
-    confidence: Number, // نسبة ثقة الـ AI
-    extractedText: String, // OCR text لو محتاجه
+    detectedAmount:{ type: Number ,default: 0},
+    sender: { type: String ,default: ""},
+    receiver: { type: String ,default: ""},
+    confidence: { type: Number ,default: 0}, // نسبة ثقة الـ AI
+    extractedText: { type: String ,default: ""}, // OCR text لو محتاجه
   },
 
   proofVerification: {
@@ -43,9 +49,8 @@ const PackagePurchaseSchema = new mongoose.Schema({
       enum: ["pending", "verified", "rejected"],
       default: "pending"
     },
-    verifiedAt: Date,
-    notes: String
-
+    verifiedAt: { type: Date ,default: null},
+    notes: { type: String ,default: ""},
     
   }
 }, { timestamps: true });
@@ -55,4 +60,5 @@ PackagePurchaseSchema.virtual('remainingSessions').get(function () {
   return this.totalSessions - this.consumedSessions;
 });
 
-module.exports = mongoose.model('Purchase', PackagePurchaseSchema);
+const Purchase = mongoose.model('Purchase', PackagePurchaseSchema);
+module.exports = Purchase;

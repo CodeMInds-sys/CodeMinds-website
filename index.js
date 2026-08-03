@@ -42,7 +42,8 @@ const questionRoutes = require("./routes/question");
 const feedbackRoutes = require("./routes/feedBack");
 const courseProgressRoutes = require("./routes/courseProgress");
 const packageRoutes = require("./routes/package");
-
+const purchaseRoutes = require("./routes/PurchaseRoutes.js");
+    
 // Static files
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("uploads"));
@@ -59,6 +60,7 @@ app.use("/api/questions", questionRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/courseProgress", courseProgressRoutes);
 app.use("/api/packages", packageRoutes);
+app.use("/api/purchases", purchaseRoutes);
 
 
 // 404 Handler
