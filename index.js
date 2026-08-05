@@ -42,7 +42,7 @@ const questionRoutes = require("./routes/question");
 const feedbackRoutes = require("./routes/feedBack");
 const courseProgressRoutes = require("./routes/courseProgress");
 const packageRoutes = require("./routes/package");
-const purchaseRoutes = require("./routes/PurchaseRoutes");
+const purchaseRoutes = require("./routes/purchaseRoutes");
     
 // Static files
 app.use("/", express.static(path.join(__dirname, "public")));
