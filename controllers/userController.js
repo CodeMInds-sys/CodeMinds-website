@@ -4,7 +4,10 @@ const AppError = require("../utils/AppError");
 const auth = require("../middlewares/jwt");
 const Guest = require("../models/guest");
 const  sendEmail  = require("../utils/sendEmail");
-
+const Student = require("../models/student");
+const {courseProgress} = require("../models/courseProgress");
+const Instructor = require("../models/instructor");
+const Group=require("../models/group");
 
 
 const viewUser = asyncHandler(async (req, res) => {
@@ -102,7 +105,58 @@ const showAllUsers = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+        return res.status(404).json({
+            success: false,
+            message: 'User not found'
+        });
+    }
+    if(user.role === 'user'){
+        // delete the user
+        await User.findByIdAndDelete(id);
+    }else if(user.role === 'student'){
+        // delete the student's profile
+        let student = await Student.findById(user.profileRef);
+        if(student && student.courseProgress.length > 0){
+            // delete the student's course progress
+ 
+            for(let i=0;i<student.courseProgress.length;i++){
+                console.log(student.courseProgress[i]);
+                
+                await courseProgress.findByIdAndDelete(student.courseProgress[i]);
+            }
+            
+        }
 
+        // delete the student from the groups
+        // console.log("student is : "+student);
+        
+        for (const groupId of student.groups) {
+        await Group.findByIdAndUpdate(groupId, {
+            $pull: { students: student._id }
+        });
+        }
+        
+
+
+        await Student.findByIdAndDelete(user.profileRef);
+    }else if(user.role === 'instructor'){
+        // delete the instructor's profile
+        let instructor = await Instructor.findById(user.profileRef);
+        if(!instructor){
+            return res.status(404).json({
+                success: false,
+                message: 'Instructor not found'
+            });
+        }
+        // reject the instructor's application
+        await Instructor.findByIdAndUpdate(user.profileRef, { $set: { status: 'rejected' } });
+        return res.status(200).json({
+            success: true,
+            message: 'instructor rejected'
+        });
+    }
 
     await User.findByIdAndDelete(id);
     res.status(200).json({
