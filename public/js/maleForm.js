@@ -7,7 +7,7 @@ const prevBtn = document.getElementById("prevBtn");
 const submitBtn = document.getElementById("submitBtn");
 
 const progress = document.getElementById("progress");
-const BASE_URL = "";
+const BASE_URL = "https://wsal-kappa.vercel.app/";
 
 const currentStepElement =
     document.getElementById("currentStep");
