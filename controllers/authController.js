@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const Student=require("../models/student")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -102,66 +101,7 @@ const authController = {
 
 
 
-    registerWithPhone:asyncHandler( async (req,res,next)=>{
-        const {name,phone,password,age,gender}=req.body;
-        const existingUser=await User.findOne({phone});
-        let user,student;
-        const hashedPassword=bcrypt.hashSync(password, 10); 
 
-        if(! existingUser){
-        try{    
-        user= await User.create({
-                name,
-                password:hashedPassword,
-                phone:normalizePhone(phone)
-            });
-        student = await new Student({
-        age,
-        gender,
-        user:user._id
-            });
-        // Logger.info(student);
-
-
-        await student.save();
-        }
-        catch(error){
-            const existingUser=await User.findOne({phone});
-            if(existingUser){
-                await User.findByIdAndDelete(existingUser._id);
-            }
-            Logger.error('Error registering user', error);
-            throw new AppError(error.message || 'Failed to register user. Please try again', 500);
-        }
-        }
-        else{
-            user=existingUser;
-            student=await Student.findOne({user:user._id});
-            if(!student){
-                throw new AppError('user is not a student', 400);
-            }
-        }
-
-
-
-
-
-    user.role='student';
-    user.profileRef=student._id;
-    user.profileModel='Student';
-    user.password=hashedPassword;
-    user.name=name;
-    student.age=age;
-    student.gender=gender;
-    await student.save();
-    await user.save();
-
-    res.status(201).json({
-        success: true,
-        data: student,
-        message: 'تم إضافة الطالب بنجاح'
-    });
-    }),
     // تسجيل الدخول
     login: asyncHandler(async (req, res) => {
         let { email, password ,rememberMe } = req.body;  
@@ -235,7 +175,7 @@ const authController = {
             if( !decoded){
                 throw new AppError('Invalid token', 401);
             }
-            const {name, email, password,phone} = decoded;
+            const {name, email, password} = decoded;
             const existingUser=await User.findOne({email});
             console.log("exist user ",existingUser);
             
@@ -255,7 +195,6 @@ const authController = {
                 name,
                 email,
                 password:hashedPassword,
-                phone,
             });
             
             // قراءة صفحة النجاح
@@ -286,50 +225,12 @@ const authController = {
 
     verifyToken:asyncHandler(async (req, res) => {
         const userId = req.user._id;
-        let user = await User.findById(userId);
+        let user = await User.findById(userId)
+        .populate('profileRef');
         
         if (!user) throw new AppError('User not found', 404);
         
-        // خطوة 1: populate لـ profileRef 
-        if(user.role==='student'){
-            await user.populate({
-            path: 'profileRef',
-            model: user.profileModel, // Student مثلاً
-            populate: [
-                { path: 'courses' ,select:'title _id imageURL ' },
-                { path: 'groups' ,select:'title _id startDate endDate ',
-                    populate:{
-                        path:'instructor',
-                        select:'name '
-                    },
-                    populate:{
-                        path:'course',
-                        select:'title '
-                    },
-                    populate:{
-                        path:'lectures',
-                        // select:'title '
-                    },
-    
 
-                 },
-                 { path: 'courseProgress',
-                    populate:{
-                        path:'course',
-                        select:'title '
-                    },
-                    populate:{
-                        path:'lectureProgress',
-                    }
-                  },
-            ]
-            });
-        }
-        else if(user.role==='instructor'){
-            await user.populate({
-                path: 'profileRef'
-            });
-        }
 
         
         res.status(200).json({ 

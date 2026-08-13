@@ -17,20 +17,6 @@ const userSchema = new mongoose.Schema({
         match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'email is invalid']
     },
 
-
-
-    phone: {
-  type: String,
-  required: [true, 'phone is required'],
-  trim: true,
-  unique: [true, 'phone already exists'],
-  validate: {
-    validator: function (value) {
-      return /^(01[0-2,5][0-9]{8}|05[0-9]{8})$/.test(value);
-    },
-    message: 'phone is invalid',
-  },
-},
     password: {
         type: String,
         minlength: [8, 'password must be at least 8 characters long'],
@@ -38,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user','student', 'instructor', 'manager', 'admin'],
+        enum: ['user', 'manager', 'admin'],
         default: 'user'
     },
     authToken: String,
@@ -48,7 +34,7 @@ const userSchema = new mongoose.Schema({
     },
     profileModel:{
         type: String,
-        enum: ['Student', 'Instructor', 'Manager', 'Admin'],
+        enum: ['Male', 'Female', 'Manager', 'Admin'],
         default:null
     },
     history:{
@@ -67,7 +53,26 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: String
     },
-
+    suggestedMatches: [
+        {
+          person:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: function() {
+              return this.profileModel === 'Male' ? 'Female' : 'Male';
+            }
+          },
+          matchedAt: {
+            type: Date,
+            default: Date.now
+          },
+          status: {
+            type: String,
+            enum: ['pending', 'accepted', 'rejected'],
+            default: 'pending'
+          }
+        }
+    ]
+    
 
 }, {
     timestamps: true

@@ -8,10 +8,9 @@ const checkRole = require('../middlewares/checkRole');
 
 
 router.post('/register', authController.register);
-router.post("/register/phone",auth, 
-    checkRole( 'instructor','manager'), 
 
-   authController.registerWithPhone)
+
+
 router.post('/login', authController.login);
 router.get('/verify-email/:token', authController.verifyEmail);
 

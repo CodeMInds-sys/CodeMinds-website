@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>استمارة الزواج</title>
+
+    <link rel="stylesheet" href="./css/maleForm.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="form-header">
+            <h1>استمارة الزواج</h1>
+            <p>برجاء إدخال البيانات المطلوبة بدقة</p>
+        </header>
+
+        <!-- Progress -->
+        <div class="progress-container">
+
+            <div class="progress-bar">
+                <div id="progress"></div>
+            </div>
+
+            <div class="steps-info">
+                <span id="stepTitle">البيانات الأساسية</span>
+                <span>
+                    <span id="currentStep">1</span>
+                    /
+                    <span id="totalSteps">8</span>
+                </span>
+            </div>
+
+        </div>
+
+
+        <form id="marriageForm">
+
+            <!-- ================================================= -->
+            <!-- STEP 1 : BASIC INFO -->
+            <!-- ================================================= -->
+
+            <section class="form-step active" data-step="1">
+
+                <h2>البيانات الأساسية</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>الاسم *</label>
+                        <input
+                            type="text"
+                            id="name"
+                            minlength="3"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>تاريخ الميلاد *</label>
+                        <input
+                            type="date"
+                            id="birthDate"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>الجنسية *</label>
+                        <input
+                            type="text"
+                            id="nationality"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>الوزن (كجم) *</label>
+                        <input
+                            type="number"
+                            id="weight"
+                            min="1"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>الطول (سم) *</label>
+                        <input
+                            type="number"
+                            id="height"
+                            min="1"
+                            required
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>لون البشرة *</label>
+
+                        <select id="skinColor" required>
+
+                            <option value="">اختر</option>
+
+                            <option value="اسمر داكن">اسمر داكن</option>
+                            <option value="اسمر">اسمر</option>
+                            <option value="قمحى غامق">قمحى غامق</option>
+                            <option value="قمحى فاتح">قمحى فاتح</option>
+                            <option value="ابيض">ابيض</option>
+                            <option value="ابيض فاتح جدا">
+                                ابيض فاتح جدا
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="field full">
+                        <label>رابط الصورة</label>
+
+                        <input
+                            type="url"
+                            id="photo"
+                            placeholder="https://..."
+                        >
+                    </div>
+
+                    <div class="field full">
+                        <label>نبذة عنك</label>
+
+                        <textarea
+                            id="description"
+                            rows="5"
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 2 : EDUCATION & WORK -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="2">
+
+                <h2>التعليم والعمل</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>المؤهل *</label>
+
+                        <select id="education" required>
+
+                            <option value="">اختر</option>
+                            <option value="ثانوي">ثانوي</option>
+                            <option value="دبلوم">دبلوم</option>
+                            <option value="جامعي">جامعي</option>
+                            <option value="دراسات عليا">دراسات عليا</option>
+
+                        </select>
+                    </div>
+
+                    <div
+                        class="field hidden"
+                        id="universityMajorField"
+                    >
+
+                        <label>التخصص الجامعي</label>
+
+                        <input
+                            type="text"
+                            id="universityMajor"
+                        >
+
+                    </div>
+
+                    <div class="field">
+                        <label>العمل *</label>
+
+                        <input
+                            type="text"
+                            id="job"
+                            required
+                        >
+                    </div>
+
+                    <div class="field full">
+                        <label>وصف العمل</label>
+
+                        <textarea
+                            id="jobDescription"
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 3 : RESIDENCE -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="3">
+
+                <h2>السكن والإقامة</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>المدينة</label>
+
+                        <input
+                            type="text"
+                            id="city"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>مكان الإقامة الحالي</label>
+
+                        <input
+                            type="text"
+                            id="currentPlaceOfResidence"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>هل تقبل الاغتراب؟ *</label>
+
+                        <select id="expatriate" required>
+
+                            <option value="">اختر</option>
+                            <option value="نعم">نعم</option>
+                            <option value="لا">لا</option>
+                            <option value="حسب الاتفاق">
+                                حسب الاتفاق
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>السكن الزوجي *</label>
+
+                        <input
+                            type="text"
+                            id="maritalHome"
+                            required
+                        >
+                    </div>
+
+                    <div class="field full">
+                        <label>وصف السكن الزوجي</label>
+
+                        <textarea
+                            id="maritalHomeDescription"
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 4 : FAMILY -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="4">
+
+                <h2>معلومات الأسرة</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>عمل الوالد</label>
+
+                        <input
+                            type="text"
+                            id="fatherJob"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label>عمل الوالدة</label>
+
+                        <input
+                            type="text"
+                            id="motherJob"
+                        >
+                    </div>
+
+                    <div class="field full">
+                        <label>
+                            معلومات الإخوة والأخوات *
+                        </label>
+
+                        <textarea
+                            id="siblingsInfo"
+                            rows="5"
+                            required
+                            placeholder="مثال: أخ مهندس، أخت طبيبة، أخ طالب..."
+                        ></textarea>
+                    </div>
+
+                    <div class="field">
+                        <label>هل الوالدان منفصلان؟ *</label>
+
+                        <select
+                            id="parentsSeparated"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 5 : MARITAL INFO -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="5">
+
+                <h2>الحالة الاجتماعية والزواج</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>الحالة الاجتماعية *</label>
+
+                        <select
+                            id="maritalStatus"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+
+                            <option value="عزب">
+                                عزب
+                            </option>
+
+                            <option value="أعزب سبق له عقد أو كتب كتاب">
+                                أعزب سبق له عقد أو كتب كتاب
+                            </option>
+
+                            <option value="مطلق">
+                                مطلق
+                            </option>
+
+                            <option value="أرمل">
+                                أرمل
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <!-- Children -->
+
+                    <div
+                        class="field hidden"
+                        id="childrenField"
+                    >
+
+                        <label>عدد الأولاد *</label>
+
+                        <input
+                            type="number"
+                            id="haveChildren"
+                            min="0"
+                            value="0"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+                        <label>التعدد *</label>
+
+                        <select id="polygamy" required>
+
+                            <option value="">اختر</option>
+                            <option value="نعم">نعم</option>
+                            <option value="لا">لا</option>
+                            <option value="حسب الاتفاق">
+                                حسب الاتفاق
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>نوع الزواج *</label>
+
+                        <select id="marriageType" required>
+
+                            <option value="">اختر</option>
+
+                            <option value="زواج بقائمة منقولات">
+                                زواج بقائمة منقولات
+                            </option>
+
+                            <option value="زواج شرعي بدون قائمة">
+                                زواج شرعي بدون قائمة
+                            </option>
+
+                            <option value="على حسب الاتفاق">
+                                على حسب الاتفاق
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>هل تريد الإنجاب؟ *</label>
+
+                        <select id="wantChildren" required>
+
+                            <option value="">اختر</option>
+                            <option value="نعم">نعم</option>
+                            <option value="لا">لا</option>
+                            <option value="أفضل تأخير الانجاب">
+                                أفضل تأخير الانجاب
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>نوع الخاتم *</label>
+
+                        <select id="ringType" required>
+
+                            <option value="">اختر</option>
+                            <option value="ذهب">ذهب</option>
+                            <option value="فضة">فضة</option>
+                            <option value="لا يهم">لا يهم</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>المهر / الصداق *</label>
+
+                        <input
+                            type="number"
+                            id="mahr"
+                            min="0"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 6 : RELIGION & HEALTH -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="6">
+
+                <h2>الدين والصحة</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>هل أنت مدخن؟ *</label>
+
+                        <select
+                            id="smoker"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>هل أنت ملتحي؟ *</label>
+
+                        <select
+                            id="bearded"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>هل تحافظ على الصلوات الخمس؟ *</label>
+
+                        <select
+                            id="prayFiveTimes"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>هل تصلي في المسجد؟ *</label>
+
+                        <select id="prayInMosque" required>
+
+                            <option value="">اختر</option>
+                            <option value="نعم">نعم</option>
+                            <option value="لا">لا</option>
+                            <option value="متوسط">متوسط</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>هل تصلي الصلاة في وقتها؟ *</label>
+
+                        <select id="praysOnTime" required>
+
+                            <option value="">اختر</option>
+                            <option value="true">نعم</option>
+                            <option value="false">لا</option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>مقدار حفظ القرآن *</label>
+
+                        <select
+                            id="quranMemorization"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+
+                            <option value="0">
+                                لا يحفظ
+                            </option>
+
+                            <option value="0.5">
+                                أقل من جزء
+                            </option>
+
+                            <script>
+                                for (let i = 1; i <= 30; i++) {
+                                    document.write(
+                                        `<option value="${i}">${i} جزء</option>`
+                                    );
+                                }
+                            </script>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>
+                            هل تعاني من أمراض أو إعاقات؟ *
+                        </label>
+
+                        <select
+                            id="hasDisabilityOrIllness"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+                            <option value="نعم">نعم</option>
+                            <option value="لا">لا</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 7 : BRIDE REQUIREMENTS -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="7">
+
+                <h2>مواصفات العروسة المطلوبة</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>من سن *</label>
+
+                        <select id="minAge" required>
+                            <option value="">اختر</option>
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>إلى سن *</label>
+
+                        <select id="maxAge" required>
+                            <option value="">اختر</option>
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>الحالة الاجتماعية المطلوبة *</label>
+
+                        <select
+                            id="brideMaritalStatus"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+
+                            <option value="عزباء">
+                                عزباء
+                            </option>
+
+                            <option value="عزباء سبق لها عقد أو كتب كتاب">
+                                عزباء سبق لها عقد أو كتب كتاب
+                            </option>
+
+                            <option value="مطلقة">
+                                مطلقة
+                            </option>
+
+                            <option value="أرملة">
+                                أرملة
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label>المؤهل المطلوب *</label>
+
+                        <select
+                            id="brideEducation"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+
+                            <option value="بدون مؤهل">
+                                بدون مؤهل
+                            </option>
+
+                            <option value="متوسط">
+                                متوسط
+                            </option>
+
+                            <option value="فوق المتوسط">
+                                فوق المتوسط
+                            </option>
+
+                            <option value="جامعي">
+                                جامعي
+                            </option>
+
+                            <option value="دراسات عليا">
+                                دراسات عليا
+                            </option>
+
+                            <option value="غير مهم">
+                                غير مهم
+                            </option>
+
+                        </select>
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>الحجاب المقبول *</label>
+
+                        <div class="checkbox-group">
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="منتقبة نقاب كامل"
+                                >
+                                منتقبة نقاب كامل
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="منتقبة فقط"
+                                >
+                                منتقبة فقط
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="محجبة مختمرة"
+                                >
+                                محجبة مختمرة
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="محجبة"
+                                >
+                                محجبة
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="غير محجبة"
+                                >
+                                غير محجبة
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="hijab"
+                                    value="لا يهم"
+                                >
+                                لا يهم
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            مواصفات العروسة المطلوبة
+                        </label>
+
+                        <textarea
+                            id="brideDescription"
+                            rows="5"
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>قائمة المنقولات الزوجية *</label>
+
+                        <select
+                            id="furnitureList"
+                            required
+                        >
+
+                            <option value="">اختر</option>
+
+                            <option value="أوافق">
+                                أوافق
+                            </option>
+
+                            <option value="لا أوافق وأفرش شقتي بالكامل">
+                                لا أوافق وأفرش شقتي بالكامل
+                            </option>
+
+                            <option value="على حسب الاتفاق">
+                                على حسب الاتفاق
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- STEP 8 : CONTACT -->
+            <!-- ================================================= -->
+
+            <section class="form-step" data-step="8">
+
+                <h2>معلومات التواصل</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label>رقم الواتساب *</label>
+
+                        <input
+                            type="tel"
+                            id="whatsapp"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label>التليجرام</label>
+
+                        <input
+                            type="text"
+                            id="telegram"
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label>رابط الفيسبوك</label>
+
+                        <input
+                            type="url"
+                            id="facebook"
+                        >
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            تكلم عن نفسك + نبذة مختصرة عن الأهل *
+                        </label>
+
+                        <textarea
+                            id="about"
+                            rows="7"
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="field full">
+
+                        <label>
+                            هل يوجد إضافة أو ملاحظة أخيرة؟
+                        </label>
+
+                        <textarea
+                            id="additionalNotes"
+                            rows="5"
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- NAVIGATION -->
+            <!-- ================================================= -->
+
+            <div class="form-navigation">
+
+                <button
+                    type="button"
+                    id="prevBtn"
+                    class="secondary-btn"
+                >
+                    السابق
+                </button>
+
+                <button
+                    type="button"
+                    id="nextBtn"
+                    class="primary-btn"
+                >
+                    التالي
+                </button>
+
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="success-btn hidden"
+                >
+                    إرسال الطلب
+                </button>
+
+            </div>
+
+
+            <div id="message"></div>
+
+        </form>
+
+    </div>
+
+    <script src="./js/maleForm.js"></script>
+
+</body>
+
+</html>
