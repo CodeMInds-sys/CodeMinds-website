@@ -1,0 +1,1319 @@
+
+<style>
+/* ================================
+   CodeMinds Python Lesson - CSS
+   Content & JavaScript unchanged
+   ================================ */
+
+:root {
+  --cm-green: #22c55e;
+  --cm-green-dark: #16a34a;
+  --cm-green-soft: rgba(34, 197, 94, 0.10);
+  --cm-green-border: rgba(34, 197, 94, 0.35);
+
+  --cm-bg: #0b0f0d;
+  --cm-surface: #111714;
+  --cm-surface-2: #171e1a;
+  --cm-surface-3: #1d2621;
+
+  --cm-text: #f3f7f4;
+  --cm-text-2: #c5d0c8;
+  --cm-muted: #87948b;
+
+  --cm-border: #29332d;
+  --cm-border-strong: #3a463e;
+
+  --cm-danger: #ef4444;
+  --cm-danger-soft: rgba(239, 68, 68, 0.10);
+  --cm-warning: #f59e0b;
+  --cm-warning-soft: rgba(245, 158, 11, 0.10);
+  --cm-success: #22c55e;
+  --cm-success-soft: rgba(34, 197, 94, 0.12);
+
+  --cm-radius: 14px;
+  --cm-radius-sm: 10px;
+  --cm-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+  --cm-transition: 0.2s ease;
+}
+
+/* Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family:
+    Inter,
+    "Noto Sans Arabic",
+    "Segoe UI",
+    Tahoma,
+    Arial,
+    sans-serif;
+
+  direction: rtl;
+  text-align: right;
+  background: var(--cm-bg);
+  color: var(--cm-text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Main wrapper */
+.wrap {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  padding: 24px 18px 30px;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Progress */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 14px;
+  flex-wrap: nowrap;
+}
+
+.pb-step {
+  flex: 1;
+  min-width: 20px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--cm-border);
+  transition:
+    background var(--cm-transition),
+    transform var(--cm-transition);
+  cursor: pointer;
+}
+
+.pb-step:hover {
+  transform: scaleY(1.5);
+  background: var(--cm-border-strong);
+}
+
+.pb-step.active {
+  background: var(--cm-green);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.pb-step.done {
+  background: var(--cm-green-dark);
+}
+
+/* Chapter */
+.chapter-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 4px 10px;
+  margin-bottom: 12px;
+  border: 1px solid var(--cm-green-border);
+  border-radius: 999px;
+  background: var(--cm-green-soft);
+  color: var(--cm-green);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Slides */
+.slide {
+  display: none;
+  animation: slideIn 0.25s ease;
+}
+
+.slide.active {
+  display: block;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide title */
+.slide-title {
+  position: relative;
+  font-size: clamp(19px, 3vw, 23px);
+  font-weight: 700;
+  color: var(--cm-text);
+  margin-bottom: 18px;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--cm-border);
+}
+
+.slide-title::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 70px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--cm-green);
+}
+
+/* Content cards */
+.concept-box {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0)
+    ),
+    var(--cm-surface);
+
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+}
+
+.concept-box h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cm-text);
+  margin-bottom: 10px;
+}
+
+.concept-box h3::before {
+  content: "";
+  width: 4px;
+  height: 17px;
+  border-radius: 999px;
+  background: var(--cm-green);
+  flex-shrink: 0;
+}
+
+.concept-box p {
+  color: var(--cm-text-2);
+}
+
+/* Analogy */
+.analogy {
+  font-size: 14px;
+  color: var(--cm-text-2);
+  font-style: italic;
+  line-height: 1.8;
+  padding: 3px 0;
+}
+
+.analogy strong {
+  color: var(--cm-green);
+  font-style: normal;
+}
+
+/* Code */
+.code-block {
+  direction: ltr;
+  text-align: left;
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  background: #080b09;
+  border: 1px solid var(--cm-border);
+  border-right: 3px solid var(--cm-green);
+  border-radius: var(--cm-radius-sm);
+
+  padding: 15px 17px;
+  margin: 11px 0;
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    "JetBrains Mono",
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+  line-height: 1.8;
+  color: #e8eee9;
+
+  white-space: pre;
+  tab-size: 4;
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+  scrollbar-width: thin;
+}
+
+.code-block::-webkit-scrollbar {
+  height: 7px;
+}
+
+.code-block::-webkit-scrollbar-track {
+  background: #0d110e;
+  border-radius: 999px;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+  background: #344139;
+  border-radius: 999px;
+}
+
+.code-block .kw {
+  color: #7dd3fc;
+  font-weight: 600;
+}
+
+.code-block .str {
+  color: #86efac;
+}
+
+.code-block .num {
+  color: #fbbf24;
+}
+
+.code-block .cmt {
+  color: #718078;
+  font-style: italic;
+}
+
+/* Highlight */
+.highlight-box {
+  background: var(--cm-green-soft);
+  border: 1px solid var(--cm-green-border);
+  border-radius: var(--cm-radius-sm);
+  padding: 12px 15px;
+  margin: 12px 0;
+}
+
+.highlight-box p {
+  font-size: 14px;
+  color: var(--cm-green);
+  line-height: 1.7;
+}
+
+.highlight-box strong {
+  color: #86efac;
+}
+
+/* Warning */
+.warning-box {
+  background: var(--cm-warning-soft);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: var(--cm-radius-sm);
+  padding: 12px 15px;
+  margin: 12px 0;
+}
+
+.warning-box p {
+  font-size: 14px;
+  color: #fbbf24;
+  line-height: 1.7;
+}
+
+/* Grid */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.grid-2 .concept-box {
+  margin-bottom: 0;
+}
+
+/* Tags */
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+
+  background: var(--cm-surface-3);
+  border: 1px solid var(--cm-border);
+  border-radius: 999px;
+
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 600;
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+
+  color: var(--cm-text-2);
+  transition:
+    transform var(--cm-transition),
+    border-color var(--cm-transition),
+    background var(--cm-transition);
+}
+
+.tag:hover {
+  transform: translateY(-1px);
+  border-color: var(--cm-border-strong);
+}
+
+.tag.accent {
+  background: var(--cm-green-soft);
+  color: var(--cm-green);
+  border-color: var(--cm-green-border);
+}
+
+/* Quiz */
+.quiz-section {
+  margin-top: 18px;
+  padding: 17px;
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+  box-shadow: var(--cm-shadow);
+}
+
+.quiz-q {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cm-text);
+  margin-bottom: 12px;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.quiz-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quiz-opt {
+  width: 100%;
+  background: var(--cm-surface-2);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius-sm);
+
+  padding: 11px 14px;
+
+  font-size: 14px;
+  color: var(--cm-text);
+  text-align: right;
+
+  cursor: pointer;
+  transition:
+    border-color var(--cm-transition),
+    background var(--cm-transition),
+    transform var(--cm-transition);
+}
+
+.quiz-opt:hover {
+  border-color: var(--cm-green-border);
+  background: var(--cm-green-soft);
+  transform: translateX(-2px);
+}
+
+.quiz-opt:focus-visible {
+  outline: 2px solid var(--cm-green);
+  outline-offset: 2px;
+}
+
+.quiz-opt.correct {
+  background: var(--cm-success-soft);
+  border-color: rgba(34, 197, 94, 0.55);
+  color: #86efac;
+}
+
+.quiz-opt.wrong {
+  background: var(--cm-danger-soft);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #fca5a5;
+}
+
+.quiz-feedback {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--cm-radius-sm);
+}
+
+.quiz-feedback.correct {
+  background: var(--cm-success-soft);
+  color: #86efac;
+}
+
+.quiz-feedback.wrong {
+  background: var(--cm-danger-soft);
+  color: #fca5a5;
+}
+
+/* Navigation */
+.nav-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--cm-border);
+}
+
+.nav-btn {
+  min-height: 42px;
+  background: var(--cm-surface-2);
+  border: 1px solid var(--cm-border-strong);
+  border-radius: var(--cm-radius-sm);
+
+  padding: 8px 18px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cm-text);
+
+  cursor: pointer;
+  transition:
+    background var(--cm-transition),
+    border-color var(--cm-transition),
+    color var(--cm-transition),
+    transform var(--cm-transition);
+}
+
+#prevBtn {
+  justify-self: start;
+}
+
+#nextBtn {
+  justify-self: end;
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: var(--cm-green-soft);
+  border-color: var(--cm-green-border);
+  color: var(--cm-green);
+  transform: translateY(-1px);
+}
+
+.nav-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.step-counter {
+  min-width: 65px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--cm-muted);
+  direction: ltr;
+}
+
+/* Interactive section */
+.interactive-section {
+  margin: 16px 0;
+}
+
+.try-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cm-text-2);
+  margin-bottom: 7px;
+}
+
+.try-input {
+  width: 100%;
+
+  border: 1px solid var(--cm-border-strong);
+  border-radius: var(--cm-radius-sm);
+
+  padding: 10px 12px;
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+  background: var(--cm-surface-2);
+  color: var(--cm-text);
+
+  direction: ltr;
+  text-align: left;
+
+  outline: none;
+  transition: border-color var(--cm-transition), box-shadow var(--cm-transition);
+}
+
+.try-input:focus {
+  border-color: var(--cm-green);
+  box-shadow: 0 0 0 3px var(--cm-green-soft);
+}
+
+.try-btn {
+  margin-top: 8px;
+
+  padding: 8px 14px;
+
+  border: 1px solid var(--cm-green-border);
+  border-radius: var(--cm-radius-sm);
+
+  background: var(--cm-green-soft);
+  color: var(--cm-green);
+
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background var(--cm-transition),
+    transform var(--cm-transition);
+}
+
+.try-btn:hover {
+  background: rgba(34, 197, 94, 0.16);
+  transform: translateY(-1px);
+}
+
+.try-output {
+  margin-top: 8px;
+
+  background: #080b09;
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius-sm);
+
+  padding: 10px 12px;
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+
+  font-size: 13px;
+  color: #86efac;
+
+  min-height: 38px;
+
+  direction: ltr;
+  text-align: left;
+  overflow-x: auto;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+
+  font-size: 13px;
+  margin: 12px 0;
+
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius-sm);
+  background: var(--cm-surface);
+}
+
+th {
+  text-align: right;
+  padding: 10px 12px;
+  background: var(--cm-surface-3);
+  color: var(--cm-text);
+  font-weight: 700;
+  border-bottom: 1px solid var(--cm-border);
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cm-border);
+  color: var(--cm-text-2);
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+}
+
+tr:last-child td {
+  border-bottom: 0;
+}
+
+td:first-child {
+  font-weight: 600;
+  color: var(--cm-text);
+}
+
+tbody tr {
+  transition: background var(--cm-transition);
+}
+
+tbody tr:hover {
+  background: rgba(34, 197, 94, 0.04);
+}
+
+/* Inline code */
+code {
+  direction: ltr;
+  unicode-bidi: embed;
+
+  padding: 2px 5px;
+  border-radius: 5px;
+
+  background: var(--cm-surface-3);
+  color: #86efac;
+
+  font-family:
+    "Cascadia Code",
+    "Fira Code",
+    Consolas,
+    monospace;
+
+  font-size: 0.92em;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.badge-blue {
+  background: var(--cm-green-soft);
+  color: var(--cm-green);
+  border: 1px solid var(--cm-green-border);
+}
+
+.badge-green {
+  background: var(--cm-success-soft);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+/* Final card */
+.final-card {
+  text-align: center;
+  padding: 32px 18px;
+  margin-bottom: 15px;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(34, 197, 94, 0.10),
+      transparent 55%
+    ),
+    var(--cm-surface);
+
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius);
+}
+
+.final-card .icon {
+  font-size: 52px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.final-card h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--cm-text);
+  margin-bottom: 7px;
+}
+
+.final-card p {
+  font-size: 15px;
+  color: var(--cm-text-2);
+  margin-bottom: 18px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .wrap {
+    padding: 16px 12px 24px;
+  }
+
+  .progress-bar {
+    gap: 4px;
+  }
+
+  .pb-step {
+    height: 4px;
+  }
+
+  .chapter-label {
+    font-size: 11px;
+  }
+
+  .slide-title {
+    font-size: 19px;
+    margin-bottom: 15px;
+  }
+
+  .concept-box {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .concept-box h3 {
+    font-size: 14px;
+  }
+
+  .code-block {
+    padding: 12px 13px;
+    font-size: 12px;
+    line-height: 1.75;
+    border-right-width: 2px;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .grid-2 .concept-box {
+    margin-bottom: 0;
+  }
+
+  .quiz-section {
+    padding: 14px;
+  }
+
+  .quiz-q {
+    font-size: 14px;
+  }
+
+  .quiz-opt {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .nav-row {
+    grid-template-columns: 1fr 70px 1fr;
+    gap: 7px;
+  }
+
+  .nav-btn {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .step-counter {
+    min-width: 55px;
+    font-size: 11px;
+  }
+
+  th,
+  td {
+    padding: 8px 9px;
+    font-size: 12px;
+  }
+
+  .final-card {
+    padding: 27px 14px;
+  }
+
+  .final-card h2 {
+    font-size: 21px;
+  }
+
+  .final-card .icon {
+    font-size: 45px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-btn {
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .step-counter {
+    min-width: 48px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 9px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+
+<div class="wrap">
+<h2 class="sr-only">درس Python تفاعلي بالعربي للمبتدئين</h2>
+
+<div class="progress-bar" id="pbar"></div>
+<div class="chapter-label" id="chapterLabel"></div>
+
+<div id="slides"></div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">→ السابق</button>
+  <span class="step-counter" id="stepCounter"></span>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">التالي ←</button>
+</div>
+</div>
+
+<script>
+const slides = [
+{
+  chapter:"الفصل الأول: المتغيرات وأنواع البيانات",
+  title:"ما هو المتغير؟",
+  content:`
+<div class="concept-box">
+<h3>التعريف</h3>
+<p class="analogy">تخيل المتغير كأنه صندوق له اسم — بتحط فيه قيمة وبتقدر تستخدمها بعدين.</p>
+<div class="code-block"><span class="cmt"># إنشاء متغيرات</span>
+name = <span class="str">"أحمد"</span>
+age = <span class="num">15</span>
+score = <span class="num">98.5</span></div>
+</div>
+<div class="concept-box">
+<h3>قواعد التسمية</h3>
+<div class="tag-grid">
+<span class="tag accent">✓ my_name</span>
+<span class="tag accent">✓ score1</span>
+<span class="tag accent">✓ _temp</span>
+<span class="tag" style="border-color:var(--border-danger);color:var(--text-danger)">✗ 1score</span>
+<span class="tag" style="border-color:var(--border-danger);color:var(--text-danger)">✗ my name</span>
+<span class="tag" style="border-color:var(--border-danger);color:var(--text-danger)">✗ my-score</span>
+</div>
+<div class="highlight-box"><p>الاتفاقية: استخدم <strong>snake_case</strong> — كل حرف صغير والكلمات مفصولة بـ _</p></div>
+</div>
+`,quiz:{q:"أي من التالي اسم متغير صحيح في Python؟",opts:["1number","my score","student_name","my-score"],correct:2,explain:"student_name صحيح: يبدأ بحرف ومفيش مسافات أو علامات خاصة غير _"}
+},
+{
+  chapter:"الفصل الأول: المتغيرات وأنواع البيانات",
+  title:"أنواع البيانات الأربعة",
+  content:`
+<table>
+<tr><th>النوع</th><th>الاسم بالإنجليزي</th><th>مثال</th></tr>
+<tr><td>عدد صحيح</td><td>int</td><td>10, -5, 0</td></tr>
+<tr><td>عدد عشري</td><td>float</td><td>10.5, 3.14</td></tr>
+<tr><td>نص</td><td>str</td><td>"مرحبا", 'hello'</td></tr>
+<tr><td>منطقي</td><td>bool</td><td>True, False</td></tr>
+</table>
+<div class="concept-box">
+<h3>تحويل الأنواع (Type Casting)</h3>
+<div class="code-block">x = <span class="str">"10"</span>           <span class="cmt"># نص</span>
+x = <span class="kw">int</span>(x)        <span class="cmt"># → عدد صحيح: 10</span>
+y = <span class="kw">float</span>(<span class="str">"3.14"</span>) <span class="cmt"># → عدد عشري: 3.14</span>
+z = <span class="kw">str</span>(<span class="num">42</span>)        <span class="cmt"># → نص: "42"</span></div>
+</div>
+<div class="warning-box"><p>⚠️ مهم: تحويل <code>int("hello")</code> ← خطأ! ممكن تحول نص لرقم بس لو النص رقم فعلاً</p></div>
+`,quiz:{q:'ما ناتج: bool(0)',opts:["True","False","0","Error"],correct:1,explain:"الصفر يتحول لـ False — أي رقم تاني (موجب أو سالب أو عشري) يتحول لـ True"}
+},
+{
+  chapter:"الفصل الأول: المتغيرات وأنواع البيانات",
+  title:"المدخلات والتحويل",
+  content:`
+<div class="concept-box">
+<h3>مشكلة input()</h3>
+<p class="analogy" style="margin-bottom:0.75rem">دالة input() دايماً بتعمل الناتج <strong>نص (str)</strong> — حتى لو المستخدم كتب رقم!</p>
+<div class="code-block"><span class="cmt"># المشكلة</span>
+num1 = <span class="kw">input</span>(<span class="str">"أدخل رقم: "</span>)  <span class="cmt"># → "10" (نص!)</span>
+num2 = <span class="kw">input</span>(<span class="str">"أدخل رقم: "</span>)  <span class="cmt"># → "5"  (نص!)</span>
+<span class="kw">print</span>(num1 + num2)         <span class="cmt"># → "105" ← ❌ ليس 15!</span></div>
+</div>
+<div class="concept-box">
+<h3>الحل: تحويل فوري أو دائم</h3>
+<div class="code-block"><span class="cmt"># الحل: التحويل قبل الاستخدام</span>
+num1 = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"أدخل رقم: "</span>))
+num2 = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"أدخل رقم: "</span>))
+<span class="kw">print</span>(num1 + num2)  <span class="cmt"># → 15 ✓</span>
+
+<span class="cmt"># فرق مهم:</span>
+x = <span class="str">"7"</span>
+<span class="kw">int</span>(x)    <span class="cmt"># تحويل مؤقت — x لسه str</span>
+x = <span class="kw">int</span>(x)  <span class="cmt"># تحويل دائم — x بقت int</span></div>
+</div>
+`,quiz:{q:'ما ناتج: "5" + "3" في Python؟',opts:["8","53","5.3","Error"],correct:1,explain:'جمع نصين يعمل concatenation (دمج) — "5" + "3" = "53" مش 8. لازم تحول للرقم الأول!'}
+},
+{
+  chapter:"الفصل الأول: المتغيرات وأنواع البيانات",
+  title:"العمليات الحسابية والمقارنة",
+  content:`
+<div class="grid-2">
+<div class="concept-box">
+<h3>عمليات حسابية</h3>
+<div class="code-block">+ - * /
+** <span class="cmt"># أس</span>
+// <span class="cmt"># قسمة صحيحة</span>
+%  <span class="cmt"># باقي قسمة</span></div>
+</div>
+<div class="concept-box">
+<h3>عمليات مقارنة</h3>
+<div class="code-block">== != 
+<  >
+<= >=</div>
+</div>
+</div>
+<div class="concept-box">
+<h3>أمثلة مهمة</h3>
+<div class="code-block">10 / 3   <span class="cmt"># → 3.333 (عشري دايما)</span>
+10 // 3  <span class="cmt"># → 3 (الجزء الصحيح فقط)</span>
+10 % 3   <span class="cmt"># → 1 (الباقي)</span>
+2 ** 8   <span class="cmt"># → 256 (أس)</span>
+x = <span class="num">10</span>
+x += <span class="num">5</span>  <span class="cmt"># نفس x = x + 5 → 15</span></div>
+</div>
+<div class="concept-box">
+<h3>العمليات المنطقية</h3>
+<div class="code-block"><span class="kw">and</span>  <span class="cmt"># الاتنين True</span>
+<span class="kw">or</span>   <span class="cmt"># واحد على الأقل True</span>
+<span class="kw">not</span>  <span class="cmt"># عكس القيمة</span></div>
+</div>
+`,quiz:{q:"ما ناتج: 17 % 5",opts:["3","2","3.4","0"],correct:1,explain:"17 % 5 = باقي قسمة 17 على 5 = 2 (لأن 5×3=15 والباقي 2)"}
+},
+{
+  chapter:"الفصل الثاني: الحلقات والدوال",
+  title:"حلقة for",
+  content:`
+<div class="concept-box">
+<h3>متى نستخدم for؟</h3>
+<p class="analogy">لما تعرف مسبقاً كام مرة هتكرر — زي "عمل ده 10 مرات" أو "امشي على كل عنصر"</p>
+</div>
+<div class="concept-box">
+<h3>دالة range()</h3>
+<div class="code-block"><span class="kw">range</span>(stop)           <span class="cmt"># 0 ← حتى stop-1</span>
+<span class="kw">range</span>(start, stop)    <span class="cmt"># من start حتى stop-1</span>
+<span class="kw">range</span>(start, stop, step) <span class="cmt"># بخطوة</span>
+
+<span class="cmt"># أمثلة:</span>
+<span class="kw">range</span>(<span class="num">5</span>)        <span class="cmt"># 0,1,2,3,4</span>
+<span class="kw">range</span>(<span class="num">1</span>,<span class="num">6</span>)      <span class="cmt"># 1,2,3,4,5</span>
+<span class="kw">range</span>(<span class="num">0</span>,<span class="num">11</span>,<span class="num">3</span>)  <span class="cmt"># 0,3,6,9</span></div>
+</div>
+<div class="concept-box">
+<h3>مثال</h3>
+<div class="code-block"><span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num">5</span>):
+    <span class="kw">print</span>(<span class="str">f"رقم: {i}"</span>)
+<span class="cmt"># ناتج: رقم: 0  رقم: 1  رقم: 2  رقم: 3  رقم: 4</span></div>
+</div>
+`,quiz:{q:"range(0, 10, 2) تنتج كام رقم؟",opts:["5","4","10","6"],correct:0,explain:"0, 2, 4, 6, 8 — خمس أرقام. range يوقف قبل الـ stop (10) ومش بيشملها"}
+},
+{
+  chapter:"الفصل الثاني: الحلقات والدوال",
+  title:"حلقة while",
+  content:`
+<div class="concept-box">
+<h3>متى نستخدم while؟</h3>
+<p class="analogy">لما مش عارف كام مرة هتكرر — هتكمل طول ما شرط معين صحيح</p>
+</div>
+<div class="concept-box">
+<h3>مثال: حاسبة بتسأل المستخدم</h3>
+<div class="code-block">repeat = <span class="str">"y"</span>
+<span class="kw">while</span> repeat == <span class="str">"y"</span>:
+    num1 = <span class="kw">float</span>(<span class="kw">input</span>(<span class="str">"أدخل رقم 1: "</span>))
+    num2 = <span class="kw">float</span>(<span class="kw">input</span>(<span class="str">"أدخل رقم 2: "</span>))
+    <span class="kw">print</span>(num1 + num2)
+    repeat = <span class="kw">input</span>(<span class="str">"تكرار؟ (y/n): "</span>)</div>
+</div>
+<div class="grid-2">
+<div class="highlight-box">
+<p><strong>for:</strong> تكرار محدد<br>range(10) ← 10 مرات بالضبط</p>
+</div>
+<div class="highlight-box">
+<p><strong>while:</strong> تكرار شرطي<br>بيوقف لما الشرط يبقى False</p>
+</div>
+</div>
+<div class="warning-box"><p>⚠️ تحذير: لازم تتأكد إن الشرط هيبقى False في النهاية — غير كده الحلقة مش هتوقف!</p></div>
+`,quiz:{q:"أي حلقة الأنسب لطباعة جدول الضرب من 1 لـ 10؟",opts:["while","for","الاتنين بيشتغلوا بس for أوضح","while أحسن دايماً"],correct:2,explain:"الاتنين بيشتغلوا — بس for مع range(1,11) أوضح وأبسط لما تعرف العدد مسبقاً"}
+},
+{
+  chapter:"الفصل الثاني: الحلقات والدوال",
+  title:"الدوال (Functions)",
+  content:`
+<div class="concept-box">
+<h3>ليه نستخدم دوال؟</h3>
+<div class="tag-grid">
+<span class="tag accent">إعادة استخدام الكود</span>
+<span class="tag accent">سهولة الصيانة</span>
+<span class="tag accent">تقسيم المشكلة</span>
+</div>
+<p class="analogy" style="margin-top:0.5rem">بدل ما تكتب نفس الكود 10 مرات — اكتبه مرة واحدة جوه دالة واستخدمها</p>
+</div>
+<div class="concept-box">
+<h3>مثال عملي</h3>
+<div class="code-block"><span class="cmt"># بدون دوال — مشكلة!</span>
+result1 = num1 + num2  <span class="cmt"># تكرار</span>
+result2 = num3 + num4  <span class="cmt"># تكرار</span>
+
+<span class="cmt"># مع دوال — كويس!</span>
+<span class="kw">def</span> add_numbers(num1, num2):
+    result = num1 + num2
+    <span class="kw">return</span> result
+
+r1 = add_numbers(<span class="num">5</span>, <span class="num">3</span>)  <span class="cmt"># → 8</span>
+r2 = add_numbers(<span class="num">10</span>, <span class="num">7</span>) <span class="cmt"># → 17</span></div>
+</div>
+<div class="highlight-box"><p>لو عايز تغير الجمع لضرب — تعدل سطر واحد بس جوه الدالة ✓</p></div>
+`,quiz:{q:"ما الكلمة المحجوزة لإرجاع قيمة من دالة؟",opts:["send","output","return","give"],correct:2,explain:"return هي الكلمة الصحيحة — بتوقف الدالة وترجع القيمة للي استدعاها"}
+},
+{
+  chapter:"الفصل الثالث: هياكل البيانات",
+  title:"القوائم (Lists)",
+  content:`
+<div class="concept-box">
+<h3>ما هي القائمة؟</h3>
+<p class="analogy">زي سكة حديد — عندك عربيات (عناصر) مرتبة، وكل عربية ليها رقم (index) يبدأ من 0</p>
+<div class="code-block">fruits = [<span class="str">"تفاح"</span>, <span class="str">"مانجو"</span>, <span class="str">"موز"</span>]
+<span class="cmt">#          [0]      [1]      [2]</span>
+
+<span class="kw">print</span>(fruits[<span class="num">0</span>])   <span class="cmt"># → تفاح</span>
+<span class="kw">print</span>(fruits[<span class="num">-1</span>])  <span class="cmt"># → موز (من الآخر)</span>
+<span class="kw">print</span>(fruits[<span class="num">-2</span>])  <span class="cmt"># → مانجو</span></div>
+</div>
+<div class="concept-box">
+<h3>عمليات على القوائم</h3>
+<div class="code-block">fruits.append(<span class="str">"برتقال"</span>)  <span class="cmt"># إضافة للآخر</span>
+fruits.remove(<span class="str">"موز"</span>)    <span class="cmt"># حذف عنصر</span>
+<span class="kw">len</span>(fruits)              <span class="cmt"># عدد العناصر</span>
+
+<span class="cmt"># المشي على القائمة</span>
+<span class="kw">for</span> fruit <span class="kw">in</span> fruits:
+    <span class="kw">print</span>(fruit)</div>
+</div>
+`,quiz:{q:'في القائمة: colors = ["أحمر", "أخضر", "أزرق"]\nما قيمة colors[-1]؟',opts:["أحمر","أخضر","أزرق","خطأ"],correct:2,explain:"الـ index السالب يعدّ من الآخر: -1 هو آخر عنصر = أزرق"}
+},
+{
+  chapter:"الفصل الثالث: هياكل البيانات",
+  title:"القواميس (Dictionaries)",
+  content:`
+<div class="concept-box">
+<h3>ما هو القاموس؟</h3>
+<p class="analogy">زي قاموس اللغة — كل كلمة (مفتاح) ليها معنى (قيمة). بتوصل للقيمة بالمفتاح مش برقم!</p>
+<div class="code-block">drinks = {
+    <span class="str">"Cola"</span>:  <span class="num">10</span>,
+    <span class="str">"Fanta"</span>: <span class="num">12</span>,
+    <span class="str">"Water"</span>: <span class="num">5</span>
+}
+
+<span class="kw">print</span>(drinks[<span class="str">"Cola"</span>])     <span class="cmt"># → 10</span>
+<span class="kw">print</span>(drinks.keys())       <span class="cmt"># → أسماء الأصناف</span>
+drinks.update({<span class="str">"Pepsi"</span>: <span class="num">11</span>}) <span class="cmt"># إضافة صنف</span></div>
+</div>
+<div class="grid-2">
+<div class="concept-box" style="margin:0">
+<h3>قائمة (list)</h3>
+<div class="code-block">items[0]
+items[1]
+items[-1]</div>
+</div>
+<div class="concept-box" style="margin:0">
+<h3>قاموس (dict)</h3>
+<div class="code-block">menu["Cola"]
+menu["Fanta"]
+menu.keys()</div>
+</div>
+</div>
+`,quiz:{q:'drinks = {"Cola": 10, "Fanta": 12}\nكيف تضيف "Water": 5 للقاموس؟',opts:['drinks.append({"Water": 5})','drinks.update({"Water": 5})','drinks["Water"] == 5','drinks.add("Water", 5)'],correct:1,explain:'drinks.update({"Water": 5}) أو drinks["Water"] = 5 هي الطرق الصحيحة لإضافة عنصر للقاموس'}
+},
+{
+  chapter:"الفصل الثالث: هياكل البيانات",
+  title:"مشروع: قائمة المطعم",
+  content:`
+<div class="concept-box">
+<h3>بنية المشروع</h3>
+<div class="code-block"><span class="cmt"># البيانات</span>
+drinks = {<span class="str">"Cola"</span>: <span class="num">10</span>, <span class="str">"Fanta"</span>: <span class="num">12</span>}
+client_order = []
+
+<span class="cmt"># الدوال</span>
+<span class="kw">def</span> show_menu():
+    <span class="kw">for</span> item <span class="kw">in</span> drinks.keys():
+        <span class="kw">print</span>(<span class="str">f"{item}: {drinks[item]} جنيه"</span>)
+
+<span class="kw">def</span> add_item():
+    name = <span class="kw">input</span>(<span class="str">"اسم الصنف: "</span>)
+    price = <span class="kw">float</span>(<span class="kw">input</span>(<span class="str">"السعر: "</span>))
+    drinks.update({name: price})
+
+<span class="kw">def</span> client_order_fn():
+    item = <span class="kw">input</span>(<span class="str">"ماذا تطلب؟ "</span>)
+    client_order.append(item)
+
+<span class="kw">def</span> calculate_total():
+    total = <span class="num">0</span>
+    <span class="kw">for</span> item <span class="kw">in</span> client_order:
+        total += drinks[item]
+    <span class="kw">return</span> total</div>
+</div>
+<div class="highlight-box"><p>المشروع يجمع كل اللي اتعلمناه: قاموس + قائمة + دوال + حلقات 🎯</p></div>
+`,quiz:{q:"لو client_order = ['Cola', 'Fanta'] و drinks = {'Cola':10, 'Fanta':12}\nما ناتج calculate_total()؟",opts:["10","12","22","None"],correct:2,explain:"10 + 12 = 22 — الدالة بتمشي على الطلبات وتجمع أسعارها من القاموس"}
+},
+{
+  chapter:"",
+  title:"🎉 أحسنت!",
+  content:`
+<div class="final-card">
+<div class="icon">🐍</div>
+<h2>خلصت الدرس بنجاح!</h2>
+<p>راجعت كل المفاهيم الأساسية في Python</p>
+<div class="tag-grid" style="justify-content:center;margin:1rem 0">
+<span class="tag accent">المتغيرات</span>
+<span class="tag accent">أنواع البيانات</span>
+<span class="tag accent">المدخلات</span>
+<span class="tag accent">العمليات</span>
+<span class="tag accent">for / while</span>
+<span class="tag accent">الدوال</span>
+<span class="tag accent">القوائم</span>
+<span class="tag accent">القواميس</span>
+</div>
+</div>
+<div class="concept-box">
+<h3>الواجب: ابني مشروع قائمة المطعم</h3>
+<div class="tag-grid">
+<span class="tag">show_menu()</span>
+<span class="tag">add_item()</span>
+<span class="tag">client_order()</span>
+<span class="tag">calculate_total()</span>
+</div>
+<div class="highlight-box" style="margin-top:0.75rem"><p>لو عندك أي سؤال — ابعته في المجموعة! 💬</p></div>
+</div>
+`,quiz:null
+}
+];
+
+let current = 0;
+let answered = {};
+
+function buildSlides(){
+  const container = document.getElementById('slides');
+  slides.forEach((s,i)=>{
+    const div = document.createElement('div');
+    div.className = 'slide' + (i===0?' active':'');
+    div.id = 'slide-'+i;
+    let qHtml = '';
+    if(s.quiz){
+      qHtml = `<div class="quiz-section">
+<p class="quiz-q">🧠 ${s.quiz.q}</p>
+<div class="quiz-opts" id="opts-${i}">
+${s.quiz.opts.map((o,oi)=>`<button class="quiz-opt" onclick="answer(${i},${oi})">${o}</button>`).join('')}
+</div>
+<div id="fb-${i}" class="quiz-feedback" style="display:none"></div>
+</div>`;
+    }
+    div.innerHTML = `<div class="slide-title">${s.title}</div>${s.content}${qHtml}`;
+    container.appendChild(div);
+  });
+}
+
+function buildProgress(){
+  const bar = document.getElementById('pbar');
+  slides.forEach((s,i)=>{
+    const d = document.createElement('div');
+    d.className = 'pb-step' + (i===0?' active':'');
+    d.id='pb-'+i;
+    d.title = s.title;
+    d.onclick=()=>goTo(i);
+    bar.appendChild(d);
+  });
+}
+
+function answer(slideIdx, optIdx){
+  if(answered[slideIdx] !== undefined) return;
+  answered[slideIdx] = optIdx;
+  const quiz = slides[slideIdx].quiz;
+  const opts = document.querySelectorAll(`#opts-${slideIdx} .quiz-opt`);
+  const fb = document.getElementById('fb-'+slideIdx);
+  opts.forEach((o,i)=>{
+    o.style.cursor='default';
+    if(i===quiz.correct) o.classList.add('correct');
+    else if(i===optIdx && optIdx!==quiz.correct) o.classList.add('wrong');
+  });
+  const correct = optIdx === quiz.correct;
+  fb.style.display='block';
+  fb.className='quiz-feedback '+(correct?'correct':'wrong');
+  fb.textContent = (correct?'✅ صح! ':'❌ مش صح — ') + quiz.explain;
+}
+
+function goTo(n){
+  document.querySelector('.slide.active').classList.remove('active');
+  document.getElementById('pb-'+current).classList.remove('active');
+  if(answered[current]!==undefined || !slides[current].quiz){
+    document.getElementById('pb-'+current).classList.add('done');
+  }
+  current=n;
+  document.getElementById('slide-'+current).classList.add('active');
+  document.getElementById('pb-'+current).classList.remove('done');
+  document.getElementById('pb-'+current).classList.add('active');
+  document.getElementById('chapterLabel').textContent = slides[current].chapter;
+  document.getElementById('stepCounter').textContent = (current+1) + ' / ' + slides.length;
+  document.getElementById('prevBtn').disabled = current===0;
+  document.getElementById('nextBtn').disabled = current===slides.length-1;
+}
+
+function navigate(dir){
+  const n = current+dir;
+  if(n>=0 && n<slides.length) goTo(n);
+}
+
+buildSlides();
+buildProgress();
+document.getElementById('chapterLabel').textContent = slides[0].chapter;
+document.getElementById('stepCounter').textContent = '1 / '+slides.length;
+document.getElementById('prevBtn').disabled = true;
+</script>
