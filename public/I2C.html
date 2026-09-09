@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I²C Communication Interactive Lab</title>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+:root {
+  --bg-base:      #0d1117;
+  --bg-card:      #161b22;
+  --bg-card2:     #1c2230;
+  --bg-code:      #0a0e14;
+  --border:       #2a3441;
+  --border-glow:  #1a7a4a;
+  --green:        #3fb950;
+  --green-dim:    #238636;
+  --green-glow:   rgba(63,185,80,0.18);
+  --green-pulse:  rgba(63,185,80,0.08);
+  --amber:        #e3b341;
+  --red:          #f85149;
+  --blue:         #58a6ff;
+  --purple:       #bc8cff;
+  --cyan:         #39d5d5;
+  --text-primary: #e6edf3;
+  --text-sec:     #8b949e;
+  --text-dim:     #484f58;
+  --radius:       10px;
+  --radius-lg:    16px;
+  --shadow:       0 4px 24px rgba(0,0,0,0.5);
+  --font-mono:    'JetBrains Mono','Fira Mono','Cascadia Code',monospace;
+  --font-ui:      'Inter','Segoe UI',system-ui,sans-serif;
+  --sidebar-w:    240px;
+  --transition:   0.22s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green-dim); }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform var(--transition);
+}
+
+#main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar-logo {
+  padding: 20px 18px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sidebar-logo svg { flex-shrink: 0; }
+.sidebar-logo-text { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; color: var(--green); text-transform: uppercase; }
+.sidebar-logo-sub  { font-size: 10px; color: var(--text-sec); }
+
+.sidebar-nav { padding: 12px 8px; }
+.nav-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 6px 10px 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  font-size: 12.5px;
+  color: var(--text-sec);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--green-pulse); color: var(--text-primary); }
+.nav-item.active { background: var(--green-glow); color: var(--green); font-weight: 600; }
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+.nav-item.active .nav-dot { opacity: 1; }
+
+/* Mobile hamburger */
+#hamburger {
+  display: none;
+  position: fixed;
+  top: 14px; left: 14px;
+  z-index: 200;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+.ham-line { display: block; width: 20px; height: 2px; background: currentColor; margin: 4px 0; border-radius: 2px; transition: var(--transition); }
+
+/* ============================================================
+   SECTION BASE
+   ============================================================ */
+.section {
+  padding: 80px 48px;
+  border-bottom: 1px solid var(--border);
+  max-width: 960px;
+  margin: 0 auto;
+}
+.section:last-child { border-bottom: none; }
+
+.section-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+.section-sub {
+  font-size: 15px;
+  color: var(--text-sec);
+  max-width: 640px;
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 16px; margin-top: 24px; }
+.card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  font-family: var(--font-ui);
+  line-height: 1;
+}
+.btn-primary { background: var(--green); color: #000; }
+.btn-primary:hover { background: #4fd860; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(63,185,80,0.4); }
+.btn-outline { background: transparent; color: var(--green); border: 1px solid var(--green); }
+.btn-outline:hover { background: var(--green-glow); }
+.btn-ghost { background: var(--bg-card2); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--green); color: var(--green); }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: #ff6b6b; }
+.btn-amber { background: var(--amber); color: #000; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-green  { background: var(--green-glow); color: var(--green); border: 1px solid var(--green-dim); }
+.badge-amber  { background: rgba(227,179,65,0.15); color: var(--amber); border: 1px solid rgba(227,179,65,0.3); }
+.badge-red    { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+.badge-blue   { background: rgba(88,166,255,0.12); color: var(--blue); border: 1px solid rgba(88,166,255,0.3); }
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+.code-block {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+  position: relative;
+}
+.code-block pre { padding: 20px 24px; }
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.code-lang { font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.code-dots { display: flex; gap: 6px; }
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.code-dot:nth-child(1) { background: #ff5f57; }
+.code-dot:nth-child(2) { background: #febc2e; }
+.code-dot:nth-child(3) { background: #28c840; }
+
+/* syntax colors */
+.kw  { color: #ff7b72; }   /* keyword */
+.fn  { color: #d2a8ff; }   /* function */
+.str { color: #a5d6ff; }   /* string */
+.num { color: #f0883e; }   /* number */
+.cmt { color: #8b949e; font-style: italic; }  /* comment */
+.def { color: #79c0ff; }   /* define */
+.cls { color: #ffa657; }   /* class */
+.pun { color: #e6edf3; }   /* punctuation */
+
+/* ============================================================
+   WAVEFORM CANVAS
+   ============================================================ */
+canvas { display: block; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 60px 48px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 50%, rgba(63,185,80,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(88,166,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 1; max-width: 520px; }
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--green-glow);
+  border: 1px solid var(--green-dim);
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+.hero-title {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+.hero-title span { color: var(--green); }
+.hero-sub { font-size: 15px; color: var(--text-sec); line-height: 1.75; margin-bottom: 36px; max-width: 460px; }
+.hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.hero-visual {
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 380px;
+}
+.bus-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.bus-device {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  position: relative;
+}
+.bus-device.master { border-color: var(--blue); color: var(--blue); }
+.bus-device.slave  { border-color: var(--green); color: var(--green); }
+.bus-device.active { box-shadow: 0 0 14px rgba(63,185,80,0.35); }
+
+.bus-lines { margin: 16px 0; position: relative; height: 60px; }
+.bus-line {
+  position: absolute;
+  left: 20px; right: 20px;
+  height: 2px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+}
+.bus-line.sda { top: 18px; background: var(--green-dim); }
+.bus-line.scl { bottom: 18px; background: var(--amber); }
+.bus-line-label {
+  position: absolute;
+  right: -42px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.bus-line.sda .bus-line-label { color: var(--green); }
+.bus-line.scl .bus-line-label { color: var(--amber); }
+
+/* animated data packets */
+.packet {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  top: -3px;
+  animation: travel 2.4s linear infinite;
+}
+.packet.sda { background: var(--green); box-shadow: 0 0 8px var(--green); }
+.packet.scl { background: var(--amber); box-shadow: 0 0 8px var(--amber); animation-duration: 1.2s; }
+@keyframes travel { from{left:0} to{left:calc(100% - 8px)} }
+
+.bus-slaves { display: flex; gap: 8px; justify-content: center; }
+.bus-slaves .bus-device { flex: 1; font-size: 10px; }
+.bus-connectors { display: flex; justify-content: space-around; }
+.bus-connector-line { width: 1px; height: 20px; background: var(--border); margin: 0 auto; }
+
+/* ============================================================
+   DUPLEX TOGGLE
+   ============================================================ */
+.duplex-toggle { display: flex; gap: 0; background: var(--bg-card2); border-radius: 8px; padding: 4px; border: 1px solid var(--border); width: fit-content; margin-bottom: 28px; }
+.duplex-btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  color: var(--text-sec);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-ui);
+}
+.duplex-btn.active { background: var(--green); color: #000; }
+
+.protocol-diagram {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 2;
+  color: var(--text-sec);
+  transition: all 0.3s ease;
+  display: none;
+  overflow-x: auto;
+}
+.protocol-diagram.active { display: block; }
+.proto-line-tx { color: var(--blue); }
+.proto-line-rx { color: var(--green); }
+.proto-line-clk { color: var(--amber); }
+.proto-line-sda { color: var(--cyan); }
+.proto-label    { color: var(--text-primary); font-weight: 700; }
+
+/* ============================================================
+   WAVEFORM SIMULATOR
+   ============================================================ */
+#waveform-canvas { border-radius: var(--radius); background: var(--bg-code); }
+.sim-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 16px; }
+.bit-input {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 7px 12px;
+  width: 130px;
+  letter-spacing: 2px;
+}
+.bit-input:focus { outline: none; border-color: var(--green); }
+.sim-status {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.status-item { display: flex; flex-direction: column; gap: 4px; }
+.status-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
+.status-value { font-size: 14px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); }
+.status-value.high { color: var(--green); }
+.status-value.low  { color: var(--red); }
+.status-desc { font-size: 13px; color: var(--text-sec); margin-top: 8px; }
+
+/* ============================================================
+   TRANSACTION SIMULATOR
+   ============================================================ */
+.transaction-steps {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+.txn-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  min-width: 90px;
+}
+.txn-step-node {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-card2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition: all 0.3s;
+  position: relative;
+  z-index: 1;
+}
+.txn-step.active .txn-step-node  { border-color: var(--green); color: var(--green); background: var(--green-glow); box-shadow: 0 0 14px rgba(63,185,80,0.4); }
+.txn-step.done .txn-step-node    { border-color: var(--green-dim); color: #fff; background: var(--green-dim); }
+.txn-step-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); margin-top: 6px; text-align: center; max-width: 80px; }
+.txn-step.active .txn-step-label { color: var(--green); }
+.txn-step.done .txn-step-label   { color: var(--text-sec); }
+.txn-connector {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  margin-top: 17px;
+  min-width: 24px;
+  transition: background 0.3s;
+}
+.txn-connector.done { background: var(--green-dim); }
+
+.txn-panel {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  min-height: 120px;
+  transition: all 0.3s;
+}
+.txn-panel-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.txn-panel-detail { color: var(--text-sec); font-size: 14px; line-height: 1.7; }
+.txn-bits { display: flex; gap: 4px; margin-top: 12px; flex-wrap: wrap; }
+.txn-bit {
+  width: 32px; height: 32px;
+  border-radius: 5px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.txn-bit.b1 { color: var(--green); border-color: var(--green-dim); }
+.txn-bit.b0 { color: var(--text-sec); }
+.txn-bit.ack-bit { color: var(--amber); border-color: rgba(227,179,65,0.4); }
+
+/* ============================================================
+   WAVEFORM MINI (start/stop)
+   ============================================================ */
+.mini-wave {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.mini-wave-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.mini-wave-label { width: 36px; font-weight: 700; font-size: 10px; color: var(--text-sec); }
+.mini-wave-line { flex: 1; height: 24px; position: relative; display: flex; align-items: center; }
+.wave-svg { width: 100%; height: 24px; }
+
+/* ============================================================
+   ADDRESS CARDS
+   ============================================================ */
+.device-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+.device-card:hover { border-color: var(--green); box-shadow: 0 0 20px var(--green-glow); }
+.device-card.selected { border-color: var(--green); background: var(--green-glow); }
+.device-icon { font-size: 28px; margin-bottom: 8px; }
+.device-name { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.device-addr { font-family: var(--font-mono); font-size: 18px; font-weight: 800; color: var(--green); }
+.device-desc { font-size: 11px; color: var(--text-sec); margin-top: 6px; }
+
+/* ============================================================
+   ACK/NACK
+   ============================================================ */
+.ack-visual {
+  display: grid;
+  grid-template-columns: repeat(9,1fr);
+  gap: 4px;
+}
+.ack-cell {
+  aspect-ratio: 1;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all 0.3s;
+}
+.ack-cell.data   { color: var(--text-sec); }
+.ack-cell.active { color: var(--green); border-color: var(--green-dim); background: var(--green-glow); }
+.ack-cell.ack    { color: var(--green); border-color: var(--green-dim); background: var(--green-glow); }
+.ack-cell.nack   { color: var(--red); border-color: rgba(248,81,73,0.4); background: rgba(248,81,73,0.08); }
+.ack-cell-top { font-size: 8px; color: var(--text-dim); font-weight: 400; margin-bottom: 2px; }
+
+/* ============================================================
+   BUS DIAGRAM (multi-device)
+   ============================================================ */
+#bus-canvas { border-radius: var(--radius); background: var(--bg-code); display: block; }
+.device-select {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.device-select:focus { outline: none; border-color: var(--green); }
+.device-select option { background: var(--bg-card); }
+
+/* ============================================================
+   SCANNER
+   ============================================================ */
+.scanner-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+.scan-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  transition: all 0.15s;
+  font-size: 7.5px;
+}
+.scan-cell.scanning { background: rgba(88,166,255,0.1); border-color: var(--blue); color: var(--blue); }
+.scan-cell.found    { background: var(--green-glow); border-color: var(--green); color: var(--green); font-weight: 900; }
+.scan-cell.empty    { background: var(--bg-card2); color: var(--text-dim); }
+
+.scan-log {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  height: 180px;
+  overflow-y: auto;
+  margin-top: 16px;
+  line-height: 1.7;
+}
+.log-addr   { color: var(--text-dim); }
+.log-found  { color: var(--green); }
+.log-prompt { color: var(--text-sec); }
+.log-done   { color: var(--amber); font-weight: 700; }
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+.quiz-q {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+  display: none;
+}
+.quiz-q.active { display: block; }
+.quiz-q-text { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 18px; }
+.quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-sec);
+}
+.quiz-option:hover { border-color: var(--green); color: var(--text-primary); }
+.quiz-option.correct { border-color: var(--green); background: var(--green-glow); color: var(--text-primary); }
+.quiz-option.wrong   { border-color: var(--red); background: rgba(248,81,73,0.08); color: var(--text-primary); }
+.quiz-option.disabled { pointer-events: none; }
+.quiz-opt-letter {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.quiz-feedback {
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 12px 14px;
+  border-radius: 7px;
+  margin-top: 12px;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct { background: var(--green-glow); border: 1px solid var(--green-dim); color: var(--text-primary); }
+.quiz-feedback.wrong   { background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.3); color: var(--text-primary); }
+.quiz-progress { display: flex; gap: 4px; margin-bottom: 16px; }
+.quiz-pip { flex: 1; height: 3px; border-radius: 3px; background: var(--border); }
+.quiz-pip.done    { background: var(--green-dim); }
+.quiz-pip.correct { background: var(--green); }
+.quiz-pip.wrong   { background: var(--red); }
+
+.quiz-score {
+  text-align: center;
+  padding: 40px;
+  display: none;
+}
+.quiz-score-num { font-size: 64px; font-weight: 800; color: var(--green); line-height: 1; }
+.quiz-score-label { font-size: 14px; color: var(--text-sec); margin-top: 8px; }
+.quiz-score-grade { font-size: 20px; font-weight: 700; margin-top: 16px; }
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 20px; }
+.compare-table th, .compare-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); text-align: left; }
+.compare-table th { background: var(--bg-card2); color: var(--green); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; }
+.compare-table td:first-child { color: var(--text-sec); font-size: 12px; }
+.compare-table td.val-i2c { color: var(--text-primary); }
+.compare-table td.val-spi { color: var(--blue); }
+.compare-table tr:hover td { background: var(--green-pulse); }
+.compare-table th:nth-child(2), .compare-table td.val-i2c { border-left: 1px solid var(--green-dim); border-right: 1px solid var(--green-dim); }
+
+/* ============================================================
+   PULL-UP DIAGRAM
+   ============================================================ */
+.pullup-diagram {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 2;
+  color: var(--text-sec);
+  overflow-x: auto;
+}
+.pullup-vcc  { color: var(--red); }
+.pullup-res  { color: var(--amber); }
+.pullup-line { color: var(--green); }
+
+/* ============================================================
+   CLOCK STRETCH
+   ============================================================ */
+.stretch-stage {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+}
+.stretch-stage.active { border-color: var(--green); background: var(--green-glow); }
+.stretch-icon { font-size: 20px; }
+.stretch-text { font-size: 13px; color: var(--text-sec); }
+.stretch-stage.active .stretch-text { color: var(--text-primary); }
+.stretch-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+/* ============================================================
+   SUMMARY
+   ============================================================ */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 14px; margin-top: 28px; }
+.summary-card {
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  text-align: center;
+  transition: border-color var(--transition);
+}
+.summary-card:hover { border-color: var(--green); }
+.summary-symbol { font-family: var(--font-mono); font-size: 20px; font-weight: 800; color: var(--green); margin-bottom: 6px; }
+.summary-term   { font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.summary-def    { font-size: 11px; color: var(--text-sec); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  #hamburger { display: block; }
+  #hero { padding: 100px 24px 60px; flex-direction: column; }
+  .hero-visual { position: static; transform: none; width: 100%; margin-top: 40px; }
+  .section { padding: 60px 24px; }
+  .card-grid-2 { grid-template-columns: 1fr; }
+  .scanner-grid { grid-template-columns: repeat(8,1fr); }
+}
+@media (max-width: 560px) {
+  .section { padding: 48px 16px; }
+  .section-title { font-size: 1.5rem; }
+  .transaction-steps { gap: 0; }
+  .txn-step { min-width: 60px; }
+  .txn-step-label { font-size: 7px; }
+}
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 50;
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ============================================================
+   OVERLAY (mobile)
+   ============================================================ */
+#overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 99;
+}
+#overlay.show { display: block; }
+
+/* ============================================================
+   MISC
+   ============================================================ */
+hr.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+.text-green { color: var(--green); }
+.text-amber { color: var(--amber); }
+.text-red   { color: var(--red); }
+.text-blue  { color: var(--blue); }
+.text-mono  { font-family: var(--font-mono); }
+.mb-0 { margin-bottom: 0; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.info-box {
+  background: rgba(88,166,255,0.07);
+  border: 1px solid rgba(88,166,255,0.25);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--text-sec);
+  line-height: 1.65;
+  margin-top: 16px;
+}
+.info-box strong { color: var(--blue); }
+.warn-box {
+  background: rgba(227,179,65,0.07);
+  border: 1px solid rgba(227,179,65,0.25);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--text-sec);
+  line-height: 1.65;
+  margin-top: 16px;
+}
+.warn-box strong { color: var(--amber); }
+</style>
+</head>
+<body>
+
+<!-- OVERLAY (mobile) -->
+<div id="overlay"></div>
+
+<!-- HAMBURGER -->
+<button id="hamburger" aria-label="Open menu" onclick="toggleSidebar()">
+  <span class="ham-line"></span>
+  <span class="ham-line"></span>
+  <span class="ham-line"></span>
+</button>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<nav id="sidebar" aria-label="Course navigation">
+  <div class="sidebar-logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <rect width="28" height="28" rx="7" fill="#238636"/>
+      <path d="M7 14h14M14 7v14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+      <circle cx="14" cy="14" r="3" fill="#fff"/>
+    </svg>
+    <div>
+      <div class="sidebar-logo-text">I²C Lab</div>
+      <div class="sidebar-logo-sub">Interactive Learning</div>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-label">Sections</div>
+    <a class="nav-item active" href="#hero" onclick="closeSidebar()"><span class="nav-dot"></span>Introduction</a>
+    <a class="nav-item" href="#s-duplex" onclick="closeSidebar()"><span class="nav-dot"></span>Full vs Half Duplex</a>
+    <a class="nav-item" href="#s-arch" onclick="closeSidebar()"><span class="nav-dot"></span>I²C Architecture</a>
+    <a class="nav-item" href="#s-sdascl" onclick="closeSidebar()"><span class="nav-dot"></span>SDA &amp; SCL</a>
+    <a class="nav-item" href="#s-transaction" onclick="closeSidebar()"><span class="nav-dot"></span>I²C Transaction</a>
+    <a class="nav-item" href="#s-startstop" onclick="closeSidebar()"><span class="nav-dot"></span>Start &amp; Stop</a>
+    <a class="nav-item" href="#s-addressing" onclick="closeSidebar()"><span class="nav-dot"></span>Addressing</a>
+    <a class="nav-item" href="#s-ack" onclick="closeSidebar()"><span class="nav-dot"></span>ACK / NACK</a>
+    <a class="nav-item" href="#s-multidev" onclick="closeSidebar()"><span class="nav-dot"></span>Multiple Devices</a>
+    <a class="nav-item" href="#s-pullup" onclick="closeSidebar()"><span class="nav-dot"></span>Pull-up Resistors</a>
+    <a class="nav-item" href="#s-clockstretch" onclick="closeSidebar()"><span class="nav-dot"></span>Clock Stretching</a>
+    <a class="nav-item" href="#s-oled" onclick="closeSidebar()"><span class="nav-dot"></span>OLED Practical Lab</a>
+    <a class="nav-item" href="#s-scanner" onclick="closeSidebar()"><span class="nav-dot"></span>I²C Scanner</a>
+    <a class="nav-item" href="#s-code" onclick="closeSidebar()"><span class="nav-dot"></span>Complete Code</a>
+    <a class="nav-item" href="#s-compare" onclick="closeSidebar()"><span class="nav-dot"></span>I²C vs SPI</a>
+    <a class="nav-item" href="#s-quiz" onclick="closeSidebar()"><span class="nav-dot"></span>Knowledge Check</a>
+    <a class="nav-item" href="#s-summary" onclick="closeSidebar()"><span class="nav-dot"></span>Summary</a>
+  </div>
+</nav>
+
+<!-- ============================================================
+     MAIN
+     ============================================================ -->
+<main id="main">
+
+<!-- =========================================================== -->
+<!-- HERO                                                         -->
+<!-- =========================================================== -->
+<section id="hero" style="padding:0">
+  <div style="padding:80px 48px 60px;max-width:960px;margin:0 auto;display:flex;align-items:center;gap:48px;flex-wrap:wrap;min-height:100vh;position:relative;">
+    <div class="hero-bg"></div>
+    <div class="hero-content" style="flex:1;min-width:260px;position:relative;z-index:1;">
+      <div class="hero-tag"><span class="hero-tag-dot"></span>Interactive Learning Lab</div>
+      <h1 class="hero-title">I²C Communication<br><span>Interactive Lab</span></h1>
+      <p class="hero-sub">Understand how <strong style="color:var(--green)">SDA, SCL, Addressing, ACK/NACK</strong> and I²C devices communicate — visually and interactively. Go from theory to practical ESP32 code.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="document.getElementById('s-sdascl').scrollIntoView({behavior:'smooth'})">▶ Start Simulation</button>
+        <button class="btn btn-outline" onclick="document.getElementById('s-arch').scrollIntoView({behavior:'smooth'})">Learn I²C</button>
+      </div>
+      <div style="display:flex;gap:24px;margin-top:40px;flex-wrap:wrap;">
+        <div><div style="font-size:24px;font-weight:800;color:var(--green)">17</div><div style="font-size:11px;color:var(--text-sec)">Sections</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--amber)">6+</div><div style="font-size:11px;color:var(--text-sec)">Simulations</div></div>
+        <div><div style="font-size:24px;font-weight:800;color:var(--blue)">10</div><div style="font-size:11px;color:var(--text-sec)">Quiz Questions</div></div>
+      </div>
+    </div>
+    <!-- Bus hero visual -->
+    <div style="flex:0 0 340px;min-width:260px;position:relative;z-index:1;">
+      <div class="bus-diagram">
+        <div style="display:flex;justify-content:center;margin-bottom:16px;">
+          <div class="bus-device master" id="hero-master">ESP32 Controller</div>
+        </div>
+        <div class="bus-lines">
+          <div class="bus-line sda">
+            <div class="packet sda"></div>
+            <span class="bus-line-label">SDA</span>
+          </div>
+          <div class="bus-line scl">
+            <div class="packet scl"></div>
+            <span class="bus-line-label">SCL</span>
+          </div>
+        </div>
+        <div class="bus-connectors">
+          <div class="bus-connector-line"></div>
+          <div class="bus-connector-line"></div>
+          <div class="bus-connector-line"></div>
+        </div>
+        <div class="bus-slaves mt-8">
+          <div class="bus-device slave" id="hero-oled">OLED<br><span style="font-size:10px;font-family:var(--font-mono)">0x3C</span></div>
+          <div class="bus-device slave" id="hero-mpu">MPU6050<br><span style="font-size:10px;font-family:var(--font-mono)">0x68</span></div>
+          <div class="bus-device slave" id="hero-eeprom">EEPROM<br><span style="font-size:10px;font-family:var(--font-mono)">0x50</span></div>
+        </div>
+        <div style="text-align:center;margin-top:14px;">
+          <span class="badge badge-green">I²C Bus Active</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Introduction / Architecture                         -->
+<!-- =========================================================== -->
+<section class="section" id="s-arch">
+  <div class="section-eyebrow">Section 1</div>
+  <h2 class="section-title">What is I²C?</h2>
+  <p class="section-sub">I²C (Inter-Integrated Circuit) is a <strong>synchronous, address-based serial communication protocol</strong> that uses only two wires to connect multiple devices to a controller.</p>
+
+  <div class="card-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">
+    <div class="card">
+      <div class="card-title">SDA</div>
+      <div style="font-family:var(--font-mono);font-size:22px;font-weight:800;color:var(--green);margin-bottom:8px;">Serial Data</div>
+      <div style="font-size:13px;color:var(--text-sec)">Carries the actual data bits between controller and targets. Bidirectional — both sides use the same wire, one at a time.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">SCL</div>
+      <div style="font-family:var(--font-mono);font-size:22px;font-weight:800;color:var(--amber);margin-bottom:8px;">Serial Clock</div>
+      <div style="font-size:13px;color:var(--text-sec)">Provides the timing pulses. The controller always drives SCL. It tells the receiver exactly <em>when</em> to read SDA — it does <strong>not</strong> carry data itself.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Controller</div>
+      <div style="font-family:var(--font-mono);font-size:22px;font-weight:800;color:var(--blue);margin-bottom:8px;">Master</div>
+      <div style="font-size:13px;color:var(--text-sec)">Initiates all transactions, generates the clock, and selects which device to talk to using an address. Typically your microcontroller (ESP32, Arduino…).</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Target</div>
+      <div style="font-family:var(--font-mono);font-size:22px;font-weight:800;color:var(--purple);margin-bottom:8px;">Slave</div>
+      <div style="font-size:13px;color:var(--text-sec)">Responds when addressed by the controller. Can be an OLED display, sensor, EEPROM, etc. Each has a unique address.</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">Bus Topology</h3>
+  <div class="pullup-diagram">
+<span class="pullup-vcc">        VCC</span>
+<span class="pullup-vcc">         |</span>
+<span class="pullup-vcc">         |</span>
+<span style="color:var(--text-sec)">  ┌──────┴──────────────────────────────────────┐</span>
+<span style="color:var(--text-sec)">  │              ESP32 Controller               │</span>
+<span style="color:var(--text-sec)">  └──────┬──────────────────────────────────────┘</span>
+<span class="pullup-line">         │ SDA ──────────┬────────────┬──────────────── OLED 0x3C</span>
+<span style="color:var(--amber)">         │ SCL ──────────┼────────────┼──────────────── MPU6050 0x68</span>
+<span style="color:var(--text-sec)">                         │            │</span>
+<span style="color:var(--text-sec)">                      EEPROM       Sensor</span>
+<span style="color:var(--text-sec)">                      0x50         0x76</span>
+  </div>
+
+  <div class="info-box mt-16">
+    <strong>Key insight:</strong> All devices share the same SDA and SCL wires. The controller selects a specific device by sending its unique 7-bit address at the beginning of every transaction. All other devices ignore the transaction silently.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Full vs Half Duplex                                 -->
+<!-- =========================================================== -->
+<section class="section" id="s-duplex">
+  <div class="section-eyebrow">Section 2</div>
+  <h2 class="section-title">Full Duplex vs Half Duplex</h2>
+  <p class="section-sub">Understanding data direction is critical. SPI can send and receive simultaneously; I²C cannot — it uses the same wire for both directions, one at a time.</p>
+
+  <div class="duplex-toggle">
+    <button class="duplex-btn active" id="btn-spi" onclick="switchDuplex('spi')">SPI — Full Duplex</button>
+    <button class="duplex-btn"        id="btn-i2c" onclick="switchDuplex('i2c')">I²C — Half Duplex</button>
+  </div>
+
+  <div class="protocol-diagram active" id="duplex-spi">
+<span class="proto-label">MASTER</span>                         <span class="proto-label">SLAVE</span>
+<span style="color:var(--text-dim)">  │                               │</span>
+<span class="proto-line-tx">  │ ──────── MOSI ──────────────► │</span>  <span style="color:var(--text-sec)">← Master sends data to Slave</span>
+<span class="proto-line-rx">  │ ◄──────── MISO ──────────────  │</span>  <span style="color:var(--text-sec)">← Slave sends data to Master</span>
+<span style="color:var(--text-dim)">  │                               │</span>  <span style="color:var(--text-sec)">  (simultaneously!)</span>
+<span class="proto-line-clk">  │ ──────── SCLK ──────────────► │</span>  <span style="color:var(--text-sec)">← Clock from Master</span>
+<span class="proto-line-clk">  │ ──────── CS   ──────────────► │</span>  <span style="color:var(--text-sec)">← Chip select</span>
+
+<span class="proto-label">RESULT: Data flows in BOTH directions simultaneously → Full Duplex</span>
+<span style="color:var(--text-sec)">Requires 4 wires minimum (MOSI, MISO, SCLK, CS)</span>
+  </div>
+
+  <div class="protocol-diagram" id="duplex-i2c">
+<span class="proto-label">CONTROLLER</span>                      <span class="proto-label">TARGET</span>
+<span style="color:var(--text-dim)">  │                               │</span>
+<span class="proto-line-sda">  │ ──────── SDA ──────────────► │</span>  <span style="color:var(--text-sec)">← Controller writes data</span>
+<span class="proto-line-sda">  │ ◄──────── SDA ──────────────  │</span>  <span style="color:var(--text-sec)">← Target responds (ACK/read)</span>
+<span style="color:var(--text-dim)">  │                               │</span>  <span style="color:var(--text-sec)">  (but NOT at the same time!)</span>
+<span class="proto-line-clk">  │ ──────── SCL ──────────────► │</span>  <span style="color:var(--text-sec)">← Clock always from Controller</span>
+
+<span class="proto-label">RESULT: SDA is shared → only ONE direction active at a time → Half Duplex</span>
+<span style="color:var(--text-sec)">Requires only 2 wires (SDA, SCL) + pull-up resistors</span>
+  </div>
+
+  <div style="margin-top:24px;display:flex;gap:14px;flex-wrap:wrap;">
+    <div class="card" style="flex:1;min-width:220px;">
+      <div class="card-title">Why Half Duplex?</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">I²C uses open-drain bus lines. When the line is released, a pull-up resistor pulls it HIGH. Multiple devices share the wire using this mechanism — they can pull LOW but never actively drive HIGH. This means only one device can drive SDA at a time, making simultaneous bidirectional transmission impossible.</p>
+    </div>
+    <div class="card" style="flex:1;min-width:220px;">
+      <div class="card-title">Trade-offs</div>
+      <ul style="font-size:13px;color:var(--text-sec);line-height:1.9;padding-left:18px;">
+        <li>✓ Only 2 wires (SDA + SCL)</li>
+        <li>✓ Up to 127 devices on one bus</li>
+        <li>✓ Simple routing and PCB layout</li>
+        <li>✗ Slower than SPI in most cases</li>
+        <li>✗ No simultaneous bidirectional flow</li>
+        <li>✗ Protocol overhead per transaction</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: SDA & SCL Waveform                                  -->
+<!-- =========================================================== -->
+<section class="section" id="s-sdascl">
+  <div class="section-eyebrow">Section 3 — Interactive Simulation</div>
+  <h2 class="section-title">SDA &amp; SCL Waveforms</h2>
+  <p class="section-sub">Watch how each bit is transmitted. SCL provides the clock; SDA carries the data. Data is prepared while SCL is LOW, and sampled by the receiver when SCL goes HIGH.</p>
+
+  <div class="card mb-0">
+    <div class="card-title">Waveform Simulator</div>
+    <canvas id="waveform-canvas" width="800" height="180" style="width:100%;height:auto;max-height:180px;"></canvas>
+
+    <div class="sim-controls">
+      <button class="btn btn-primary" id="wave-play-btn" onclick="wavePlayPause()">▶ Play</button>
+      <button class="btn btn-ghost"   onclick="waveNextBit()">Next Bit</button>
+      <button class="btn btn-ghost"   onclick="waveReset()">↺ Reset</button>
+      <input  class="bit-input"       id="wave-byte-input" type="text" maxlength="8" value="10110010" placeholder="10110010" oninput="waveUpdateByte()">
+      <span style="font-size:12px;color:var(--text-sec);">← 8 bits to transmit</span>
+    </div>
+
+    <div class="sim-status" id="wave-status">
+      <div class="status-item">
+        <span class="status-label">Current Bit</span>
+        <span class="status-value" id="stat-bit">—</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Bit Index</span>
+        <span class="status-value" id="stat-idx">—</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">SCL State</span>
+        <span class="status-value" id="stat-scl">—</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">SDA State</span>
+        <span class="status-value" id="stat-sda">—</span>
+      </div>
+      <div class="status-item" style="flex:1;min-width:200px;">
+        <span class="status-label">What's Happening</span>
+        <span class="status-value" id="stat-desc" style="font-size:12px;font-weight:400;color:var(--text-sec);">Press Play to begin</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Why does SCL exist?</h3>
+  <div class="card-grid-2">
+    <div class="card" style="border-color:var(--amber)">
+      <div class="card-title" style="color:var(--amber)">SCL — Clock Signal</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">SCL is the synchronization signal. It tells the receiver <em>exactly when</em> to read the SDA line. Without SCL, the receiver would not know when a stable bit is ready. <strong>SCL does NOT carry data.</strong></p>
+      <div style="margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--amber);">SCL HIGH = sample SDA now<br>SCL LOW  = SDA may change (prepare next bit)</div>
+    </div>
+    <div class="card" style="border-color:var(--green)">
+      <div class="card-title">SDA — Data Signal</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">SDA carries the actual bits. It must remain <strong>stable while SCL is HIGH</strong> so the receiver can reliably sample it. SDA changes are only permitted while SCL is LOW (except for START and STOP conditions).</p>
+      <div style="margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--green);">SDA stable + SCL HIGH = valid bit<br>SDA changes + SCL LOW  = preparing bit</div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: I²C Transaction                                     -->
+<!-- =========================================================== -->
+<section class="section" id="s-transaction">
+  <div class="section-eyebrow">Section 4 — Step-by-Step</div>
+  <h2 class="section-title">I²C Transaction Simulator</h2>
+  <p class="section-sub">A complete I²C write transaction: from START condition to STOP. Use the buttons to walk through each step. Example: writing to an OLED at address <span class="text-mono text-green">0x3C</span>.</p>
+
+  <!-- Step nodes -->
+  <div class="transaction-steps" id="txn-steps"></div>
+
+  <!-- Step panel -->
+  <div class="txn-panel" id="txn-panel">
+    <div class="txn-panel-title" id="txn-title">Ready to simulate</div>
+    <div class="txn-panel-detail" id="txn-detail">Click "Next Step" to begin the I²C transaction.</div>
+    <div class="txn-bits" id="txn-bits"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="txn-next-btn" onclick="txnNext()">Next Step →</button>
+    <button class="btn btn-ghost"   onclick="txnReset()">↺ Reset</button>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Start & Stop                                        -->
+<!-- =========================================================== -->
+<section class="section" id="s-startstop">
+  <div class="section-eyebrow">Section 5</div>
+  <h2 class="section-title">START &amp; STOP Conditions</h2>
+  <p class="section-sub">START and STOP are special bus conditions, not data bits. They are defined by changes on SDA <em>while SCL is HIGH</em> — which is normally forbidden during data transfer.</p>
+
+  <div class="card-grid-2">
+    <div class="card" style="border-color:var(--green)">
+      <div class="card-title">START Condition</div>
+      <p style="font-size:13px;color:var(--text-sec);margin-bottom:16px;">SDA transitions from <strong style="color:var(--green)">HIGH → LOW</strong> while SCL is HIGH.</p>
+      <canvas id="start-canvas" width="300" height="80" style="width:100%;height:auto;"></canvas>
+      <p style="font-size:12px;color:var(--text-sec);margin-top:10px;">This signals to all devices on the bus that a transaction is beginning. All targets begin listening for their address.</p>
+    </div>
+    <div class="card" style="border-color:var(--red)">
+      <div class="card-title" style="color:var(--red)">STOP Condition</div>
+      <p style="font-size:13px;color:var(--text-sec);margin-bottom:16px;">SDA transitions from <strong style="color:var(--red)">LOW → HIGH</strong> while SCL is HIGH.</p>
+      <canvas id="stop-canvas"  width="300" height="80" style="width:100%;height:auto;"></canvas>
+      <p style="font-size:12px;color:var(--text-sec);margin-top:10px;">This signals the end of the transaction. The bus returns to idle (both lines HIGH). Any device may now initiate a new transaction.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Addressing                                          -->
+<!-- =========================================================== -->
+<section class="section" id="s-addressing">
+  <div class="section-eyebrow">Section 6 — Interactive</div>
+  <h2 class="section-title">I²C Addressing</h2>
+  <p class="section-sub">Every target device has a unique 7-bit address. The controller broadcasts this address at the start of each transaction. Only the matching device responds.</p>
+
+  <div class="card-grid" id="device-cards">
+    <div class="device-card" onclick="selectDevice('oled')">
+      <div class="device-icon">🖥️</div>
+      <div class="device-name">OLED SSD1306</div>
+      <div class="device-addr">0x3C</div>
+      <div class="device-desc">Common display address<br>Alt: 0x3D</div>
+    </div>
+    <div class="device-card" onclick="selectDevice('mpu')">
+      <div class="device-icon">📐</div>
+      <div class="device-name">MPU-6050</div>
+      <div class="device-addr">0x68</div>
+      <div class="device-desc">IMU (Gyro + Accel)<br>Alt: 0x69</div>
+    </div>
+    <div class="device-card" onclick="selectDevice('eeprom')">
+      <div class="device-icon">💾</div>
+      <div class="device-name">EEPROM 24LC</div>
+      <div class="device-addr">0x50</div>
+      <div class="device-desc">Non-volatile memory<br>A0–A2 pins set addr</div>
+    </div>
+    <div class="device-card" onclick="selectDevice('bme')">
+      <div class="device-icon">🌡️</div>
+      <div class="device-name">BME280</div>
+      <div class="device-addr">0x76</div>
+      <div class="device-desc">Temp/Pressure/Humidity<br>Alt: 0x77</div>
+    </div>
+  </div>
+
+  <div class="card mt-24" id="addr-detail" style="display:none;">
+    <div id="addr-detail-content"></div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;">7-bit Addressing Explained</h3>
+  <div class="card">
+    <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-sec);margin-bottom:16px;">
+      <div style="margin-bottom:8px;">Address byte transmitted on I²C bus (MSB first):</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A6</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 7</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A5</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 6</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A4</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 5</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A3</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 4</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A2</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 3</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A1</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 2</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid var(--border);padding:6px 10px;border-radius:5px;color:var(--green);font-weight:700;">A0</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 1</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:var(--bg-card2);border:1px solid rgba(88,166,255,0.4);padding:6px 10px;border-radius:5px;color:var(--blue);font-weight:700;">R/W</div>
+          <div style="font-size:9px;color:var(--text-dim);margin-top:4px;">Bit 0</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">The 7-bit address occupies the upper 7 bits. The 8th bit (LSB) is the <strong style="color:var(--blue)">R/W bit</strong>: 0 = Write, 1 = Read. So address 0x3C (binary: 0111100) transmitted as a write byte becomes <span style="font-family:var(--font-mono);color:var(--green)">0x78</span> on the wire (0111100<strong style="color:var(--blue)">0</strong>). In your code, you only specify the 7-bit address (0x3C); the library handles the R/W bit automatically.</p>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: ACK / NACK                                          -->
+<!-- =========================================================== -->
+<section class="section" id="s-ack">
+  <div class="section-eyebrow">Section 7 — Interactive</div>
+  <h2 class="section-title">ACK &amp; NACK</h2>
+  <p class="section-sub">After every byte (8 bits) is transmitted, the receiver must acknowledge receipt. This uses a 9th clock pulse on SCL. The ACK/NACK phase confirms the communication is working.</p>
+
+  <div class="ack-visual" id="ack-visual">
+    <!-- built by JS -->
+  </div>
+
+  <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+    <button class="btn btn-primary"  onclick="ackSend(0)">Send ACK (SDA = LOW)</button>
+    <button class="btn btn-danger"   onclick="ackSend(1)">Send NACK (SDA = HIGH)</button>
+    <button class="btn btn-ghost"    onclick="ackReset()">↺ Reset</button>
+  </div>
+
+  <div class="sim-status mt-16">
+    <div class="status-item">
+      <span class="status-label">9th Clock</span>
+      <span class="status-value text-amber">SCL HIGH</span>
+    </div>
+    <div class="status-item" style="flex:1;">
+      <span class="status-label">Result</span>
+      <span class="status-value" id="ack-result">Waiting…</span>
+    </div>
+    <div class="status-item" style="flex:2;">
+      <span class="status-label">Meaning</span>
+      <span class="status-desc" id="ack-meaning">Click "Send ACK" or "Send NACK" above.</span>
+    </div>
+  </div>
+
+  <div class="card-grid-2 mt-24">
+    <div class="card" style="border-color:var(--green)">
+      <div class="card-title">ACK (Acknowledge)</div>
+      <div style="font-family:var(--font-mono);color:var(--green);font-size:18px;font-weight:800;margin-bottom:8px;">SDA = LOW</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">The receiver pulls SDA LOW during the 9th clock pulse. This signals: "I received the byte successfully, send more."</p>
+      <p style="font-size:12px;color:var(--text-sec);margin-top:8px;"><strong>When sent:</strong> Target to controller (after address byte), target to controller (after each data byte in read), controller to target (after each data byte in write).</p>
+    </div>
+    <div class="card" style="border-color:var(--red)">
+      <div class="card-title" style="color:var(--red)">NACK (Not Acknowledge)</div>
+      <div style="font-family:var(--font-mono);color:var(--red);font-size:18px;font-weight:800;margin-bottom:8px;">SDA = HIGH</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">SDA remains HIGH during the 9th clock pulse. This signals: "Not ready", "Error", "No such device", or "Last byte in read."</p>
+      <p style="font-size:12px;color:var(--text-sec);margin-top:8px;"><strong>When sent:</strong> Address doesn't match any device, device busy, controller sends NACK after last byte it wants to read.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Multiple Devices                                    -->
+<!-- =========================================================== -->
+<section class="section" id="s-multidev">
+  <div class="section-eyebrow">Section 8 — Interactive</div>
+  <h2 class="section-title">Multiple Devices on One Bus</h2>
+  <p class="section-sub">One of I²C's greatest strengths: many devices on just two wires. Select a device below to simulate communication.</p>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+    <label style="font-size:13px;color:var(--text-sec);">Select target device:</label>
+    <select class="device-select" id="bus-device-select" onchange="busSelectDevice()">
+      <option value="">— None (idle) —</option>
+      <option value="0x3C">OLED (0x3C)</option>
+      <option value="0x68">MPU-6050 (0x68)</option>
+      <option value="0x50">EEPROM (0x50)</option>
+      <option value="0x76">BME280 (0x76)</option>
+    </select>
+    <button class="btn btn-primary" onclick="busAnimate()">Simulate Communication</button>
+  </div>
+
+  <canvas id="bus-canvas" width="760" height="280" style="width:100%;height:auto;max-height:280px;"></canvas>
+
+  <div class="info-box mt-16" id="bus-info">Select a device above to begin the simulation.</div>
+
+  <div class="warn-box">
+    <strong>Address Conflicts:</strong> Two devices with the same address on the same I²C bus will both respond simultaneously, causing bus contention. Many devices allow configuring their address via hardware pins (e.g. ADDR pin on MPU-6050, A0–A2 pins on EEPROMs) to avoid this.
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Pull-up Resistors                                   -->
+<!-- =========================================================== -->
+<section class="section" id="s-pullup">
+  <div class="section-eyebrow">Section 9</div>
+  <h2 class="section-title">Pull-up Resistors</h2>
+  <p class="section-sub">I²C uses open-drain bus lines. Devices can only pull the line LOW — they cannot actively drive it HIGH. Pull-up resistors complete the circuit by pulling idle lines HIGH.</p>
+
+  <div class="pullup-diagram">
+<span class="pullup-vcc">  VCC (3.3V or 5V)</span>
+<span class="pullup-vcc">       │         │</span>
+<span class="pullup-res">    [4.7kΩ]    [4.7kΩ]</span>    <span style="color:var(--text-sec)">← Pull-up resistors</span>
+<span class="pullup-vcc">       │         │</span>
+<span class="pullup-line">  SDA ─┘         └─ SCL</span>
+<span style="color:var(--text-dim)">       │    I²C   │</span>
+<span style="color:var(--text-dim)">       ├──── Bus ──┤</span>
+<span style="color:var(--text-dim)">       │         │</span>
+<span style="color:var(--text-sec)">  ┌────┴────┐ ┌──┴──────┐ ┌────────────┐</span>
+<span style="color:var(--text-sec)">  │ ESP32   │ │ OLED    │ │ MPU-6050   │</span>
+<span style="color:var(--text-sec)">  │ (ctrl)  │ │ 0x3C   │ │ 0x68       │</span>
+<span style="color:var(--text-sec)">  └─────────┘ └─────────┘ └────────────┘</span>
+<span style="color:var(--text-sec)">  Open-drain outputs: can pull LOW, but only resistor can pull HIGH</span>
+  </div>
+
+  <div class="card-grid mt-24">
+    <div class="card">
+      <div class="card-title">Why Open-Drain?</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Open-drain allows multiple devices to share the bus safely. If two devices tried to simultaneously drive the line (one HIGH, one LOW), they would short-circuit. With open-drain, devices only pull LOW — the resistor provides HIGH when no device is pulling.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Resistor Values</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Typical values: <strong style="color:var(--green)">2.2kΩ – 10kΩ</strong>. Lower values provide faster rise times (better for high-speed I²C) but draw more current. Higher values save power but limit speed. Most designs use <strong>4.7kΩ</strong> as a safe default.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">ESP32 Internal Pull-ups</div>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">The Wire library on ESP32 can enable internal pull-up resistors, which are typically ~45kΩ. This may work for short cables and low speed, but external 4.7kΩ resistors are strongly recommended for reliable communication.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Clock Stretching                                    -->
+<!-- =========================================================== -->
+<section class="section" id="s-clockstretch">
+  <div class="section-eyebrow">Section 10 — Interactive</div>
+  <h2 class="section-title">Clock Stretching</h2>
+  <p class="section-sub">Sometimes a target device needs more time to prepare data. Rather than losing synchronization, I²C allows the target to hold SCL LOW until it is ready. This is clock stretching.</p>
+
+  <div id="stretch-stages">
+    <div class="stretch-stage" id="stretch-0">
+      <div class="stretch-icon">⏱️</div>
+      <div><div class="stretch-title">Controller drives SCL HIGH</div><div class="stretch-text">The controller finishes sending a byte and raises SCL to start the ACK clock pulse.</div></div>
+    </div>
+    <div class="stretch-stage" id="stretch-1">
+      <div class="stretch-icon">🛑</div>
+      <div><div class="stretch-title">Target holds SCL LOW</div><div class="stretch-text">The target is not ready (e.g., still processing the command). It uses its open-drain pin to hold the SCL line LOW, even though the controller tried to raise it.</div></div>
+    </div>
+    <div class="stretch-stage" id="stretch-2">
+      <div class="stretch-icon">⏳</div>
+      <div><div class="stretch-title">Controller detects stretched clock and waits</div><div class="stretch-text">The controller reads back SCL and finds it still LOW. It enters a wait state, halting the clock. A well-designed controller handles this gracefully; some simpler controllers may time out.</div></div>
+    </div>
+    <div class="stretch-stage" id="stretch-3">
+      <div class="stretch-icon">✅</div>
+      <div><div class="stretch-title">Target releases SCL</div><div class="stretch-text">When the target is ready, it releases its hold on SCL. The pull-up resistor raises SCL HIGH. The controller sees SCL go HIGH and resumes the transaction normally.</div></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="stretchNext()">▶ Next Stage</button>
+    <button class="btn btn-ghost"   onclick="stretchReset()">↺ Reset</button>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: OLED Practical Lab                                  -->
+<!-- =========================================================== -->
+<section class="section" id="s-oled">
+  <div class="section-eyebrow">Section 11 — Practical</div>
+  <h2 class="section-title">OLED Practical Lab</h2>
+  <p class="section-sub">Connect an SSD1306 I²C OLED display to an ESP32. Below is the wiring, library explanation, and complete code.</p>
+
+  <div class="card-grid-2">
+    <div class="card">
+      <div class="card-title">Wiring Diagram</div>
+      <div class="pullup-diagram" style="font-size:11.5px;">
+<span style="color:var(--text-primary);font-weight:700;">ESP32              OLED SSD1306</span>
+<span style="color:var(--text-dim);">────────────────────────────────</span>
+<span style="color:var(--red);">3.3V  ─────────────── VCC</span>
+<span style="color:var(--text-sec);">GND   ─────────────── GND</span>
+<span class="pullup-line">GPIO21 ────────────── SDA</span>
+<span style="color:var(--amber);">GPIO22 ────────────── SCL</span>
+<span style="color:var(--text-dim);">────────────────────────────────</span>
+<span style="color:var(--text-dim);">+ 4.7kΩ pull-ups on SDA &amp; SCL</span>
+<span style="color:var(--text-dim);">  to 3.3V (or use module's)</span>
+      </div>
+      <div class="warn-box" style="margin-top:12px;">
+        <strong>Note:</strong> GPIO21/22 are ESP32's default I²C pins. Some boards (ESP32-S2, S3, C3) use different defaults. Check your board's pinout.
+      </div>
+    </div>
+    <div>
+      <div class="card mb-0" style="margin-bottom:16px;">
+        <div class="card-title">VCC</div>
+        <p style="font-size:13px;color:var(--text-sec);">Powers the OLED. SSD1306 operates at 3.3V (or 5V on some modules via onboard regulator). Match to your ESP32's logic level — always use 3.3V for pure 3.3V ESP32 boards.</p>
+      </div>
+      <div class="card mb-0" style="margin-bottom:16px;">
+        <div class="card-title">GND</div>
+        <p style="font-size:13px;color:var(--text-sec);">Common ground. Always connect GND between controller and all I²C devices. Without a shared GND, voltage levels are meaningless.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">OLED Address</div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="btn btn-ghost" id="addr-btn-3c" onclick="selectOledAddr('0x3C')" style="border-color:var(--green);color:var(--green)">0x3C (default)</button>
+          <button class="btn btn-ghost" id="addr-btn-3d" onclick="selectOledAddr('0x3D')">0x3D (alt)</button>
+        </div>
+        <p style="font-size:12px;color:var(--text-sec);">Set by the SA0 pin on the SSD1306. Use an I²C scanner to confirm your module's actual address before writing code.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Required Libraries</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Wire.h</div>
+      <span class="badge badge-green" style="margin-bottom:10px;">Built-in</span>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Arduino's I²C library. Handles all low-level I²C protocol: START/STOP conditions, addressing, byte transmission, and ACK handling. <code style="font-family:var(--font-mono);color:var(--green);">Wire.begin(SDA, SCL)</code> initializes the bus.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Adafruit_GFX.h</div>
+      <span class="badge badge-amber" style="margin-bottom:10px;">Install via Library Manager</span>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Graphics abstraction layer. Provides text drawing, shapes, bitmaps, and pixel operations. Platform-independent — works with any display driver.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Adafruit_SSD1306.h</div>
+      <span class="badge badge-amber" style="margin-bottom:10px;">Install via Library Manager</span>
+      <p style="font-size:13px;color:var(--text-sec);line-height:1.7;">Hardware driver for the SSD1306 OLED controller. Translates GFX drawing commands into I²C messages that the display's controller chip understands.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Complete Code                                       -->
+<!-- =========================================================== -->
+<section class="section" id="s-code">
+  <div class="section-eyebrow">Section 12 — Code Lab</div>
+  <h2 class="section-title">Complete OLED Code</h2>
+  <p class="section-sub">Full working example for ESP32 + SSD1306 OLED via I²C. Click any line to see an explanation.</p>
+
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+    <label style="font-size:13px;color:var(--text-sec)">OLED Address:</label>
+    <select class="device-select" id="code-addr-select" onchange="updateCodeAddr()">
+      <option value="0x3C">0x3C (default)</option>
+      <option value="0x3D">0x3D (alternate)</option>
+    </select>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+        <span class="code-lang">Arduino C++</span>
+        <span class="badge badge-green">ESP32 + OLED</span>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" style="padding:5px 12px;font-size:11px;" onclick="copyCode()">Copy</button>
+      </div>
+    </div>
+    <pre id="code-block-content" style="cursor:default;"></pre>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="explainCode()">📖 Explain Selected</button>
+    <button class="btn btn-ghost"   onclick="copyCode()">📋 Copy Code</button>
+  </div>
+
+  <div class="card mt-16" id="code-explain-box" style="display:none;border-color:var(--blue)">
+    <div class="card-title" style="color:var(--blue)">Code Explanation</div>
+    <div id="code-explain-text" style="font-size:13px;color:var(--text-sec);line-height:1.75;"></div>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: I²C Scanner                                        -->
+<!-- =========================================================== -->
+<section class="section" id="s-scanner">
+  <div class="section-eyebrow">Section 13</div>
+  <h2 class="section-title">I²C Scanner</h2>
+  <p class="section-sub">If you don't know your device's address, upload the scanner sketch first. It will print all responding addresses to the Serial Monitor.</p>
+
+  <div class="code-block" style="margin-bottom:24px;">
+    <div class="code-header">
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div>
+        <span class="code-lang">I²C Scanner Sketch</span>
+      </div>
+      <button class="btn btn-ghost" style="padding:5px 12px;font-size:11px;" onclick="copyScanner()">Copy</button>
+    </div>
+    <pre id="scanner-code"></pre>
+  </div>
+
+  <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">Line-by-Line Explanation</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Wire.begin(21, 22)</div>
+      <p style="font-size:13px;color:var(--text-sec);">Initializes the I²C peripheral with SDA=GPIO21 and SCL=GPIO22. Configures the pins, enables internal pull-ups, and sets the clock speed (default 100kHz).</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Wire.beginTransmission(addr)</div>
+      <p style="font-size:13px;color:var(--text-sec);">Queues a START condition + address byte to be sent. The address is the 7-bit device address. This does not yet transmit anything.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">Wire.endTransmission()</div>
+      <p style="font-size:13px;color:var(--text-sec);">Actually sends the queued data (START + address + data if any + STOP). Returns 0 if the address was acknowledged (device found), or an error code if no device responded.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <h3 style="font-size:15px;font-weight:700;margin-bottom:8px;">Browser Scanner Simulation <span class="badge badge-blue" style="margin-left:8px;">Simulation</span></h3>
+  <p style="font-size:13px;color:var(--text-sec);margin-bottom:20px;">This simulates what the scanner would output. Virtual devices are present at 0x3C, 0x68, and 0x50.</p>
+
+  <div class="scanner-grid" id="scanner-grid">
+    <!-- built by JS -->
+  </div>
+
+  <div class="scan-log" id="scan-log">
+    <span class="log-prompt">I2C Scanner ready. Press "Start Scan" to begin...</span>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" id="scan-btn" onclick="scanStart()">▶ Start Scan</button>
+    <button class="btn btn-ghost"   id="scan-pause-btn" onclick="scanPause()">⏸ Pause</button>
+    <button class="btn btn-ghost"   onclick="scanReset()">↺ Reset</button>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: I²C vs SPI                                         -->
+<!-- =========================================================== -->
+<section class="section" id="s-compare">
+  <div class="section-eyebrow">Section 14</div>
+  <h2 class="section-title">I²C vs SPI Comparison</h2>
+  <p class="section-sub">Both are popular synchronous serial protocols. Choose based on your wiring constraints, speed requirements, and number of devices.</p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>I²C</th>
+        <th>SPI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Data wires</td><td class="val-i2c">1 (SDA shared)</td><td class="val-spi">2 (MOSI + MISO)</td></tr>
+      <tr><td>Clock wire</td><td class="val-i2c">1 (SCL)</td><td class="val-spi">1 (SCLK)</td></tr>
+      <tr><td>Chip select</td><td class="val-i2c">None (address-based)</td><td class="val-spi">1 CS per device</td></tr>
+      <tr><td>Min wires for 1 device</td><td class="val-i2c">2 (+ pull-ups)</td><td class="val-spi">4</td></tr>
+      <tr><td>Min wires for N devices</td><td class="val-i2c">2 (+ pull-ups)</td><td class="val-spi">3 + N</td></tr>
+      <tr><td>Duplex mode</td><td class="val-i2c"><span class="badge badge-amber">Half Duplex</span></td><td class="val-spi"><span class="badge badge-green">Full Duplex</span></td></tr>
+      <tr><td>Device addressing</td><td class="val-i2c">7-bit software address</td><td class="val-spi">Hardware CS pin</td></tr>
+      <tr><td>Typical speed</td><td class="val-i2c">100kHz / 400kHz / 1MHz+</td><td class="val-spi">1–80+ MHz</td></tr>
+      <tr><td>Protocol overhead</td><td class="val-i2c">Higher (START, ADDR, ACK)</td><td class="val-spi">Lower (raw bit stream)</td></tr>
+      <tr><td>Max devices</td><td class="val-i2c">Up to 127 (7-bit addr)</td><td class="val-spi">Limited by CS pins</td></tr>
+      <tr><td>Clock source</td><td class="val-i2c">Controller always</td><td class="val-spi">Master always</td></tr>
+      <tr><td>Clock stretching</td><td class="val-i2c"><span class="badge badge-green">Yes (target can hold)</span></td><td class="val-spi">No</td></tr>
+      <tr><td>Common use cases</td><td class="val-i2c">Sensors, displays, EEPROMs</td><td class="val-spi">Flash, SD cards, high-speed DAC/ADC</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Quiz                                                -->
+<!-- =========================================================== -->
+<section class="section" id="s-quiz">
+  <div class="section-eyebrow">Section 15 — Test Yourself</div>
+  <h2 class="section-title">Knowledge Check</h2>
+  <p class="section-sub">10 questions covering everything in this lab. No time limit.</p>
+
+  <div class="quiz-progress" id="quiz-progress">
+    <!-- pips built by JS -->
+  </div>
+
+  <div id="quiz-questions">
+    <!-- built by JS -->
+  </div>
+
+  <div id="quiz-nav" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+    <button class="btn btn-primary" id="quiz-next-btn" onclick="quizNext()" disabled>Next Question →</button>
+    <span id="quiz-counter" style="display:flex;align-items:center;font-size:13px;color:var(--text-sec);">Q 1 / 10</span>
+  </div>
+
+  <div class="quiz-score" id="quiz-score">
+    <div class="quiz-score-num" id="quiz-score-pct">0%</div>
+    <div class="quiz-score-label">Questions answered correctly</div>
+    <div class="quiz-score-grade" id="quiz-score-grade"></div>
+    <div style="font-size:13px;color:var(--text-sec);margin-top:12px;" id="quiz-score-detail"></div>
+    <button class="btn btn-primary" style="margin-top:24px;" onclick="quizRestart()">↺ Restart Quiz</button>
+  </div>
+</section>
+
+<!-- =========================================================== -->
+<!-- SECTION: Summary                                             -->
+<!-- =========================================================== -->
+<section class="section" id="s-summary">
+  <div class="section-eyebrow">Section 16 — Wrap-up</div>
+  <h2 class="section-title">Summary</h2>
+  <p class="section-sub">Everything you need to remember about I²C communication in one place.</p>
+
+  <div class="summary-grid">
+    <div class="summary-card"><div class="summary-symbol">SDA</div><div class="summary-term">Serial Data</div><div class="summary-def">Carries actual data bits, bidirectional, one direction at a time</div></div>
+    <div class="summary-card"><div class="summary-symbol">SCL</div><div class="summary-term">Serial Clock</div><div class="summary-def">Timing signal from controller. Does NOT carry data.</div></div>
+    <div class="summary-card"><div class="summary-symbol">S</div><div class="summary-term">START</div><div class="summary-def">SDA HIGH→LOW while SCL HIGH. Begins every transaction.</div></div>
+    <div class="summary-card"><div class="summary-symbol">P</div><div class="summary-term">STOP</div><div class="summary-def">SDA LOW→HIGH while SCL HIGH. Ends every transaction.</div></div>
+    <div class="summary-card"><div class="summary-symbol">0x</div><div class="summary-term">Address</div><div class="summary-def">7-bit unique ID for each device on the bus</div></div>
+    <div class="summary-card"><div class="summary-symbol">R/W</div><div class="summary-term">Direction Bit</div><div class="summary-def">0 = Write, 1 = Read. Appended to address byte.</div></div>
+    <div class="summary-card"><div class="summary-symbol">ACK</div><div class="summary-term">Acknowledge</div><div class="summary-def">SDA pulled LOW on 9th clock. "Byte received OK."</div></div>
+    <div class="summary-card"><div class="summary-symbol">NACK</div><div class="summary-term">No Acknowledge</div><div class="summary-def">SDA stays HIGH. Error, not ready, or last read byte.</div></div>
+    <div class="summary-card"><div class="summary-symbol">½D</div><div class="summary-term">Half Duplex</div><div class="summary-def">Only one direction at a time on the shared SDA line</div></div>
+    <div class="summary-card"><div class="summary-symbol">↑R</div><div class="summary-term">Pull-up</div><div class="summary-def">Required. Returns open-drain bus to HIGH when idle.</div></div>
+    <div class="summary-card"><div class="summary-symbol">CS</div><div class="summary-term">Stretch</div><div class="summary-def">Target can hold SCL LOW to request more time</div></div>
+    <div class="summary-card"><div class="summary-symbol">127</div><div class="summary-term">Max Devices</div><div class="summary-def">7-bit addressing allows up to 127 devices on one bus</div></div>
+  </div>
+
+  <div class="card mt-32" style="border-color:var(--green)">
+    <div class="card-title">Full I²C Write Transaction Flow</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;font-family:var(--font-mono);">
+      <span class="badge badge-green">START</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-blue">ADDR (7-bit)</span>
+      <span style="color:var(--text-dim)">+</span>
+      <span class="badge badge-blue">W(0)</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-green">ACK</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-amber">DATA[0]</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-green">ACK</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-amber">DATA[n]</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-green">ACK</span>
+      <span style="color:var(--text-dim)">→</span>
+      <span class="badge badge-red">STOP</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;padding:32px;background:var(--bg-card2);border-radius:var(--radius-lg);border:1px solid var(--border);">
+    <div style="font-size:13px;color:var(--text-sec);margin-bottom:8px;">You've completed the I²C Interactive Lab</div>
+    <div style="font-size:28px;font-weight:800;color:var(--green);margin-bottom:16px;">ESP32 → I²C Bus → OLED 0x3C</div>
+    <div style="font-size:13px;color:var(--text-sec);">Two wires. 127 devices. Endless possibilities.</div>
+    <div class="btn-row" style="justify-content:center;margin-top:20px;">
+      <button class="btn btn-primary" onclick="document.getElementById('s-quiz').scrollIntoView({behavior:'smooth'})">Take the Quiz</button>
+      <button class="btn btn-outline" onclick="window.scrollTo({top:0,behavior:'smooth'})">Back to Top</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function $(id){ return document.getElementById(id); }
+
+/* ============================================================
+   SIDEBAR / NAVIGATION
+   ============================================================ */
+function toggleSidebar(){
+  const sb = $('sidebar'), ov = $('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar(){
+  $('sidebar').classList.remove('open');
+  $('overlay').classList.remove('show');
+}
+$('overlay').addEventListener('click', closeSidebar);
+
+function initNavigation(){
+  const items = document.querySelectorAll('.nav-item');
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  function onScroll(){
+    const scrollY = window.scrollY + 120;
+    let current = sections[0].id;
+    sections.forEach(s => { if(scrollY >= s.offsetTop) current = s.id; });
+    items.forEach(item => {
+      const href = item.getAttribute('href');
+      item.classList.toggle('active', href === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+}
+
+/* ============================================================
+   DUPLEX SIMULATION
+   ============================================================ */
+function switchDuplex(mode){
+  $('btn-spi').classList.toggle('active', mode==='spi');
+  $('btn-i2c').classList.toggle('active', mode==='i2c');
+  $('duplex-spi').classList.toggle('active', mode==='spi');
+  $('duplex-i2c').classList.toggle('active', mode==='i2c');
+}
+function initDuplexSimulation(){ /* default set in HTML */ }
+
+/* ============================================================
+   WAVEFORM SIMULATOR
+   ============================================================ */
+let waveState = {
+  byte: '10110010',
+  currentBit: -1,
+  playing: false,
+  phase: 0,  // 0=scl-low 1=scl-rise 2=scl-high 3=scl-fall
+  timer: null
+};
+
+function initWaveformSimulation(){
+  waveReset();
+}
+
+function waveDrawStatic(highlightBit, sclPhase){
+  const canvas = $('waveform-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const byte = waveState.byte.padEnd(8,'0').slice(0,8);
+  const bits = byte.split('').map(Number);
+
+  ctx.clearRect(0,0,W,H);
+
+  const padL = 60, padR = 20, padT = 20;
+  const rowH = 60;
+  const bitW = (W - padL - padR) / 8;
+  const sclY = padT + rowH * 0;
+  const sdaY = padT + rowH * 1;
+
+  // labels
+  ctx.fillStyle = '#e3b341';
+  ctx.font = 'bold 12px ' + getComputedStyle(document.body).getPropertyValue('--font-mono') || 'monospace';
+  ctx.fillText('SCL', 4, sclY + 18);
+  ctx.fillStyle = '#3fb950';
+  ctx.fillText('SDA', 4, sdaY + 18);
+
+  // draw waveforms
+  function drawSCL(){
+    ctx.beginPath();
+    ctx.strokeStyle = '#e3b341';
+    ctx.lineWidth = 2;
+    let x = padL;
+    ctx.moveTo(x, sclY + 32); // start LOW
+    for(let i = 0; i < 8; i++){
+      const bx = padL + i * bitW;
+      const nx = bx + bitW;
+      const lowPhase  = bitW * 0.3;
+      const highPhase = bitW * 0.4;
+
+      // SCL LOW -> HIGH -> LOW per bit
+      ctx.lineTo(bx + lowPhase * 0.5, sclY + 32);
+      ctx.lineTo(bx + lowPhase * 0.5, sclY + 6);
+      ctx.lineTo(bx + lowPhase * 0.5 + highPhase, sclY + 6);
+      ctx.lineTo(bx + lowPhase * 0.5 + highPhase, sclY + 32);
+      ctx.lineTo(nx, sclY + 32);
+      x = nx;
+    }
+    ctx.stroke();
+  }
+
+  function drawSDA(){
+    ctx.beginPath();
+    ctx.strokeStyle = '#3fb950';
+    ctx.lineWidth = 2;
+    ctx.moveTo(padL, sdaY + (bits[0] ? 6 : 32));
+    for(let i = 0; i < 8; i++){
+      const bx = padL + i * bitW;
+      const nx = bx + bitW;
+      const v = bits[i] ? 6 : 32;
+      const nv = i < 7 ? (bits[i+1] ? 6 : 32) : (bits[i] ? 6 : 32);
+      ctx.lineTo(bx + bitW * 0.15, sdaY + v);   // stable during SCL HIGH
+      ctx.lineTo(nx - bitW * 0.05, sdaY + v);
+      if(i < 7){
+        ctx.lineTo(nx + bitW * 0.02, sdaY + nv); // transition during SCL LOW
+      }
+    }
+    ctx.stroke();
+  }
+
+  drawSCL();
+  drawSDA();
+
+  // bit labels
+  ctx.font = 'bold 11px monospace';
+  for(let i = 0; i < 8; i++){
+    const cx = padL + (i + 0.5) * bitW;
+    const col = (highlightBit === i) ? '#58a6ff' : (bits[i] ? '#3fb950' : '#8b949e');
+    ctx.fillStyle = col;
+    ctx.textAlign = 'center';
+    ctx.fillText(bits[i].toString(), cx, H - 6);
+  }
+  ctx.textAlign = 'left';
+
+  // highlight current bit column
+  if(highlightBit >= 0 && highlightBit < 8){
+    ctx.fillStyle = 'rgba(88,166,255,0.07)';
+    ctx.fillRect(padL + highlightBit * bitW, 0, bitW, H);
+    // moving clock indicator
+    const phaseFraction = (sclPhase||0) / 4;
+    const indicatorX = padL + highlightBit * bitW + phaseFraction * bitW;
+    ctx.strokeStyle = '#58a6ff';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath();
+    ctx.moveTo(indicatorX, 0);
+    ctx.lineTo(indicatorX, H - 18);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+function waveUpdateStatus(){
+  const bits = waveState.byte.padEnd(8,'0').slice(0,8).split('').map(Number);
+  const idx = waveState.currentBit;
+  const phase = waveState.phase;
+
+  $('stat-idx').textContent = idx >= 0 ? `Bit ${idx} (${idx===0?'MSB':idx===7?'LSB':''}` + ')' : '—';
+  if(idx < 0){
+    $('stat-bit').textContent = '—';
+    $('stat-scl').className = 'status-value';
+    $('stat-scl').textContent = 'IDLE';
+    $('stat-sda').textContent = 'HIGH';
+    $('stat-desc').textContent = 'Press Play to begin';
+    return;
+  }
+  const bit = bits[idx] || 0;
+  $('stat-bit').textContent = bit;
+  const sclHigh = phase === 1 || phase === 2;
+  const sclEl = $('stat-scl');
+  sclEl.textContent = sclHigh ? 'HIGH' : 'LOW';
+  sclEl.className = 'status-value ' + (sclHigh ? 'high' : 'low');
+  const sdaEl = $('stat-sda');
+  sdaEl.textContent = bit ? 'HIGH' : 'LOW';
+  sdaEl.className = 'status-value ' + (bit ? 'high' : 'low');
+
+  if(phase === 0)      $('stat-desc').textContent = `SCL LOW → SDA is being prepared for bit ${idx}: "${bit}"`;
+  else if(phase === 1) $('stat-desc').textContent = `SCL rising — receiver prepares to sample SDA`;
+  else if(phase === 2) $('stat-desc').textContent = `SCL HIGH — receiver samples SDA = "${bit}". This bit is "${bit===1?'ONE':'ZERO'}"`;
+  else                 $('stat-desc').textContent = `SCL falling back to LOW. Next bit preparation begins`;
+
+  waveDrawStatic(idx, phase);
+}
+
+function waveNextBit(){
+  waveState.phase++;
+  if(waveState.phase > 3){
+    waveState.phase = 0;
+    waveState.currentBit++;
+    if(waveState.currentBit >= 8){
+      waveState.currentBit = 8;
+      waveStop();
+      $('stat-desc').textContent = '✓ All 8 bits transmitted! Transaction phase complete.';
+      return;
+    }
+  }
+  waveUpdateStatus();
+}
+
+function wavePlayPause(){
+  if(waveState.playing){
+    waveStop();
+  } else {
+    waveState.playing = true;
+    $('wave-play-btn').textContent = '⏸ Pause';
+    if(waveState.currentBit < 0) waveState.currentBit = 0;
+    waveState.timer = setInterval(()=>{
+      if(waveState.currentBit >= 8){ waveStop(); return; }
+      waveNextBit();
+    }, 600);
+  }
+}
+
+function waveStop(){
+  waveState.playing = false;
+  clearInterval(waveState.timer);
+  $('wave-play-btn').textContent = '▶ Play';
+}
+
+function waveReset(){
+  waveStop();
+  waveState.currentBit = -1;
+  waveState.phase = 0;
+  waveDrawStatic(-1, 0);
+  $('stat-bit').textContent = '—';
+  $('stat-idx').textContent = '—';
+  $('stat-scl').textContent = '—';
+  $('stat-scl').className = 'status-value';
+  $('stat-sda').textContent = '—';
+  $('stat-desc').textContent = 'Press Play to begin';
+}
+
+function waveUpdateByte(){
+  const v = $('wave-byte-input').value;
+  const clean = v.replace(/[^01]/g,'').slice(0,8);
+  waveState.byte = clean || '10110010';
+  waveReset();
+}
+
+/* ============================================================
+   START / STOP MINI WAVEFORMS
+   ============================================================ */
+function drawStartWave(){
+  const c = $('start-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = 10;
+  const sclY = pad + 8;
+  const sdaY = pad + 40;
+  const mid = W/2;
+
+  ctx.font = 'bold 10px monospace';
+  ctx.fillStyle = '#e3b341'; ctx.fillText('SCL', 2, sclY+10);
+  ctx.fillStyle = '#3fb950'; ctx.fillText('SDA', 2, sdaY+10);
+
+  // SCL stays HIGH throughout
+  ctx.beginPath(); ctx.strokeStyle='#e3b341'; ctx.lineWidth=2;
+  ctx.moveTo(30, sclY+4); ctx.lineTo(W-pad, sclY+4); ctx.stroke();
+
+  // SDA: HIGH then drops LOW in middle
+  ctx.beginPath(); ctx.strokeStyle='#3fb950'; ctx.lineWidth=2;
+  ctx.moveTo(30, sdaY+2);
+  ctx.lineTo(mid - 20, sdaY+2);
+  ctx.lineTo(mid - 20, sdaY+22);
+  ctx.lineTo(W-pad, sdaY+22);
+  ctx.stroke();
+
+  // Label
+  ctx.fillStyle='#3fb950'; ctx.textAlign='center';
+  ctx.fillText('SDA: HIGH→LOW', mid, H-2);
+  ctx.textAlign='left';
+}
+
+function drawStopWave(){
+  const c = $('stop-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+
+  const pad = 10;
+  const sclY = pad + 8;
+  const sdaY = pad + 40;
+  const mid = W/2;
+
+  ctx.font = 'bold 10px monospace';
+  ctx.fillStyle = '#e3b341'; ctx.fillText('SCL', 2, sclY+10);
+  ctx.fillStyle = '#f85149'; ctx.fillText('SDA', 2, sdaY+10);
+
+  // SCL stays HIGH
+  ctx.beginPath(); ctx.strokeStyle='#e3b341'; ctx.lineWidth=2;
+  ctx.moveTo(30, sclY+4); ctx.lineTo(W-pad, sclY+4); ctx.stroke();
+
+  // SDA: LOW then rises HIGH in middle
+  ctx.beginPath(); ctx.strokeStyle='#f85149'; ctx.lineWidth=2;
+  ctx.moveTo(30, sdaY+22);
+  ctx.lineTo(mid - 20, sdaY+22);
+  ctx.lineTo(mid - 20, sdaY+2);
+  ctx.lineTo(W-pad, sdaY+2);
+  ctx.stroke();
+
+  ctx.fillStyle='#f85149'; ctx.textAlign='center';
+  ctx.fillText('SDA: LOW→HIGH', mid, H-2);
+  ctx.textAlign='left';
+}
+
+/* ============================================================
+   TRANSACTION SIMULATOR
+   ============================================================ */
+const TXN_STEPS = [
+  {
+    label:'START', icon:'S',
+    title:'START Condition',
+    detail:'The controller pulls SDA LOW while SCL is HIGH. This is the unique START condition that signals all devices on the bus that a transaction is beginning. All targets start listening.',
+    bits:[]
+  },
+  {
+    label:'ADDRESS', icon:'A',
+    title:'Address Byte — 0x3C (OLED)',
+    detail:'The controller sends the 7-bit address of the target device, MSB first. Address 0x3C in binary is 0111100. All 127 devices on the bus receive this; only 0x3C will respond.',
+    bits:[{v:'0',l:'A6'},{v:'1',l:'A5'},{v:'1',l:'A4'},{v:'1',l:'A3'},{v:'1',l:'A2'},{v:'0',l:'A1'},{v:'0',l:'A0'},{v:'0',l:'R/W',cls:'ack-bit'}]
+  },
+  {
+    label:'ACK', icon:'✓',
+    title:'Target Sends ACK (after address)',
+    detail:'The OLED at 0x3C recognizes its own address and pulls SDA LOW during the 9th clock pulse. This ACK tells the controller: "I\'m here and ready." If no device responds, SDA stays HIGH (NACK) and the controller knows no device was found at that address.',
+    bits:[{v:'ACK',l:'9th CLK',cls:'ack'}]
+  },
+  {
+    label:'DATA', icon:'D',
+    title:'Data Byte — Command (0x00)',
+    detail:'The controller sends the first data byte. For SSD1306, 0x00 is a control byte indicating that the next byte is a command. The data is sent MSB first, one bit per clock pulse on SDA.',
+    bits:[{v:'0',l:'7'},{v:'0',l:'6'},{v:'0',l:'5'},{v:'0',l:'4'},{v:'0',l:'3'},{v:'0',l:'2'},{v:'0',l:'1'},{v:'0',l:'0'}]
+  },
+  {
+    label:'ACK', icon:'✓',
+    title:'ACK after Data Byte',
+    detail:'The OLED acknowledges receiving the command byte by pulling SDA LOW on the 9th clock. The controller can now send the next byte.',
+    bits:[{v:'ACK',l:'9th CLK',cls:'ack'}]
+  },
+  {
+    label:'DATA', icon:'D',
+    title:'Data Byte — Payload (e.g. 0xAF = Display ON)',
+    detail:'0xAF is the SSD1306 command to turn the display on. The controller sends this byte bit by bit. Each bit is placed on SDA while SCL is LOW, then SCL goes HIGH for the receiver to sample it.',
+    bits:[{v:'1',l:'7'},{v:'0',l:'6'},{v:'1',l:'5'},{v:'0',l:'4'},{v:'1',l:'3'},{v:'1',l:'2'},{v:'1',l:'1'},{v:'1',l:'0'}]
+  },
+  {
+    label:'ACK', icon:'✓',
+    title:'Final ACK',
+    detail:'The OLED acknowledges the final byte. The controller has now completed sending its command.',
+    bits:[{v:'ACK',l:'9th CLK',cls:'ack'}]
+  },
+  {
+    label:'STOP', icon:'P',
+    title:'STOP Condition',
+    detail:'The controller releases SDA (SDA goes LOW→HIGH while SCL is HIGH). This STOP condition signals the end of the transaction. The bus returns to idle. All lines are HIGH. The OLED is now processing the received command.',
+    bits:[]
+  }
+];
+
+let txnCurrent = -1;
+
+function initTransactionSimulation(){
+  const container = $('txn-steps');
+  container.innerHTML = '';
+  TXN_STEPS.forEach((step, i) => {
+    if(i > 0){
+      const conn = document.createElement('div');
+      conn.className = 'txn-connector';
+      conn.id = `txn-conn-${i}`;
+      container.appendChild(conn);
+    }
+    const el = document.createElement('div');
+    el.className = 'txn-step';
+    el.id = `txn-step-${i}`;
+    el.innerHTML = `
+      <div class="txn-step-node">${step.icon}</div>
+      <div class="txn-step-label">${step.label}</div>`;
+    container.appendChild(el);
+  });
+  txnReset();
+}
+
+function txnNext(){
+  if(txnCurrent >= TXN_STEPS.length - 1) return;
+  if(txnCurrent >= 0){
+    $(`txn-step-${txnCurrent}`).classList.remove('active');
+    $(`txn-step-${txnCurrent}`).classList.add('done');
+    if(txnCurrent > 0) $(`txn-conn-${txnCurrent}`).classList.add('done');
+  }
+  txnCurrent++;
+  $(`txn-step-${txnCurrent}`).classList.add('active');
+  if(txnCurrent > 0) $(`txn-conn-${txnCurrent}`).classList.add('done');
+
+  const step = TXN_STEPS[txnCurrent];
+  $('txn-title').textContent = step.title;
+  $('txn-detail').textContent = step.detail;
+
+  const bitsEl = $('txn-bits');
+  bitsEl.innerHTML = '';
+  step.bits.forEach(b => {
+    const cell = document.createElement('div');
+    cell.className = 'txn-bit ' + (b.cls || (b.v==='1'?'b1':'b0'));
+    cell.innerHTML = `<div>${b.v}</div><div style="font-size:8px;color:var(--text-dim);margin-top:2px;">${b.l||''}</div>`;
+    bitsEl.appendChild(cell);
+  });
+
+  if(txnCurrent >= TXN_STEPS.length - 1){
+    $('txn-next-btn').textContent = 'Transaction Complete ✓';
+    $('txn-next-btn').disabled = true;
+  }
+}
+
+function txnReset(){
+  txnCurrent = -1;
+  TXN_STEPS.forEach((_, i) => {
+    const el = $(`txn-step-${i}`);
+    if(el){ el.className = 'txn-step'; }
+    const conn = $(`txn-conn-${i}`);
+    if(conn) conn.className = 'txn-connector';
+  });
+  $('txn-title').textContent = 'Ready to simulate';
+  $('txn-detail').textContent = 'Click "Next Step" to begin the I²C transaction. We\'ll send a command to an OLED at address 0x3C.';
+  $('txn-bits').innerHTML = '';
+  $('txn-next-btn').textContent = 'Next Step →';
+  $('txn-next-btn').disabled = false;
+}
+
+/* ============================================================
+   ADDRESSING
+   ============================================================ */
+const DEVICE_INFO = {
+  oled: {
+    name:'OLED SSD1306', addr:'0x3C', icon:'🖥️',
+    bits:'0 1 1 1 1 0 0', desc:'The most common SSD1306 address. Binary: 0111100. Set by the SA0 pin being pulled LOW on the module.',
+    use:'Used for 128×64 or 128×32 monochrome OLED displays. Initialize with Wire and Adafruit_SSD1306 library.'
+  },
+  mpu: {
+    name:'MPU-6050', addr:'0x68', icon:'📐',
+    bits:'1 1 0 1 0 0 0', desc:'Default address when the AD0 pin is LOW. Binary: 1101000. If AD0 is HIGH, address becomes 0x69.',
+    use:'6-axis IMU (3-axis gyroscope + 3-axis accelerometer). Used in robotics, drones, and wearables.'
+  },
+  eeprom: {
+    name:'24LC256 EEPROM', addr:'0x50', icon:'💾',
+    bits:'1 0 1 0 0 0 0', desc:'Base address when A0, A1, A2 pins are all LOW. Binary: 1010000. Hardware address pins allow up to 8 units on one bus.',
+    use:'Non-volatile storage. Store configuration data, calibration values, or logs that survive power cycles.'
+  },
+  bme: {
+    name:'BME280', addr:'0x76', icon:'🌡️',
+    bits:'1 1 1 0 1 1 0', desc:'When SDO pin is LOW (connected to GND). Binary: 1110110. SDO=HIGH gives 0x77.',
+    use:'Environmental sensor measuring temperature, barometric pressure, and humidity. Popular in weather stations.'
+  }
+};
+
+function selectDevice(key){
+  document.querySelectorAll('.device-card').forEach(c=>c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const d = DEVICE_INFO[key];
+  const el = $('addr-detail');
+  el.style.display = 'block';
+  $('addr-detail-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+      <span style="font-size:36px;">${d.icon}</span>
+      <div>
+        <div style="font-size:18px;font-weight:700;color:var(--text-primary);">${d.name}</div>
+        <div style="font-family:var(--font-mono);font-size:24px;font-weight:800;color:var(--green);">${d.addr}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:4px;margin-bottom:16px;flex-wrap:wrap;">
+      ${d.bits.split(' ').map((b,i)=>`<div class="txn-bit ${b==='1'?'b1':'b0'}"><div>${b}</div><div style="font-size:8px;color:var(--text-dim)">A${6-i}</div></div>`).join('')}
+      <div class="txn-bit ack-bit"><div>R/W</div><div style="font-size:8px;color:var(--text-dim)">b0</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--text-sec);margin-bottom:10px;">${d.desc}</p>
+    <p style="font-size:13px;color:var(--text-sec);">${d.use}</p>
+  `;
+}
+
+/* ============================================================
+   ACK / NACK
+   ============================================================ */
+const DATA_BYTE = '10110010';
+
+function initAckVisual(){
+  const el = $('ack-visual');
+  el.innerHTML = '';
+  for(let i=0; i<8; i++){
+    const b = DATA_BYTE[i];
+    const cell = document.createElement('div');
+    cell.className = 'ack-cell data';
+    cell.id = `ack-cell-${i}`;
+    cell.innerHTML = `<div class="ack-cell-top">Bit ${i}</div>${b}`;
+    el.appendChild(cell);
+  }
+  const ackCell = document.createElement('div');
+  ackCell.className = 'ack-cell';
+  ackCell.id = 'ack-cell-8';
+  ackCell.innerHTML = `<div class="ack-cell-top">9th CLK</div>?`;
+  el.appendChild(ackCell);
+}
+
+function ackSend(isNack){
+  // animate all data cells
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      $(`ack-cell-${i}`).classList.add('active');
+    }, i * 60);
+  }
+  setTimeout(()=>{
+    const c = $('ack-cell-8');
+    if(isNack){
+      c.className = 'ack-cell nack';
+      c.innerHTML = `<div class="ack-cell-top">9th CLK</div>NACK`;
+      $('ack-result').textContent = 'NACK — SDA HIGH';
+      $('ack-result').className = 'status-value text-red';
+      $('ack-meaning').textContent = 'The receiver did not pull SDA LOW. Possible reasons: wrong address (no device), device busy, controller sending NACK after last byte it wants to read, or communication error.';
+    } else {
+      c.className = 'ack-cell ack';
+      c.innerHTML = `<div class="ack-cell-top">9th CLK</div>ACK`;
+      $('ack-result').textContent = 'ACK — SDA LOW';
+      $('ack-result').className = 'status-value text-green';
+      $('ack-meaning').textContent = 'The receiver pulled SDA LOW, confirming the byte was received successfully. The controller may now send the next byte.';
+    }
+  }, 8 * 60 + 100);
+}
+
+function ackReset(){
+  for(let i=0;i<8;i++) $(`ack-cell-${i}`).classList.remove('active');
+  const c = $('ack-cell-8');
+  c.className = 'ack-cell';
+  c.innerHTML = `<div class="ack-cell-top">9th CLK</div>?`;
+  $('ack-result').textContent = 'Waiting…';
+  $('ack-result').className = 'status-value';
+  $('ack-meaning').textContent = 'Click "Send ACK" or "Send NACK" above.';
+}
+
+/* ============================================================
+   BUS CANVAS (multi-device)
+   ============================================================ */
+let busAnimTimer = null;
+let busPacketX = 0;
+
+function initBusCanvas(){
+  busDrawStatic(null);
+}
+
+const BUS_DEVICES = [
+  {addr:'0x3C', name:'OLED',    icon:'🖥', x:560, y:60 },
+  {addr:'0x68', name:'MPU6050', icon:'📐', x:560, y:140},
+  {addr:'0x50', name:'EEPROM',  icon:'💾', x:560, y:210},
+  {addr:'0x76', name:'BME280',  icon:'🌡', x:560, y:280}
+];
+
+function busDrawStatic(selectedAddr, packetX){
+  const canvas = $('bus-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Controller box
+  const ctrlX = 40, ctrlY = 100, ctrlW = 130, ctrlH = 80;
+  ctx.fillStyle = '#1c2230';
+  ctx.strokeStyle = '#58a6ff';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(ctrlX,ctrlY,ctrlW,ctrlH,8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#58a6ff'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('ESP32', ctrlX+ctrlW/2, ctrlY+30);
+  ctx.fillStyle='#8b949e'; ctx.font='11px sans-serif';
+  ctx.fillText('Controller', ctrlX+ctrlW/2, ctrlY+50);
+
+  // Bus lines (SDA, SCL)
+  const busX1 = ctrlX+ctrlW, busX2 = 530;
+  const sdaY = ctrlY+25, sclY = ctrlY+55;
+  [[sdaY,'#3fb950','SDA'],[sclY,'#e3b341','SCL']].forEach(([y,col,lbl])=>{
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.moveTo(busX1, y); ctx.lineTo(busX2, y); ctx.stroke();
+    ctx.fillStyle=col; ctx.font='bold 10px monospace'; ctx.textAlign='left';
+    ctx.fillText(lbl, busX1+6, y-4);
+    // Vertical bus bar
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=1.5;
+    ctx.moveTo(busX2, 40); ctx.lineTo(busX2, H-20); ctx.stroke();
+  });
+
+  // Device boxes
+  BUS_DEVICES.forEach(dev => {
+    const isActive = selectedAddr && selectedAddr === dev.addr;
+    ctx.fillStyle = isActive ? 'rgba(63,185,80,0.12)' : '#161b22';
+    ctx.strokeStyle = isActive ? '#3fb950' : '#2a3441';
+    ctx.lineWidth = isActive ? 2 : 1;
+    ctx.beginPath(); ctx.roundRect(dev.x, dev.y-22, 145, 46, 7); ctx.fill(); ctx.stroke();
+
+    // Connection stubs from vertical bus
+    [[sdaY,'#3fb950'],[sclY,'#e3b341']].forEach(([ly,col])=>{
+      ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=1.5;
+      ctx.setLineDash([3,3]);
+      ctx.moveTo(busX2, ly); ctx.lineTo(dev.x-6, dev.y+1);
+      ctx.stroke(); ctx.setLineDash([]);
+    });
+
+    ctx.fillStyle = isActive ? '#3fb950' : '#8b949e';
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(`${dev.icon} ${dev.name}`, dev.x+8, dev.y-4);
+    ctx.fillStyle = isActive ? '#3fb950' : '#484f58';
+    ctx.font = 'bold 11px monospace';
+    ctx.fillText(dev.addr, dev.x+8, dev.y+16);
+  });
+
+  // Animated packet
+  if(selectedAddr && packetX !== undefined){
+    const dev = BUS_DEVICES.find(d=>d.addr===selectedAddr);
+    if(dev){
+      const prgX = busX1 + packetX * (busX2 - busX1);
+      ctx.beginPath();
+      ctx.arc(prgX, sdaY, 5, 0, Math.PI*2);
+      ctx.fillStyle='#3fb950';
+      ctx.shadowBlur=12; ctx.shadowColor='#3fb950'; ctx.fill();
+      ctx.shadowBlur=0;
+    }
+  }
+
+  ctx.textAlign='left';
+}
+
+function busSelectDevice(){ busDrawStatic($('bus-device-select').value || null); }
+
+function busAnimate(){
+  const sel = $('bus-device-select').value;
+  if(!sel){ $('bus-info').textContent='Please select a target device first.'; return; }
+  if(busAnimTimer){ clearInterval(busAnimTimer); }
+  let t = 0;
+  const dev = BUS_DEVICES.find(d=>d.addr===sel);
+  $('bus-info').innerHTML = `Sending address <strong style="color:var(--green)">${sel}</strong> (${dev.name}) — watching for ACK…`;
+  busAnimTimer = setInterval(()=>{
+    t += 0.02;
+    busDrawStatic(sel, Math.min(t,1));
+    if(t >= 1){
+      clearInterval(busAnimTimer);
+      $('bus-info').innerHTML = `✓ <strong style="color:var(--green)">${dev.name} (${sel})</strong> responded with ACK. All other devices ignored the transaction.`;
+    }
+  }, 20);
+}
+
+/* ============================================================
+   OLED ADDRESS SELECTION
+   ============================================================ */
+let selectedOledAddr = '0x3C';
+
+function selectOledAddr(addr){
+  selectedOledAddr = addr;
+  $('addr-btn-3c').style.borderColor = addr==='0x3C' ? 'var(--green)' : 'var(--border)';
+  $('addr-btn-3c').style.color       = addr==='0x3C' ? 'var(--green)' : 'var(--text-sec)';
+  $('addr-btn-3d').style.borderColor = addr==='0x3D' ? 'var(--amber)' : 'var(--border)';
+  $('addr-btn-3d').style.color       = addr==='0x3D' ? 'var(--amber)' : 'var(--text-sec)';
+  updateCodeDisplay();
+}
+
+/* ============================================================
+   CODE DISPLAY
+   ============================================================ */
+function getCodeLines(addr){
+  return [
+    {c:`<span class="kw">#include</span> <span class="str">&lt;Wire.h&gt;</span>`,          key:'inc-wire'},
+    {c:`<span class="kw">#include</span> <span class="str">&lt;Adafruit_GFX.h&gt;</span>`,   key:'inc-gfx'},
+    {c:`<span class="kw">#include</span> <span class="str">&lt;Adafruit_SSD1306.h&gt;</span>`,key:'inc-ssd'},
+    {c:``,key:'blank'},
+    {c:`<span class="kw">#define</span> <span class="def">SCREEN_WIDTH</span>  <span class="num">128</span>`,key:'def-w'},
+    {c:`<span class="kw">#define</span> <span class="def">SCREEN_HEIGHT</span> <span class="num">64</span>`,key:'def-h'},
+    {c:`<span class="kw">#define</span> <span class="def">OLED_ADDRESS</span>  <span class="num">${addr}</span>`,key:'def-addr'},
+    {c:``,key:'blank'},
+    {c:`<span class="cls">Adafruit_SSD1306</span> <span class="fn">display</span>(`,key:'obj-decl'},
+    {c:`  <span class="def">SCREEN_WIDTH</span>, <span class="def">SCREEN_HEIGHT</span>,`,key:'obj-dims'},
+    {c:`  &amp;<span class="cls">Wire</span>, <span class="kw">-1</span>`,key:'obj-wire'},
+    {c:`);`,key:'obj-end'},
+    {c:``,key:'blank'},
+    {c:`<span class="kw">void</span> <span class="fn">setup</span>() {`,key:'setup'},
+    {c:`  <span class="cls">Wire</span>.<span class="fn">begin</span>(<span class="num">21</span>, <span class="num">22</span>);`,key:'wire-begin'},
+    {c:``,key:'blank'},
+    {c:`  <span class="kw">if</span> (!display.<span class="fn">begin</span>(<span class="def">SSD1306_SWITCHCAPVCC</span>, <span class="def">OLED_ADDRESS</span>)) {`,key:'disp-begin'},
+    {c:`    <span class="kw">while</span> (<span class="kw">true</span>);  <span class="cmt">// halt if OLED not found</span>`,key:'halt'},
+    {c:`  }`,key:'close-if'},
+    {c:``,key:'blank'},
+    {c:`  display.<span class="fn">clearDisplay</span>();`,key:'clear'},
+    {c:``,key:'blank'},
+    {c:`  display.<span class="fn">setTextSize</span>(<span class="num">2</span>);`,key:'textsize'},
+    {c:`  display.<span class="fn">setTextColor</span>(<span class="def">SSD1306_WHITE</span>);`,key:'textcolor'},
+    {c:``,key:'blank'},
+    {c:`  display.<span class="fn">setCursor</span>(<span class="num">0</span>, <span class="num">0</span>);`,key:'cursor'},
+    {c:`  display.<span class="fn">println</span>(<span class="str">"Hello I2C!"</span>);`,key:'println'},
+    {c:``,key:'blank'},
+    {c:`  display.<span class="fn">display</span>();  <span class="cmt">// push buffer to OLED via I²C</span>`,key:'push'},
+    {c:`}`,key:'setup-end'},
+    {c:``,key:'blank'},
+    {c:`<span class="kw">void</span> <span class="fn">loop</span>() {}`,key:'loop'},
+  ];
+}
+
+const CODE_EXPLANATIONS = {
+  'inc-wire':   '<strong>Wire.h</strong> — Arduino I²C library. Provides Wire.begin(), Wire.beginTransmission(), Wire.write(), Wire.endTransmission(), Wire.requestFrom(). This is the low-level I²C interface your ESP32 uses.',
+  'inc-gfx':    '<strong>Adafruit_GFX.h</strong> — Platform-independent graphics library. Provides drawPixel(), fillRect(), print(), println(), and other drawing primitives that work on any display that has a driver.',
+  'inc-ssd':    '<strong>Adafruit_SSD1306.h</strong> — Driver for the SSD1306 OLED controller chip. Translates GFX drawing commands into the correct sequence of I²C bytes that the SSD1306 understands.',
+  'def-w':      '<strong>SCREEN_WIDTH 128</strong> — The SSD1306 OLED is 128 pixels wide. This constant is passed to the display object so it knows the screen geometry.',
+  'def-h':      '<strong>SCREEN_HEIGHT 64</strong> — The display is 64 pixels tall (128×64 is the most common size). Smaller modules may be 128×32.',
+  'def-addr':   `<strong>OLED_ADDRESS</strong> — The 7-bit I²C address of your OLED module. Most SSD1306 modules use 0x3C by default. If your OLED doesn't respond, try 0x3D, or run the I²C scanner sketch to discover the actual address.`,
+  'obj-decl':   '<strong>Adafruit_SSD1306 display(...)</strong> — Creates the display object. The first two parameters set the screen dimensions.',
+  'obj-wire':   '<strong>&Wire</strong> — Passes a pointer to the Wire I²C interface object. The library will use Wire for all I²C communication.',
+  'wire-begin': '<strong>Wire.begin(21, 22)</strong> — Initializes the I²C bus. Parameter 1 = SDA pin (GPIO21), Parameter 2 = SCL pin (GPIO22). Must be called before any I²C communication. Note: on some ESP32 variants, default pins may differ.',
+  'disp-begin': '<strong>display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)</strong> — Initializes the SSD1306 display. SSD1306_SWITCHCAPVCC tells the library to use the display\'s internal charge pump for VCC. If this returns false, no device responded at OLED_ADDRESS.',
+  'halt':       '<strong>while(true)</strong> — If display.begin() returns false, no OLED was found at the specified address. The program halts here. In production code you would log an error or try recovery instead.',
+  'clear':      '<strong>display.clearDisplay()</strong> — Clears the internal display buffer (sets all pixels to OFF). The OLED is not yet updated — this only affects the in-memory buffer.',
+  'textsize':   '<strong>setTextSize(2)</strong> — Sets the text scale factor. Size 1 = 6×8 pixels per character. Size 2 = 12×16 pixels. Larger sizes are pixel-scaled, not font-smoothed.',
+  'textcolor':  '<strong>setTextColor(SSD1306_WHITE)</strong> — Sets text color to white (pixels ON). SSD1306 is monochrome — WHITE turns pixels on, BLACK turns pixels off.',
+  'cursor':     '<strong>setCursor(0, 0)</strong> — Positions the text cursor at column 0, row 0 (top-left corner). Coordinates are in pixels.',
+  'println':    '<strong>display.println("Hello I2C!")</strong> — Writes text to the buffer with a newline. Nothing is sent to the OLED yet — this is all in RAM.',
+  'push':       '<strong>display.display()</strong> — This is the critical call. It transfers the entire frame buffer to the SSD1306 via I²C. Until you call this, nothing appears on the screen. Internally it calls Wire.beginTransmission(), sends the data array, then Wire.endTransmission().',
+  'loop':       '<strong>void loop()</strong> — Empty because we only draw once. In real applications, you would update content here and call display.display() each time.',
+};
+
+let selectedLineKey = null;
+
+function updateCodeDisplay(){
+  const addr = $('code-addr-select').value;
+  const lines = getCodeLines(addr);
+  const pre = $('code-block-content');
+  pre.innerHTML = '';
+  lines.forEach((line, i) => {
+    const row = document.createElement('div');
+    row.style.cssText='display:flex;gap:12px;padding:1px 24px;cursor:pointer;border-radius:3px;transition:background 0.15s;';
+    row.innerHTML = `<span style="color:var(--text-dim);user-select:none;width:20px;text-align:right;flex-shrink:0;">${i+1}</span><span>${line.c}</span>`;
+    if(line.key !== 'blank'){
+      row.title = 'Click to explain this line';
+      row.addEventListener('mouseenter', ()=> row.style.background='rgba(63,185,80,0.06)');
+      row.addEventListener('mouseleave', ()=> row.style.background= selectedLineKey===line.key?'rgba(63,185,80,0.1)':'');
+      row.addEventListener('click', ()=>{
+        selectedLineKey = line.key;
+        document.querySelectorAll('#code-block-content > div').forEach(r=>r.style.background='');
+        row.style.background='rgba(63,185,80,0.1)';
+        showCodeExplain(line.key);
+      });
+    }
+    pre.appendChild(row);
+  });
+}
+
+function showCodeExplain(key){
+  const exp = CODE_EXPLANATIONS[key];
+  if(!exp) return;
+  const box = $('code-explain-box');
+  box.style.display = 'block';
+  $('code-explain-text').innerHTML = exp;
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function explainCode(){
+  if(selectedLineKey){
+    showCodeExplain(selectedLineKey);
+  } else {
+    $('code-explain-box').style.display='block';
+    $('code-explain-text').innerHTML = 'Click any line in the code editor above to see its explanation here.';
+  }
+}
+
+function copyCode(){
+  const addr = $('code-addr-select').value;
+  const code = `#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH  128
+#define SCREEN_HEIGHT 64
+#define OLED_ADDRESS  ${addr}
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+void setup() {
+  Wire.begin(21, 22);
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, OLED_ADDRESS)) {
+    while (true);
+  }
+
+  display.clearDisplay();
+  display.setTextSize(2);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("Hello I2C!");
+  display.display();
+}
+
+void loop() {}`;
+  navigator.clipboard.writeText(code).then(()=>{
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(()=>btn.textContent=orig, 1800);
+  }).catch(()=>{
+    alert('Copy failed. Please select and copy manually.');
+  });
+}
+
+function updateCodeAddr(){ updateCodeDisplay(); }
+
+/* ============================================================
+   SCANNER CODE
+   ============================================================ */
+function initScannerCode(){
+  $('scanner-code').innerHTML =
+`<span class="kw">#include</span> <span class="str">&lt;Wire.h&gt;</span>
+
+<span class="kw">void</span> <span class="fn">setup</span>() {
+  Serial.<span class="fn">begin</span>(<span class="num">115200</span>);
+  <span class="cls">Wire</span>.<span class="fn">begin</span>(<span class="num">21</span>, <span class="num">22</span>);
+  Serial.<span class="fn">println</span>(<span class="str">"I2C Scanner"</span>);
+
+  <span class="kw">for</span> (<span class="kw">byte</span> address = <span class="num">1</span>; address &lt; <span class="num">127</span>; address++) {
+    <span class="cls">Wire</span>.<span class="fn">beginTransmission</span>(address);
+    <span class="kw">byte</span> error = <span class="cls">Wire</span>.<span class="fn">endTransmission</span>();
+
+    <span class="kw">if</span> (error == <span class="num">0</span>) {
+      Serial.<span class="fn">print</span>(<span class="str">"Device found at 0x"</span>);
+      <span class="kw">if</span> (address &lt; <span class="num">16</span>) Serial.<span class="fn">print</span>(<span class="str">"0"</span>);
+      Serial.<span class="fn">println</span>(address, <span class="def">HEX</span>);
+    }
+  }
+  Serial.<span class="fn">println</span>(<span class="str">"Scan complete."</span>);
+}
+
+<span class="kw">void</span> <span class="fn">loop</span>() {}`;
+}
+
+function copyScanner(){
+  const code=`#include <Wire.h>
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(21, 22);
+  Serial.println("I2C Scanner");
+  for (byte address = 1; address < 127; address++) {
+    Wire.beginTransmission(address);
+    byte error = Wire.endTransmission();
+    if (error == 0) {
+      Serial.print("Device found at 0x");
+      if (address < 16) Serial.print("0");
+      Serial.println(address, HEX);
+    }
+  }
+  Serial.println("Scan complete.");
+}
+void loop() {}`;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  const btn=event.target; const o=btn.textContent; btn.textContent='✓ Copied!';
+  setTimeout(()=>btn.textContent=o,1800);
+}
+
+/* ============================================================
+   SCANNER SIMULATION
+   ============================================================ */
+const VIRTUAL_DEVICES = [0x3C, 0x50, 0x68];
+let scanState = { running:false, paused:false, addr:1, timer:null };
+
+function initScannerGrid(){
+  const grid = $('scanner-grid');
+  grid.innerHTML = '';
+  for(let a=1; a<127; a++){
+    const cell = document.createElement('div');
+    cell.className = 'scan-cell';
+    cell.id = `scan-${a}`;
+    cell.textContent = a.toString(16).padStart(2,'0').toUpperCase();
+    grid.appendChild(cell);
+  }
+}
+
+function scanStart(){
+  if(scanState.paused){ scanState.paused=false; $('scan-btn').textContent='▶ Scanning…'; scanContinue(); return; }
+  scanReset();
+  scanState.running=true;
+  $('scan-btn').textContent='▶ Scanning…';
+  appendLog(`<span class="log-prompt">Starting I2C scan (0x01 – 0x7E)…</span>`);
+  scanContinue();
+}
+
+function scanContinue(){
+  scanState.timer = setInterval(()=>{
+    if(scanState.paused){ clearInterval(scanState.timer); return; }
+    const a = scanState.addr;
+    if(a >= 127){ clearInterval(scanState.timer); scanDone(); return; }
+    const cell = $(`scan-${a}`);
+    cell.className = 'scan-cell scanning';
+    const hex = '0x' + a.toString(16).padStart(2,'0').toUpperCase();
+    if(VIRTUAL_DEVICES.includes(a)){
+      setTimeout(()=>{
+        cell.className='scan-cell found';
+        appendLog(`<span class="log-found">✓ Device found at ${hex}</span>`);
+      }, 30);
+    } else {
+      setTimeout(()=>{ cell.className='scan-cell empty'; }, 30);
+    }
+    scanState.addr++;
+  }, 40);
+}
+
+function scanPause(){
+  if(!scanState.running) return;
+  scanState.paused=!scanState.paused;
+  $('scan-pause-btn').textContent = scanState.paused ? '▶ Resume' : '⏸ Pause';
+  if(!scanState.paused){ $('scan-btn').textContent='▶ Scanning…'; scanContinue(); }
+}
+
+function scanReset(){
+  clearInterval(scanState.timer);
+  scanState = { running:false, paused:false, addr:1, timer:null };
+  $('scan-btn').textContent='▶ Start Scan';
+  $('scan-pause-btn').textContent='⏸ Pause';
+  for(let a=1;a<127;a++) $(`scan-${a}`).className='scan-cell';
+  $('scan-log').innerHTML=`<span class="log-prompt">I2C Scanner ready. Press "Start Scan" to begin...</span>`;
+}
+
+function scanDone(){
+  scanState.running=false;
+  $('scan-btn').textContent='▶ Start Scan';
+  appendLog(`<span class="log-done">Scan complete. Found ${VIRTUAL_DEVICES.length} device(s).</span>`);
+}
+
+function appendLog(html){
+  const log = $('scan-log');
+  log.innerHTML += '<br>' + html;
+  log.scrollTop = log.scrollHeight;
+}
+
+/* ============================================================
+   CLOCK STRETCHING
+   ============================================================ */
+let stretchCurrent = -1;
+
+function stretchNext(){
+  if(stretchCurrent >= 0) $(`stretch-${stretchCurrent}`).classList.remove('active');
+  stretchCurrent = Math.min(stretchCurrent+1, 3);
+  $(`stretch-${stretchCurrent}`).classList.add('active');
+}
+
+function stretchReset(){
+  if(stretchCurrent >= 0) $(`stretch-${stretchCurrent}`).classList.remove('active');
+  stretchCurrent = -1;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+const QUIZ_DATA = [
+  {
+    q:'What does SDA stand for in I²C?',
+    opts:['Serial Data Address','Serial Direct Access','Serial Data Line','Synchronous Data Arbitration'],
+    ans:1,
+    exp:'SDA stands for Serial Data. It is the bidirectional data line shared between the controller and all target devices on the I²C bus.'
+  },
+  {
+    q:'What is the primary purpose of the SCL line in I²C?',
+    opts:['To carry data from master to slave','To provide timing/clock synchronization','To select which device to communicate with','To send start and stop signals only'],
+    ans:1,
+    exp:'SCL is the Serial Clock Line. It provides timing synchronization — it tells the receiver exactly when to sample SDA. SCL does NOT carry data itself; data always travels on SDA.'
+  },
+  {
+    q:'Does SCL carry the actual data bits in an I²C transaction?',
+    opts:['Yes, SCL carries data bits','No, SCL only provides timing','Only during the address phase','Only in Fast mode (400kHz)'],
+    ans:1,
+    exp:'No. SCL is purely a clock/timing signal. All data bits travel on SDA. SCL\'s transitions tell the receiver when SDA is stable and ready to be sampled.'
+  },
+  {
+    q:'I²C is classified as which type of communication?',
+    opts:['Full Duplex (simultaneous bidirectional)','Half Duplex (one direction at a time)','Simplex (one direction only)','Parallel with 8 data lines'],
+    ans:1,
+    exp:'I²C is half-duplex because both devices share the same SDA line. Only one device can drive SDA at a time — simultaneous bidirectional communication is not possible.'
+  },
+  {
+    q:'What is 0x3C in the context of I²C and the SSD1306 OLED?',
+    opts:['The register for sending commands','The 8-bit address byte on the wire','The 7-bit I²C device address','The I²C clock speed in kHz'],
+    ans:2,
+    exp:'0x3C is the 7-bit I²C address of the SSD1306 OLED. In your code you specify 0x3C as the address. On the wire, the R/W bit is appended, making it 8 bits total, but 0x3C itself is the 7-bit address.'
+  },
+  {
+    q:'What does an ACK signal look like on the I²C bus?',
+    opts:['SDA remains HIGH during the 9th clock pulse','SDA is pulled LOW during the 9th clock pulse','SCL goes LOW for two extra pulses','A separate ACK wire goes HIGH'],
+    ans:1,
+    exp:'During the 9th clock pulse (after 8 data bits), the receiver pulls SDA LOW to acknowledge receipt. If SDA stays HIGH, it is a NACK, indicating an error or that no device is present at that address.'
+  },
+  {
+    q:'How many data bits are sent before the ACK/NACK phase?',
+    opts:['4 bits (nibble)','7 bits (address only)','8 bits (one byte)','16 bits (two bytes)'],
+    ans:2,
+    exp:'I²C transfers data one byte at a time. After each 8-bit byte is sent, there is a 9th clock pulse during which the receiver either acknowledges (SDA LOW) or not (SDA HIGH).'
+  },
+  {
+    q:'Can multiple devices share the same SDA and SCL lines?',
+    opts:['No, each device needs its own SDA and SCL','Yes, up to 127 devices on one bus','Only two devices can share the bus','Only if all devices are the same model'],
+    ans:1,
+    exp:'Yes. This is one of I²C\'s key features. Up to 127 devices (7-bit addressing) can share the same SDA and SCL lines. The controller selects which device to talk to by sending the target\'s unique address.'
+  },
+  {
+    q:'What does Wire.begin(21, 22) do on an ESP32?',
+    opts:['Sends a byte to I²C address 21','Sets the I²C speed to 22 kHz','Initializes I²C with SDA=GPIO21 and SCL=GPIO22','Connects to 21 and 22 remote devices'],
+    ans:2,
+    exp:'Wire.begin(SDA_PIN, SCL_PIN) initializes the I²C peripheral. The first argument is the SDA pin (GPIO21 on ESP32 by default), the second is SCL (GPIO22). This must be called before any I²C communication.'
+  },
+  {
+    q:'Why would you run an I²C scanner sketch before writing your main code?',
+    opts:['To check if the CPU is fast enough','To discover the actual address your device is responding on','To measure the I²C bus speed','To update the device firmware'],
+    ans:1,
+    exp:'I²C device addresses can vary between modules or be configurable via hardware pins. Running a scanner tells you exactly which address(es) are responding on the bus, preventing "device not found" bugs.'
+  }
+];
+
+let quizState = { current:0, answers:[], done:false };
+
+function initQuiz(){
+  const container = $('quiz-questions');
+  container.innerHTML = '';
+  const progress = $('quiz-progress');
+  progress.innerHTML = '';
+
+  QUIZ_DATA.forEach((q, qi) => {
+    const pip = document.createElement('div');
+    pip.className = 'quiz-pip';
+    pip.id = `pip-${qi}`;
+    progress.appendChild(pip);
+
+    const el = document.createElement('div');
+    el.className = 'quiz-q' + (qi===0?' active':'');
+    el.id = `quiz-q-${qi}`;
+    el.innerHTML = `<div class="quiz-q-text">Q${qi+1}. ${q.q}</div>` +
+      q.opts.map((opt,oi)=>`
+        <div class="quiz-option" id="qopt-${qi}-${oi}" onclick="quizAnswer(${qi},${oi})">
+          <div class="quiz-opt-letter">${'ABCD'[oi]}</div>${opt}
+        </div>`).join('') +
+      `<div class="quiz-feedback" id="quiz-fb-${qi}"></div>`;
+    container.appendChild(el);
+  });
+
+  $('quiz-next-btn').disabled = true;
+  $('quiz-counter').textContent = 'Q 1 / ' + QUIZ_DATA.length;
+  $('quiz-score').style.display = 'none';
+  $('quiz-nav').style.display = 'flex';
+}
+
+function quizAnswer(qi, oi){
+  if(quizState.answers[qi] !== undefined) return;
+  quizState.answers[qi] = oi;
+  const q = QUIZ_DATA[qi];
+  const correct = oi === q.ans;
+  // mark options
+  for(let i=0;i<q.opts.length;i++){
+    const el = $(`qopt-${qi}-${i}`);
+    el.classList.add('disabled');
+    if(i === q.ans) el.classList.add('correct');
+    if(i === oi && !correct) el.classList.add('wrong');
+  }
+  // feedback
+  const fb = $(`quiz-fb-${qi}`);
+  fb.classList.add('show', correct?'correct':'wrong');
+  fb.innerHTML = (correct ? '✓ Correct! ' : '✗ Incorrect. ') + q.exp;
+  // pip
+  $(`pip-${qi}`).classList.add(correct?'correct':'wrong');
+  // next
+  $('quiz-next-btn').disabled = false;
+}
+
+function quizNext(){
+  if(quizState.current < QUIZ_DATA.length-1){
+    $(`quiz-q-${quizState.current}`).classList.remove('active');
+    quizState.current++;
+    $(`quiz-q-${quizState.current}`).classList.add('active');
+    $('quiz-counter').textContent = `Q ${quizState.current+1} / ${QUIZ_DATA.length}`;
+    $('quiz-next-btn').disabled = quizState.answers[quizState.current] === undefined;
+    if(quizState.current === QUIZ_DATA.length-1){
+      $('quiz-next-btn').textContent = 'See Results →';
+    }
+  } else {
+    showQuizScore();
+  }
+}
+
+function showQuizScore(){
+  $('quiz-questions').style.display='none';
+  $('quiz-nav').style.display='none';
+  const score = $('quiz-score');
+  score.style.display='block';
+  const correct = quizState.answers.filter((a,i)=>a===QUIZ_DATA[i].ans).length;
+  const pct = Math.round(correct/QUIZ_DATA.length*100);
+  $('quiz-score-pct').textContent = pct + '%';
+  $('quiz-score-detail').textContent = `${correct} of ${QUIZ_DATA.length} correct`;
+  let grade='', color='var(--green)';
+  if(pct>=90){ grade='Excellent! You have a solid grasp of I²C.'; }
+  else if(pct>=70){ grade='Good work! Review the sections you missed.'; color='var(--amber)'; }
+  else { grade='Keep practicing! Revisit the simulations above.'; color='var(--red)'; }
+  $('quiz-score-grade').textContent=grade;
+  $('quiz-score-grade').style.color=color;
+  $('quiz-score-pct').style.color=color;
+  // update pips
+  quizState.answers.forEach((a,i)=>{
+    $(`pip-${i}`).classList.add('done');
+  });
+}
+
+function quizRestart(){
+  quizState = { current:0, answers:[], done:false };
+  $('quiz-questions').style.display='block';
+  $('quiz-score').style.display='none';
+  $('quiz-nav').style.display='flex';
+  $('quiz-next-btn').textContent='Next Question →';
+  $('quiz-next-btn').disabled=true;
+  $('quiz-counter').textContent='Q 1 / '+QUIZ_DATA.length;
+  initQuiz();
+}
+
+/* ============================================================
+   INIT ALL
+   ============================================================ */
+function init(){
+  initNavigation();
+  initDuplexSimulation();
+  initWaveformSimulation();
+  initTransactionSimulation();
+  initAckVisual();
+  initBusCanvas();
+  initScannerCode();
+  initScannerGrid();
+  updateCodeDisplay();
+  drawStartWave();
+  drawStopWave();
+  initQuiz();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+// Redraw canvases on resize
+window.addEventListener('resize', ()=>{
+  // Waveform redraws via state
+  if(waveState.currentBit >= 0) waveDrawStatic(waveState.currentBit, waveState.phase);
+  else waveDrawStatic(-1,0);
+  // Bus canvas
+  const sel = $('bus-device-select') && $('bus-device-select').value;
+  busDrawStatic(sel || null);
+  drawStartWave();
+  drawStopWave();
+}, {passive:true});
+</script>
+</body>
+</html>
